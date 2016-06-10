@@ -1,0 +1,524 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+
+namespace OpenReceiptViewer
+{
+    public class 日付表示Converter : TypeSafeConverter<string, int>
+    {
+        /// <summary></summary>
+        public bool WithoutDay { get; private set; }
+
+        public override string Convert(int value, object parameter)
+        {
+            return DateUtil.ReceiptDateToShowDate(value, this.WithoutDay);
+        }
+
+        public static 日付表示Converter 年月日表示Instance
+        {
+            get { return _年月日表示instance = _年月日表示instance ?? new 日付表示Converter() { WithoutDay = false }; }
+        }
+        private static 日付表示Converter _年月日表示instance;
+
+        public static 日付表示Converter 年月表示Instance
+        {
+            get { return _年月表示instance = _年月表示instance ?? new 日付表示Converter() { WithoutDay = true }; }
+        }
+        private static 日付表示Converter _年月表示instance;
+    }
+
+    public class 年齢Converter : TypeSafeConverter<object, int>
+    {
+        public override object Convert(int value, object parameter)
+        {
+            var birthDay = DateUtil.ReceiptDateToDateTime(value);
+            if (birthDay == null)
+            {
+                return "?";
+            }
+
+            var age = DateTime.Today.Year - birthDay.Value.Year;
+            if (DateTime.Today < birthDay.Value.AddYears(age))
+            {
+                // 今年の誕生日がまだ来ていない。
+                age -= 1;
+            }
+            return age.ToString();
+        }
+
+        public static CultureInfo Culture
+        {
+            get
+            {
+                if (_culture == null)
+                {
+                    _culture = new CultureInfo("ja-JP", true);
+                    _culture.DateTimeFormat.Calendar = new JapaneseCalendar();
+                }
+                return _culture;
+            }
+        }
+        private static CultureInfo _culture;
+
+        public static 年齢Converter Instance
+        {
+            get { return _instance = _instance ?? new 年齢Converter(); }
+        }
+        private static 年齢Converter _instance;
+    }
+
+    public class 主傷病Converter : TypeSafeConverter<string, string>
+    {
+        public override string Convert(string value, object parameter)
+        {
+            if (value == "01")
+            {
+                return "○";
+            }
+            else if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return "？";
+            }
+        }
+
+        public static 主傷病Converter Instance
+        {
+            get { return _instance = _instance ?? new 主傷病Converter(); }
+        }
+        private static 主傷病Converter _instance;
+    }
+
+    public class DictConverter : TypeSafeConverter<string, int>
+    {
+        /// <summary></summary>
+        public Dictionary<int, string> Dict { get; set; }
+
+        public override string Convert(int value, object parameter)
+        {
+            if (this.Dict != null)
+            {
+                if (this.Dict.ContainsKey(value))
+                {
+                    return this.Dict[value];
+                }
+            }
+            return value.ToString();
+        }
+
+        public static DictConverter 診療行為Instance
+        {
+            get { return _診療行為Instance = _診療行為Instance ?? new DictConverter(); }
+        }
+        private static DictConverter _診療行為Instance;
+
+        public static DictConverter 医薬品Instance
+        {
+            get { return _医薬品Instance = _医薬品Instance ?? new DictConverter(); }
+        }
+        private static DictConverter _医薬品Instance;
+
+        public static DictConverter 特定器材Instance
+        {
+            get { return _特定器材Instance = _特定器材Instance ?? new DictConverter(); }
+        }
+        private static DictConverter _特定器材Instance;
+    }
+
+    public class DictConverter2 : TypeSafeConverter<string, int?>
+    {
+        /// <summary></summary>
+        private DictConverter _converter = new DictConverter();
+
+        /// <summary></summary>
+        public Dictionary<int, string> Dict
+        {
+            get { return this._converter.Dict; }
+            set { this._converter.Dict = value; }
+        }
+
+        public override string Convert(int? value, object parameter)
+        {
+            if (value.HasValue)
+            {
+                return _converter.Convert(value.Value, parameter);
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    public class 内容Converter : TypeSafeMultiConverter<string, string, object>
+    {
+        public override string Convert(string レコード識別情報, object 内容, object parameter)
+        {
+            if (レコード識別情報 == レコード識別情報定数.診療行為)
+            {
+                return DictConverter.診療行為Instance.Convert((int)内容, parameter);
+            }
+            else if (レコード識別情報 == レコード識別情報定数.医薬品)
+            {
+                return DictConverter.医薬品Instance.Convert((int)内容, parameter);
+            }
+            else if (レコード識別情報 == レコード識別情報定数.特定器材)
+            {
+                return DictConverter.特定器材Instance.Convert((int)内容, parameter);
+            }
+            else if (レコード識別情報 == レコード識別情報定数.コメント)
+            {
+                var tuple = (Tuple<int, string>)内容;
+                return コメントConverter.Instance.Convert(tuple.Item1, tuple.Item2, parameter);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        public static 内容Converter Instance
+        {
+            get { return _instance = _instance ?? new 内容Converter(); }
+        }
+        private static 内容Converter _instance;
+    }
+
+    public class EnumNullableIntStringConverter : DictConverter2
+    {
+        public EnumNullableIntStringConverter(Type enumType)
+        {
+            this.Dict = new Dictionary<int, string>();
+            foreach (var e in Enum.GetValues(enumType))
+            {
+                this.Dict.Add((int)e, e.ToString());
+            }
+        }
+
+        public static EnumNullableIntStringConverter 診療識別Instance
+        {
+            get { return _診療識別Instance = _診療識別Instance ?? new EnumNullableIntStringConverter(typeof(診療識別)); }
+        }
+        private static EnumNullableIntStringConverter _診療識別Instance;
+    }
+
+    public class 傷病名Converter : TypeSafeMultiConverter<string, int, string>
+    {
+        /// <summary></summary>
+        private DictConverter _dictConverter = new DictConverter();
+
+        /// <summary></summary>
+        public Dictionary<int, string> 傷病名Dict
+        {
+            get { return _dictConverter.Dict; }
+            set { _dictConverter.Dict = value; }
+        }
+
+        /// <summary></summary>
+        public Dictionary<int, string> 修飾語Dict { get; set; }
+
+        public override string Convert(int value1, string value2, object parameter)
+        {
+            var tmp = _dictConverter.Convert(value1, null);
+
+            if (this.修飾語Dict != null && !string.IsNullOrEmpty(value2) && value2.Length % 4 == 0)
+            {
+                for (int i = 0; i < 20;/*20?*/ i++)
+                {
+                    if (((i + 1) * 4) <= value2.Length)
+                    {
+                        int id;
+                        if (int.TryParse(value2.Substring((i * 4), 4), out id))
+                        {
+                            if (this.修飾語Dict.ContainsKey(id))
+                            {
+                                if (id < 8000)  // 1～7999まで接頭語
+                                {
+                                    tmp = this.修飾語Dict[id] + tmp;
+                                }
+                                else if (id < 9000)  // 8000～8999まで接尾語
+                                {
+                                    tmp = tmp + this.修飾語Dict[id];
+                                }
+                                else
+                                {
+                                    // 歯科部位コード
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return tmp;
+        }
+
+        public static 傷病名Converter Instance
+        {
+            get { return _instance = _instance ?? new 傷病名Converter(); }
+        }
+        private static 傷病名Converter _instance;
+    }
+
+    public class コメントConverter : TypeSafeMultiConverter<string, int, string>
+    {
+        /// <summary></summary>
+        public Dictionary<int, string> コメントDict { get; set; }
+
+        private string Find(int コメントコード)
+        {
+            if (this.コメントDict != null)
+            {
+                if (this.コメントDict.ContainsKey(コメントコード))
+                {
+                    return this.コメントDict[コメントコード];
+                }
+            }
+            return string.Empty;
+        }
+
+        public override string Convert(int コメントコード, string 文字データ, object parameter)
+        {
+            if (コメントコード == 810000001)
+            {
+                return 文字データ;
+            }
+            else if (820000000 <= コメントコード && コメントコード < 830000000)
+            {
+                return this.Find(コメントコード);
+            }
+            else if (830000000 <= コメントコード && コメントコード < 840000000)
+            {
+                return this.Find(コメントコード) + 文字データ;
+            }
+            else if (840000000 <= コメントコード && コメントコード < 850000000)
+            {
+                // TODO: 未実装
+                return "（未実装）" + this.Find(コメントコード) + 文字データ;
+            }
+            else if (コメントコード == 890000001)
+            {
+                return "（未実装）" + 文字データ;
+            }
+            else
+            {
+                return "（コメント）" + コメントコード.ToString();
+            }
+        }
+
+        public static コメントConverter Instance
+        {
+            get { return _instance = _instance ?? new コメントConverter(); }
+        }
+        private static コメントConverter _instance;
+    }
+
+    public class 算定日Converter : TypeSafeConverter<string, Dictionary<int, int>>
+    {
+        public override string Convert(Dictionary<int, int> value, object parameter)
+        {
+            if (value != null)
+            {
+                var list = new List<string>();
+                foreach (var kv in value.OrderBy(x => x.Key))
+                {
+                    var dateIdx = kv.Key;
+                    list.Add((dateIdx + 1).ToString());
+                }
+                return string.Join(", ", list);
+            }
+
+            return null;
+        }
+
+        public static 算定日Converter Instance
+        {
+            get { return _instance = _instance ?? new 算定日Converter(); }
+        }
+        private static 算定日Converter _instance;
+    }
+
+    public class TitleConverter : TypeSafeMultiConverter<string, 審査支払機関, int>
+    {
+        public override string Convert(審査支払機関 審査支払機関, int 請求年月, object parameter)
+        {
+            if (0 < 請求年月)
+            {
+                return 審査支払機関.ToString() + " " + DateUtil.ReceiptDateToShowDate(請求年月, true);
+            }
+
+            return "OpenReceiptViewer";
+        }
+
+        public static TitleConverter Instance
+        {
+            get { return _instance = _instance ?? new TitleConverter(); }
+        }
+        private static TitleConverter _instance;
+    }
+
+    public class レセプト種別Converter : TypeSafeConverter<string, int>
+    {
+        public override string Convert(int value, object parameter)
+        {
+            var tmp = "";
+
+            var keta123 = (int)(value / 10);
+            var keta12 = (int)(value / 100);
+            var keta4 = value - (keta123 * 10);
+            switch (keta123)
+            {
+                case 111:
+                    tmp += "医科・医保単独";
+                    break;
+                case 112:
+                    //tmp += "医科・医保と１種の公費併用";
+                    tmp += "医科・医保と公費１";
+                    break;
+                case 113:
+                    tmp += "医科・医保と公費２";
+                    break;
+                case 114:
+                    tmp += "医科・医保と公費３";
+                    break;
+                case 115:
+                    tmp += "医科・医保と公費４";
+                    break;
+                case 121:
+                    tmp += "医科・公費単独";
+                    break;
+                case 122:
+                    //tmp += "医科・２種の公費併用";
+                    tmp += "医科・公費２";
+                    break;
+                case 123:
+                    tmp += "医科・公費３";
+                    break;
+                case 124:
+                    tmp += "医科・公費４";
+                    break;
+                case 131:
+                    //tmp += "医科・後期高齢者単独";
+                    tmp += "医科・後期高齢";
+                    break;
+                case 132:
+                    //tmp += "医科・後期高齢者単独と１種の公費併用";
+                    tmp += "医科・後期高齢と公費１";
+                    break;
+                case 133:
+                    tmp += "医科・後期高齢と公費２";
+                    break;
+                case 134:
+                    tmp += "医科・後期高齢と公費３";
+                    break;
+                case 135:
+                    tmp += "医科・後期高齢と公費４";
+                    break;
+                default:
+                    break;
+            }
+            tmp += " ";
+            if (keta12 != 12)
+            {
+                switch (keta4)
+                {
+                    case 1:
+                    case 2:
+                        tmp += "本人";
+                        break;
+                    case 3:
+                    case 4:
+                        tmp += "未就学者";
+                        break;
+                    case 5:
+                    case 6:
+                        tmp += "家族";
+                        break;
+                    case 7:
+                    case 8:
+                        if (keta12 == 13)
+                        {
+                            //tmp += "高齢受給者一般・低所得者";
+                            tmp += "高齢一般・低所得者";
+                        }
+                        else
+                        {
+                            tmp += "一般・低所得者";
+                        }
+                        break;
+                    case 9:
+                    case 0:
+                        if (keta12 == 13)
+                        {
+                            //tmp += "高齢受給者７割";
+                            tmp += "高齢７割";
+                        }
+                        else
+                        {
+                            tmp += "７割";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                tmp += " ";
+            }
+
+            if (keta4 % 2 == 0)
+            {
+                tmp += "入院外";
+            }
+            else
+            {
+                tmp += "入院";
+            }
+
+            return tmp;
+        }
+
+        public static レセプト種別Converter Instance
+        {
+            get { return _instance = _instance ?? new レセプト種別Converter(); }
+        }
+        private static レセプト種別Converter _instance;
+    }
+
+    public class ZeroHideConverter : TypeSafeConverter<string, int>
+    {
+        public override string Convert(int value, object parameter)
+        {
+            if (value == 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return value.ToString();
+            }
+        }
+
+        public static ZeroHideConverter Instance
+        {
+            get { return _instance = _instance ?? new ZeroHideConverter(); }
+        }
+        private static ZeroHideConverter _instance;
+    }
+
+    public class 被保険者Converter : TypeSafeMultiConverter<object, string, string>
+    {
+        public override object Convert(string 被保険者証記号, string 被保険者証番号, object parameter)
+        {
+            return 被保険者証記号 + " - " + 被保険者証番号;
+        }
+
+        public static 被保険者Converter Instance
+        {
+            get { return _instance = _instance ?? new 被保険者Converter(); }
+        }
+        private static 被保険者Converter _instance;
+    }
+}

@@ -1,0 +1,20 @@
+﻿<Window x:Class="OpenReceiptViewer.FilterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="○○条件" Height="120" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center"
+                     FocusManager.FocusedElement="{Binding ElementName=_textBox}">
+            <Label Name="Label" Margin="8">○○</Label>
+            <TextBox Name="_textBox" Margin="8" Width="200" Text="{Binding Input}"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Click="OkButtonClick" IsDefault="True" Margin="8" MinWidth="40">OK</Button>
+            <Button IsCancel="True" Margin="8" MinWidth="70">キャンセル</Button>
+        </StackPanel>
+    </Grid>
+</Window>
