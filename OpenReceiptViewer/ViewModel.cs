@@ -676,7 +676,7 @@ namespace OpenReceiptViewer
 
         private Dictionary<int, string> Read傷病名()
         {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "b.txt");
+            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "b.csv");
 
             var dict = new Dictionary<int, string>();
             Action<CsvReader> readAction = csv =>
@@ -694,7 +694,7 @@ namespace OpenReceiptViewer
 
         private Dictionary<int, string> Read修飾語()
         {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "z.txt");
+            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "z.csv");
 
             var dict = new Dictionary<int, string>();
             Action<CsvReader> readAction = csv =>

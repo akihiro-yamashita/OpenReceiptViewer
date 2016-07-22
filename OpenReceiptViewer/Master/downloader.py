@@ -1,4 +1,5 @@
-__author__ = 'yamacl'
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import urllib.request
@@ -19,6 +20,10 @@ def download(url):
             print(name)
             with z.open(name) as f1, open(name, 'wb') as f2:
                 shutil.copyfileobj(f1, f2)
+            if name.startswith('b_'):
+                os.rename(name, 'b.csv')
+            elif name.startswith('z_'):
+                os.rename(name, 'z.csv')
     os.remove(out_file_path)
 
 

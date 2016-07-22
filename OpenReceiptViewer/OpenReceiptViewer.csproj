@@ -138,10 +138,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="Master\b.txt">
+    <None Include="Master\b.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\z.txt">
+    <None Include="Master\z.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
