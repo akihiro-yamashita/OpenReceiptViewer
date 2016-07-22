@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+source code from
+https://mvvmfoundation.codeplex.com/SourceControl/latest#MvvmFoundation/MvvmFoundation.Wpf/RelayCommand.cs
+*/
+
+using System;
 using System.Windows.Input;
 
 namespace OpenReceiptViewer

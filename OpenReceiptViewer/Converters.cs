@@ -1,4 +1,20 @@
-﻿using System;
+﻿/*
+Copyright 2016 Akihiro Yamashita
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -48,20 +64,6 @@ namespace OpenReceiptViewer
             return age.ToString();
         }
 
-        public static CultureInfo Culture
-        {
-            get
-            {
-                if (_culture == null)
-                {
-                    _culture = new CultureInfo("ja-JP", true);
-                    _culture.DateTimeFormat.Calendar = new JapaneseCalendar();
-                }
-                return _culture;
-            }
-        }
-        private static CultureInfo _culture;
-
         public static 年齢Converter Instance
         {
             get { return _instance = _instance ?? new 年齢Converter(); }
@@ -99,6 +101,9 @@ namespace OpenReceiptViewer
         /// <summary></summary>
         public Dictionary<int, string> Dict { get; set; }
 
+        /// <summary></summary>
+        public bool ReturnsKeyWhenNotFount { get; set; }
+
         public override string Convert(int value, object parameter)
         {
             if (this.Dict != null)
@@ -108,7 +113,15 @@ namespace OpenReceiptViewer
                     return this.Dict[value];
                 }
             }
-            return value.ToString();
+
+            if (ReturnsKeyWhenNotFount)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public static DictConverter 診療行為Instance
@@ -117,17 +130,35 @@ namespace OpenReceiptViewer
         }
         private static DictConverter _診療行為Instance;
 
+        public static DictConverter 診療行為単位Instance
+        {
+            get { return _診療行為単位Instance = _診療行為単位Instance ?? new DictConverter(); }
+        }
+        private static DictConverter _診療行為単位Instance;
+
         public static DictConverter 医薬品Instance
         {
             get { return _医薬品Instance = _医薬品Instance ?? new DictConverter(); }
         }
         private static DictConverter _医薬品Instance;
 
+        public static DictConverter 医薬品単位Instance
+        {
+            get { return _医薬品単位Instance = _医薬品単位Instance ?? new DictConverter() { ReturnsKeyWhenNotFount = false, }; }
+        }
+        private static DictConverter _医薬品単位Instance;
+
         public static DictConverter 特定器材Instance
         {
             get { return _特定器材Instance = _特定器材Instance ?? new DictConverter(); }
         }
         private static DictConverter _特定器材Instance;
+
+        public static DictConverter 特定器材単位Instance
+        {
+            get { return _特定器材単位Instance = _特定器材単位Instance ?? new DictConverter(); }
+        }
+        private static DictConverter _特定器材単位Instance;
     }
 
     public class DictConverter2 : TypeSafeConverter<string, int?>
@@ -187,6 +218,43 @@ namespace OpenReceiptViewer
             get { return _instance = _instance ?? new 内容Converter(); }
         }
         private static 内容Converter _instance;
+    }
+
+    public class 数量Converter : TypeSafeMultiConverter<string, string, float?, object>
+    {
+        public override string Convert(string レコード識別情報, float? 数量, object 内容, object parameter)
+        {
+            if (数量 == null)
+            {
+                return string.Empty;
+            }
+
+            if (レコード識別情報 == レコード識別情報定数.診療行為)
+            {
+                var id = (int)内容;
+                return 数量.ToString() + DictConverter.診療行為単位Instance.Convert(id, parameter);
+            }
+            else if (レコード識別情報 == レコード識別情報定数.医薬品)
+            {
+                var id = (int)内容;
+                return 数量.ToString() + DictConverter.医薬品単位Instance.Convert(id, parameter);
+            }
+            else if (レコード識別情報 == レコード識別情報定数.特定器材)
+            {
+                var id = (int)内容;
+                return 数量.ToString() + DictConverter.特定器材単位Instance.Convert(id, parameter);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        public static 数量Converter Instance
+        {
+            get { return _instance = _instance ?? new 数量Converter(); }
+        }
+        private static 数量Converter _instance;
     }
 
     public class EnumNullableIntStringConverter : DictConverter2

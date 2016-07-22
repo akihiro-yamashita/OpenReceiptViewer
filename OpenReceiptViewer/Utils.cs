@@ -1,4 +1,20 @@
-﻿using System;
+﻿/*
+Copyright 2016 Akihiro Yamashita
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -7,8 +23,13 @@ using System.Text;
 
 namespace OpenReceiptViewer
 {
+    /// <summary></summary>
     public static class DateUtil
     {
+        /// <summary></summary>
+        /// <param name="receiptDate"></param>
+        /// <param name="withoutDay"></param>
+        /// <returns></returns>
         public static string ReceiptDateToShowDate(int receiptDate, bool withoutDay = false)
         {
             var receiptDateStr = receiptDate.ToString();
@@ -41,6 +62,9 @@ namespace OpenReceiptViewer
             return "?";
         }
 
+        /// <summary></summary>
+        /// <param name="receiptDate"></param>
+        /// <returns></returns>
         public static DateTime? ReceiptDateToDateTime(int receiptDate)
         {
             var showDate = ReceiptDateToShowDate(receiptDate);
@@ -60,6 +84,7 @@ namespace OpenReceiptViewer
             }
         }
 
+        /// <summary></summary>
         public static CultureInfo Culture
         {
             get
@@ -75,8 +100,15 @@ namespace OpenReceiptViewer
         private static CultureInfo _culture;
     }
 
+    /// <summary></summary>
     public static class CollectionUtil
     {
+        /// <summary></summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="predicate"></param>
+        /// <param name="searchAfter"></param>
+        /// <returns></returns>
         public static TSource FirstOrDefault<TSource>(this Collection<TSource> source, Func<TSource, bool> predicate, TSource searchAfter)
         {
             var startFromIdx = source.Count;

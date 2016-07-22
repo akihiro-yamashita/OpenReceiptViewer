@@ -1,5 +1,22 @@
-﻿using CsvHelper;
+﻿/*
+Copyright 2016 Akihiro Yamashita
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+using CsvHelper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -77,9 +94,15 @@ namespace OpenReceiptViewer
 
             new Thread(new ThreadStart(() =>
             {
-                DictConverter.診療行為Instance.Dict = this.Read診療行為();
-                DictConverter.医薬品Instance.Dict = this.Read医薬品();
-                DictConverter.特定器材Instance.Dict = this.Read特定器材();
+                var 診療行為List = this.Read診療行為();
+                DictConverter.診療行為Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);
+                DictConverter.診療行為単位Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.単位);
+                var 医薬品List = this.Read医薬品();
+                DictConverter.医薬品Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.名称);
+                DictConverter.医薬品単位Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.単位);
+                var 特定器材List = this.Read特定器材();
+                DictConverter.特定器材Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.名称);
+                DictConverter.特定器材単位Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.単位);
             })).Start();
         }
 
@@ -687,58 +710,38 @@ namespace OpenReceiptViewer
             return dict;
         }
 
-        private Dictionary<int, string> Read診療行為()
+        private List<名称単位マスター> Read名称単位マスター(string fileName)
         {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "s.csv");
+            var filePath = System.IO.Path.Combine(MasterDiretoryPath, fileName);
 
-            var dict = new Dictionary<int, string>();
+            var list = new List<名称単位マスター>();
             Action<CsvReader> readAction = csv =>
             {
                 while (csv.Read())
                 {
                     var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(4);
-                    dict.Add(id, name);
+                    var 名称 = csv.GetField<string>(4);
+                    var 単位 = csv.GetField<string>(9);
+                    list.Add(new 名称単位マスター() { Id = id, 名称 = 名称, 単位 = 単位 });
                 }
             };
             this.Read(filePath, readAction);
-            return dict;
+            return list;
         }
 
-        private Dictionary<int, string> Read医薬品()
+        private List<名称単位マスター> Read診療行為()
         {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "y.csv");
-
-            var dict = new Dictionary<int, string>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(4);
-                    dict.Add(id, name);
-                }
-            };
-            this.Read(filePath, readAction);
-            return dict;
+            return Read名称単位マスター("s.csv");
         }
 
-        private Dictionary<int, string> Read特定器材()
+        private List<名称単位マスター> Read医薬品()
         {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "t.csv");
+            return Read名称単位マスター("y.csv");
+        }
 
-            var dict = new Dictionary<int, string>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(4);
-                    dict.Add(id, name);
-                }
-            };
-            this.Read(filePath, readAction);
-            return dict;
+        private List<名称単位マスター> Read特定器材()
+        {
+            return Read名称単位マスター("t.csv");
         }
 
         private Dictionary<int, string> Readコメント()

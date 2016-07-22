@@ -153,7 +153,16 @@
                                 </MultiBinding>
                             </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="数量" Binding="{Binding Path=数量}" Width="40">
+                        <!--<DataGridTextColumn Header="数量" Binding="{Binding Path=数量}" Width="40">
+                        </DataGridTextColumn>-->
+                        <DataGridTextColumn Header="数量" Width="50">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding Converter="{x:Static local:数量Converter.Instance}">
+                                    <Binding Path="レコード識別情報" />
+                                    <Binding Path="数量" />
+                                    <Binding Path="内容" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="点数" Binding="{Binding Path=点数}" Width="44">
                         </DataGridTextColumn>
