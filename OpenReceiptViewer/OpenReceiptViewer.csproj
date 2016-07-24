@@ -147,10 +147,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "$(TargetDir)Master" "$(SolutionDir)dist\Master\"
-copy "$(TargetDir)*exe" "$(SolutionDir)dist\"
-copy "$(TargetDir)*dll" "$(SolutionDir)dist\"
-rem windows10! powershell compress-archive "$(SolutionDir)dist" "$(SolutionDir)$(ProjectName).zip"
+    <PostBuildEvent>xcopy /y "$(TargetDir)Master" "$(SolutionDir)tmp_dist\Master\"
+copy "$(TargetDir)*exe" "$(SolutionDir)tmp_dist\"
+copy "$(TargetDir)*dll" "$(SolutionDir)tmp_dist\"
+copy "$(SolutionDir)LICENSE.txt" "$(SolutionDir)tmp_dist\"
+rem windows10! powershell compress-archive "$(SolutionDir)tmp_dist" "$(SolutionDir)$(ProjectName).zip"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
