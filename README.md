@@ -2,6 +2,21 @@
 
 オープンソースのレセプトビューアー（レセ電ビューアー）です。
 
+## セットアップ方法
+
+プロジェクトページ（https://bitbucket.org/ayamashita_kojosen/openreceiptviewer）の
+左側ペインの「ソース」から「OpenReceiptViewer.zip」を選び、
+「View raw」をクリックして「OpenReceiptViewer.zip」をダウンロードします。
+このzipファイルを任意の場所で展開します。
+実行ファイルは「OpenReceiptViewer.exe」です。
+
+## 使い方
+
+「OpenReceiptViewer.exe」をダブルクリックし、
+左上メニューの「ファイル」、「開く」でレセプトファイル（.UKE拡張子）を選びます。
+
+![screen](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer/raw/2b9923e84e2c8042001c7a51a9bfbf49fba0dbaa/screen.png)
+
 ## システム要件
 
 .NET Framework 4以上
