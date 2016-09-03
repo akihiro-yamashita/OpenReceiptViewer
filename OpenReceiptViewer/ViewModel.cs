@@ -482,7 +482,7 @@ namespace OpenReceiptViewer
                             合計点数 = csv.GetField<int>((int)HO_IDX.合計点数),
                             予備 = csv.GetField<int?>((int)HO_IDX.予備),
                             回数 = csv.GetField<int?>((int)HO_IDX.回数),
-                            合計金額 = csv.GetField<int?>((int)HO_IDX.合計金額),
+                            //合計金額 = csv.GetField<int?>((int)HO_IDX.合計金額),
                             職務上の事由 = csv.GetField<int?>((int)HO_IDX.職務上の事由),
                             証明証番号 = csv.GetField<int?>((int)HO_IDX.証明証番号),
                             医療保険 = csv.GetField<int?>((int)HO_IDX.医療保険),

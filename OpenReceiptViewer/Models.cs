@@ -335,17 +335,29 @@ namespace OpenReceiptViewer
         }
         private int? _回数;
 
-        /// <summary>合計金額</summary>
-        public int? 合計金額
+        /// <summary>保険合計点数</summary>
+        public int? 保険合計点数
         {
-            get { return this._合計金額; }
+            get { return this._保険合計点数; }
             set
             {
-                this._合計金額 = value;
-                OnPropertyChanged("合計金額");
+                this._保険合計点数 = value;
+                OnPropertyChanged("保険合計点数");
             }
         }
-        private int? _合計金額;
+        private int? _保険合計点数;
+
+        /// <summary>公費合計点数</summary>
+        public int? 公費合計点数
+        {
+            get { return this._公費合計点数; }
+            set
+            {
+                this._公費合計点数 = value;
+                OnPropertyChanged("公費合計点数");
+            }
+        }
+        private int? _公費合計点数;
 
         /// <summary>職務上の事由</summary>
         public int? 職務上の事由

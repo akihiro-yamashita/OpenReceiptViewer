@@ -5,6 +5,8 @@ import os
 import urllib.request
 import shutil
 import zipfile
+import time
+import random
 
 
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko'
@@ -21,10 +23,17 @@ def download(url):
             with z.open(name) as f1, open(name, 'wb') as f2:
                 shutil.copyfileobj(f1, f2)
             if name.startswith('b_'):
-                os.rename(name, 'b.csv')
+                new_name = 'b.csv'
+                if os.path.exists(new_name):
+                    os.remove(new_name)
+                os.rename(name, new_name)
             elif name.startswith('z_'):
-                os.rename(name, 'z.csv')
+                new_name = 'z.csv'
+                if os.path.exists(new_name):
+                    os.remove(new_name)
+                os.rename(name, new_name)
     os.remove(out_file_path)
+    time.sleep(random.random() * 2)
 
 
 download('http://www.iryohoken.go.jp/shinryohoshu/downloadMenu/sFile')  # 医科診療行為マスター
