@@ -33,23 +33,54 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Label Content="{Binding IR.医療機関名称}"></Label>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="7*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" >
+                <Label Height="Auto"  Content="{Binding IR.医療機関名称}"></Label>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Height ="Auto" Width="75"  Content="Prev" Command="{Binding PreviousPatientCommand}"/>
+                <Button Height ="Auto" Width="75" Content="Next" Command="{Binding NextPatientCommand}"/>
+            </StackPanel>
+        </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding PatientList}" SelectedItem="{Binding CurrentPatient}">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding PatientList}" SelectedItem="{Binding CurrentPatient}" SelectedCellsChanged="DataGrid_SelectedCellsChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60">
+                    <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="患者番号" Binding="{Binding Path=RE.患者番号}" Width="60" MaxWidth="60">
+                    <DataGridTextColumn Header="患者番号" Binding="{Binding Path=RE.患者番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="氏名" Binding="{Binding Path=RE.氏名}" Width="160">
+                    <DataGridTextColumn Header="氏名" Binding="{Binding Path=RE.氏名}" Width="160" CanUserSort="False">
                     </DataGridTextColumn>
                 </DataGrid.Columns>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Orange" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="Background" Value="Navy" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Green" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
             </DataGrid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>

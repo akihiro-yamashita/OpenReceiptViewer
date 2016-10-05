@@ -32,5 +32,14 @@ namespace OpenReceiptViewer
 			_vm = new ViewModel();
 			this.DataContext = _vm;
 		}
-	}
+
+        private void DataGrid_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
+        {
+            var obj = sender as System.Windows.Controls.DataGrid;
+            if (obj != null && obj.SelectedItem != null)
+            {
+                obj.ScrollIntoView(obj.SelectedItem);
+            }
+        }
+    }
 }

@@ -766,19 +766,67 @@ namespace OpenReceiptViewer
         }
 
         private void Read(string filePath, Action<CsvReader> readAction)
-		{
+        {
             using (var stream = new System.IO.StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
-			{
+            {
                 var config = new CsvHelper.Configuration.CsvConfiguration()
                 {
                     HasHeaderRecord = false,
                 };
 
                 using (var csv = new CsvReader(stream, config))
-				{
+                {
                     readAction(csv);
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+
+        /// <summary>次の患者レセプトを表示</summary>
+        public RelayCommand NextPatientCommand
+        {
+            get
+            {
+                return _nextPatientCommand = _nextPatientCommand ??
+                new RelayCommand(() =>
+                {
+                    if (CurrentPatient != null)
+                    {
+                        var id = PatientList.IndexOf(CurrentPatient);
+
+                        if (id < (PatientList.Count - 1))
+                        {
+                            Patient pat = PatientList[id + 1];
+                            CurrentPatient = pat;
+                        }
+                    }
+                });
+            }
+        }
+        private RelayCommand _nextPatientCommand;
+
+        /// <summary>前の患者レセプトを表示</summary>
+        public RelayCommand PreviousPatientCommand
+        {
+            get
+            {
+                return _previousPatientCommand = _previousPatientCommand ??
+                new RelayCommand(() =>
+                {
+                    if (CurrentPatient != null)
+                    {
+                        var id = PatientList.IndexOf(CurrentPatient);
+
+                        if (0 < id)
+                        {
+                            Patient pat = PatientList[id - 1];
+                            CurrentPatient = pat;
+                        }
+                    }
+                });
+            }
+        }
+        private RelayCommand _previousPatientCommand;
+
+    }
+
 }
