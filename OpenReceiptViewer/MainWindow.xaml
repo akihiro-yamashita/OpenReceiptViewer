@@ -31,6 +31,11 @@
                     <MenuItem Header="特定器材条件" Command="{Binding 特定器材FilterCommand}" />
                     <MenuItem Header="条件解除" Command="{Binding ClearFilterCommand}" />
                 </MenuItem>
+                <MenuItem Header="並び順">
+                    <MenuItem Header="レセプト番号順" Command="{Binding OrderByレセプト番号Command}" />
+                    <MenuItem Header="患者番号順" Command="{Binding OrderBy患者番号Command}" />
+                    <MenuItem Header="点数高い順" Command="{Binding OrderBy合計点数Command}" />
+                </MenuItem>
             </Menu>
         </DockPanel>
         <Grid Grid.Row="1">
@@ -42,8 +47,8 @@
                 <Label Height="Auto"  Content="{Binding IR.医療機関名称}"></Label>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Height ="Auto" Width="75"  Content="Prev" Command="{Binding PreviousPatientCommand}"/>
-                <Button Height ="Auto" Width="75" Content="Next" Command="{Binding NextPatientCommand}"/>
+                <Button Height ="Auto" Width="75"  Content="前へ" Command="{Binding PreviousPatientCommand}"/>
+                <Button Height ="Auto" Width="75" Content="次へ" Command="{Binding NextPatientCommand}"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2">

@@ -26,8 +26,8 @@ using System.Windows;
 
 namespace OpenReceiptViewer
 {
-	public class ViewModel : NotifyPropertyChanged
-	{
+    public class ViewModel : NotifyPropertyChanged
+    {
         /// <summary></summary>
         public IR IR { get; set; }
 
@@ -147,7 +147,7 @@ namespace OpenReceiptViewer
                 });
             }
         }
-		private RelayCommand _openCommand;
+        private RelayCommand _openCommand;
 
         /// <summary></summary>
         public RelayCommand CloseCommand
@@ -827,6 +827,61 @@ namespace OpenReceiptViewer
         }
         private RelayCommand _previousPatientCommand;
 
-    }
+        /// <summary></summary>
+        /// <param name="orderByFunc"></param>
+        private void SortPatientList(Func<Patient, int> orderByFunc)
+        {
+            if (this.PatientList == null) { return; }
 
+            var list = this.PatientList.ToList();
+            this.PatientList.Clear();
+            foreach (var patient in list.OrderBy(orderByFunc))
+            {
+                this.PatientList.Add(patient);
+            }
+        }
+
+        /// <summary>レセプト番号順で並べ替え</summary>
+        public RelayCommand OrderByレセプト番号Command
+        {
+            get
+            {
+                return _orderByレセプト番号Command = _orderByレセプト番号Command ??
+                new RelayCommand(() =>
+                {
+                    this.SortPatientList(x => x.RE.レセプト番号);
+                });
+            }
+        }
+        private RelayCommand _orderByレセプト番号Command;
+
+        /// <summary>患者番号順で並べ替え</summary>
+        public RelayCommand OrderBy患者番号Command
+        {
+            get
+            {
+                return _orderBy患者番号Command = _orderBy患者番号Command ??
+                new RelayCommand(() =>
+                {
+                    this.SortPatientList(x => x.RE.患者番号);
+                });
+            }
+        }
+        private RelayCommand _orderBy患者番号Command;
+
+        /// <summary>点数順で並べ替え</summary>
+        public RelayCommand OrderBy合計点数Command
+        {
+            get
+            {
+                return _orderBy合計点数Command = _orderBy合計点数Command ??
+                new RelayCommand(() =>
+                {
+                    // 高い順に並べたいので、合計点数のマイナスを返す。
+                    this.SortPatientList(x => -((x.HO == null ? 0 : x.HO.合計点数) + (x.KO == null ? 0 : x.KO.合計点数)));
+                });
+            }
+        }
+        private RelayCommand _orderBy合計点数Command;
+    }
 }
