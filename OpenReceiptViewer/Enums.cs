@@ -173,6 +173,14 @@ namespace OpenReceiptViewer
         文字データ = 4,
     }
 
+    /// <summary>診療報酬請求書レコード</summary>
+    public enum GO_IDX
+    {
+        総件数 = 1,
+        総合計点数 = 2,
+        マルチボリューム識別子 = 3,
+    }
+
     /// <summary></summary>
     public enum 審査支払機関
     {

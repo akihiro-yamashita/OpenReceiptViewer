@@ -28,21 +28,25 @@ namespace OpenReceiptViewer
 {
     public class ViewModel : NotifyPropertyChanged
     {
-        /// <summary></summary>
+        /// <summary>医療機関情報レコード</summary>
         public IR IR { get; set; }
 
-        /// <summary></summary>
+        /// <summary>診療報酬請求書レコード</summary>
+        public GO GO { get; set; }
+
+        /// <summary>患者リスト</summary>
         public ObservableCollection<Patient> PatientList { get; set; }
 
         /// <summary>条件使用時のPatientList退避用</summary>
         public List<Patient> PatientListOriginal { get; set; }
 
-        /// <summary></summary>
+        /// <summary>選択中レセプトの傷病名リスト</summary>
         public ObservableCollection<SY> SYList { get; set; }
 
-        /// <summary></summary>
+        /// <summary>選択中レセプトの診療行為・医薬品・特定器材リスト</summary>
         public ObservableCollection<SIIYTOCO> SIIYTOCOList { get; set; }
 
+        /// <summary>選択中レセプトの患者</summary>
         public Patient CurrentPatient
         {
             get
@@ -80,6 +84,7 @@ namespace OpenReceiptViewer
         public ViewModel()
         {
             this.IR = new IR();
+            this.GO = new GO();
             this.PatientList = new ObservableCollection<Patient>();
             this.PatientListOriginal = null;
             this.SYList = new ObservableCollection<SY>();
@@ -121,7 +126,7 @@ namespace OpenReceiptViewer
                     if (dialogResult.HasValue && dialogResult.Value)
                     {
                         this.ReceiptFilePath = dialog.FileName;
-                        Tuple<IR, List<Patient>> tuple;
+                        Tuple<IR, GO, List<Patient>> tuple;
                         try
                         {
                             tuple = ReadReceiptSummary(ReceiptFilePath);
@@ -135,11 +140,21 @@ namespace OpenReceiptViewer
                         //// バインドが切れてしまう。
                         //this.IR = tuple.Item1;
                         this.IR.審査支払機関 = tuple.Item1.審査支払機関;
+                        this.IR.都道府県 = tuple.Item1.都道府県;
+                        this.IR.点数表 = tuple.Item1.点数表;
+                        this.IR.医療機関コード = tuple.Item1.医療機関コード;
+                        this.IR.予備 = tuple.Item1.予備;
                         this.IR.医療機関名称 = tuple.Item1.医療機関名称;
                         this.IR.請求年月 = tuple.Item1.請求年月;
+                        this.IR.マルチボリューム識別子 = tuple.Item1.マルチボリューム識別子;
+                        this.IR.電話番号 = tuple.Item1.電話番号;
+
+                        this.GO.総件数 = tuple.Item2.総件数;
+                        this.GO.総合計点数 = tuple.Item2.総合計点数;
+                        this.GO.マルチボリューム識別子 = tuple.Item2.マルチボリューム識別子;
 
                         this.PatientList.Clear();
-                        tuple.Item2.ForEach(x => this.PatientList.Add(x));
+                        tuple.Item3.ForEach(x => this.PatientList.Add(x));
                         this.PatientListOriginal = null;
                         this.SYList.Clear();
                         this.SIIYTOCOList.Clear();
@@ -421,9 +436,10 @@ namespace OpenReceiptViewer
         }
         private RelayCommand _特定器材FilterCommand;
 
-        private Tuple<IR, List<Patient>> ReadReceiptSummary(string filePath)
+        private Tuple<IR, GO, List<Patient>> ReadReceiptSummary(string filePath)
         {
             var ir = new IR();
+            var go = new GO();
             var patientList = new List<Patient>();
             Action<CsvReader> readAction = csv =>
             {
@@ -450,6 +466,12 @@ namespace OpenReceiptViewer
                         ir.マルチボリューム識別子 = csv.GetField<int>((int)IR_IDX.マルチボリューム識別子);
                         ir.電話番号 = csv.GetField<string>((int)IR_IDX.電話番号);
                         ir.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
+                    }
+                    else if (lineDef == レコード識別情報定数.診療報酬請求書)
+                    {
+                        go.総件数 = csv.GetField<int>((int)GO_IDX.総件数);
+                        go.総合計点数 = csv.GetField<int>((int)GO_IDX.総合計点数);
+                        go.マルチボリューム識別子 = csv.GetField<int>((int)GO_IDX.マルチボリューム識別子);
                     }
                     else if (lineDef == レコード識別情報定数.レセプト共通)
                     {
@@ -529,7 +551,7 @@ namespace OpenReceiptViewer
                 add();  // 最後の患者を追加する。
             };
             this.Read(filePath, readAction);
-            return new Tuple<IR, List<Patient>>(ir, patientList);
+            return new Tuple<IR, GO, List<Patient>>(ir, go, patientList);
         }
 
         private Tuple<List<SY>, List<SIIYTOCO>> ReadOneReceipt(string filePath, int レセプト番号)

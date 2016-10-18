@@ -48,6 +48,9 @@ namespace OpenReceiptViewer
         public const string 特定器材 = "TO";
 
         /// <summary></summary>
-        public const string コメント = "CO";        
+        public const string コメント = "CO";
+
+        /// <summary></summary>
+        public const string 診療報酬請求書 = "GO";
     }
 }

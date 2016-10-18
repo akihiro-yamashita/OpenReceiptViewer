@@ -1036,6 +1036,49 @@ namespace OpenReceiptViewer
         }
     }
 
+    /// <summary>診療報酬請求書レコード</summary>    
+    public class GO : Record
+    {
+        /// <summary></summary>
+        public GO() : base(レコード識別情報定数.診療報酬請求書) { }
+
+        /// <summary></summary>
+        public int 総件数
+        {
+            get { return this._総件数; }
+            set
+            {
+                this._総件数 = value;
+                OnPropertyChanged("総件数");
+            }
+        }
+        private int _総件数;
+
+        /// <summary></summary>
+        public int 総合計点数
+        {
+            get { return this._総合計点数; }
+            set
+            {
+                this._総合計点数 = value;
+                OnPropertyChanged("総合計点数");
+            }
+        }
+        private int _総合計点数;
+
+        /// <summary></summary>
+        public int マルチボリューム識別子
+        {
+            get { return this._マルチボリューム識別子; }
+            set
+            {
+                this._マルチボリューム識別子 = value;
+                OnPropertyChanged("マルチボリューム識別子");
+            }
+        }
+        private int _マルチボリューム識別子;
+    }
+
     /// <summary></summary>
     public class 名称単位マスター
     {
