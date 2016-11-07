@@ -416,7 +416,7 @@ namespace OpenReceiptViewer
         {
             if (0 < 請求年月)
             {
-                return 審査支払機関.ToString() + " " + DateUtil.ReceiptDateToShowDate(請求年月, true);
+                return 審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(請求年月, true);
             }
 
             return "OpenReceiptViewer";
