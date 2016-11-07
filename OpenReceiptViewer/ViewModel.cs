@@ -900,7 +900,7 @@ namespace OpenReceiptViewer
                 new RelayCommand(() =>
                 {
                     // 高い順に並べたいので、合計点数のマイナスを返す。
-                    this.SortPatientList(x => -((x.HO == null ? 0 : x.HO.合計点数) + (x.KO == null ? 0 : x.KO.合計点数)));
+                    this.SortPatientList(x => -(x.HO == null ? 0 : x.HO.合計点数));
                 });
             }
         }
