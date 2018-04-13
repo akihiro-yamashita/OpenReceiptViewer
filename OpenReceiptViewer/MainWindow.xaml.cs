@@ -15,6 +15,9 @@ limitations under the License.
 */
 
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace OpenReceiptViewer
 {
@@ -41,5 +44,18 @@ namespace OpenReceiptViewer
                 obj.ScrollIntoView(obj.SelectedItem);
             }
         }
-    }
+
+		private void _main_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			ModifierKeys modifyKey = Keyboard.Modifiers;
+
+			if ((modifyKey & ModifierKeys.Control) != ModifierKeys.None)
+			{
+				if (e.Key == Key.F) {
+					ViewModel vm = this.DataContext as ViewModel;
+					if (vm != null) { vm.NumberSearchCommand.Execute(null); }
+				}
+			}
+		}
+	}
 }

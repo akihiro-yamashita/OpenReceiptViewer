@@ -79,9 +79,9 @@ namespace OpenReceiptViewer
         private Patient _currentPatient;
 
         private string ReceiptFilePath = string.Empty;
-        private string MasterDiretoryPath = "Master";
+		public string MasterDiretoryPath { get; set; }
 
-        public ViewModel()
+		public ViewModel()
         {
             this.IR = new IR();
             this.GO = new GO();
@@ -89,30 +89,27 @@ namespace OpenReceiptViewer
             this.PatientListOriginal = null;
             this.SYList = new ObservableCollection<SY>();
             this.SIIYTOCOList = new ObservableCollection<SIIYTOCO>();
+		}
 
-            new Thread(new ThreadStart(() =>
-            {
-                傷病名Converter.Instance.傷病名Dict = this.Read傷病名();
-                傷病名Converter.Instance.修飾語Dict = this.Read修飾語();
-                コメントConverter.Instance.コメントDict = this.Readコメント();
-            })).Start();
+		void InitDict()
+		{
+			傷病名Converter.Instance.傷病名Dict = this.Read傷病名();
+			傷病名Converter.Instance.修飾語Dict = this.Read修飾語();
+			コメントConverter.Instance.コメントDict = this.Readコメント();
 
-            new Thread(new ThreadStart(() =>
-            {
-                var 診療行為List = this.Read診療行為();
-                DictConverter.診療行為Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);
-                DictConverter.診療行為単位Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.単位);
-                var 医薬品List = this.Read医薬品();
-                DictConverter.医薬品Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.名称);
-                DictConverter.医薬品単位Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.単位);
-                var 特定器材List = this.Read特定器材();
-                DictConverter.特定器材Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.名称);
-                DictConverter.特定器材単位Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.単位);
-            })).Start();
-        }
+			var 診療行為List = this.Read診療行為();
+			DictConverter.診療行為Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);
+			DictConverter.診療行為単位Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.単位);
+			var 医薬品List = this.Read医薬品();
+			DictConverter.医薬品Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.名称);
+			DictConverter.医薬品単位Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.単位);
+			var 特定器材List = this.Read特定器材();
+			DictConverter.特定器材Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.名称);
+			DictConverter.特定器材単位Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.単位);
+		}
 
-        /// <summary></summary>
-        public RelayCommand OpenCommand
+		/// <summary></summary>
+		public RelayCommand OpenCommand
         {
             get
             {
@@ -123,23 +120,42 @@ namespace OpenReceiptViewer
                     dialog.Filter = "*.UKE|*.*";
                     dialog.FilterIndex = 0;
                     var dialogResult = dialog.ShowDialog();
-                    if (dialogResult.HasValue && dialogResult.Value)
-                    {
-                        this.ReceiptFilePath = dialog.FileName;
-                        Tuple<IR, GO, List<Patient>> tuple;
-                        try
-                        {
-                            tuple = ReadReceiptSummary(ReceiptFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                            return;
-                        }
+					if (dialogResult.HasValue && dialogResult.Value)
+					{
+						this.ReceiptFilePath = dialog.FileName;
+						Tuple<IR, GO, List<Patient>> tuple;
+						try
+						{
+							tuple = ReadReceiptSummary(ReceiptFilePath);
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show(ex.Message);
+							return;
+						}
 
-                        //// バインドが切れてしまう。
-                        //this.IR = tuple.Item1;
-                        this.IR.審査支払機関 = tuple.Item1.審査支払機関;
+						if (43005<=tuple.Item1.請求年月)
+						{
+							MasterDiretoryPath = @"Master\201804";
+						}
+						else
+						{
+							MasterDiretoryPath = @"Master\201604";
+						}
+
+						if (IR.請求年月 != tuple.Item1.請求年月)
+						{
+							if ((IR.請求年月 == 0)										// 読み込みなし
+							|| (IR.請求年月 < 43005 && 43005 <= tuple.Item1.請求年月)	// 2016年→2018年切替
+							|| (tuple.Item1.請求年月 < 43005 && 43005 <= IR.請求年月))  // 2018年→2016年切替
+							{
+								InitDict();
+							}
+						}
+
+						//// バインドが切れてしまう。
+						//this.IR = tuple.Item1;
+						this.IR.審査支払機関 = tuple.Item1.審査支払機関;
                         this.IR.都道府県 = tuple.Item1.都道府県;
                         this.IR.点数表 = tuple.Item1.点数表;
                         this.IR.医療機関コード = tuple.Item1.医療機関コード;
@@ -153,11 +169,13 @@ namespace OpenReceiptViewer
                         this.GO.総合計点数 = tuple.Item2.総合計点数;
                         this.GO.マルチボリューム識別子 = tuple.Item2.マルチボリューム識別子;
 
-                        this.PatientList.Clear();
+						this.PatientList.Clear();
                         tuple.Item3.ForEach(x => this.PatientList.Add(x));
                         this.PatientListOriginal = null;
                         this.SYList.Clear();
                         this.SIIYTOCOList.Clear();
+
+						this.CurrentPatient = this.PatientList[0];
                     }
                 });
             }
@@ -198,6 +216,8 @@ namespace OpenReceiptViewer
                     var window = new SearchWindow();
                     window.Title = "患者番号検索";
                     window.Label.Content = "患者番号";
+					window.Owner = Application.Current.MainWindow;
+
                     var dialogResult = window.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
                     {

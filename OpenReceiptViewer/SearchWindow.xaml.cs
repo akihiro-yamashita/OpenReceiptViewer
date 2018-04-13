@@ -29,7 +29,7 @@ namespace OpenReceiptViewer
         {
             InitializeComponent();
 
-            _vm = new SearchWindowViewModel();
+			_vm = new SearchWindowViewModel();
             this.DataContext = _vm;
         }
 

@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:OpenReceiptViewer"
-        Height="900" Width="1000">
+        Height="900" Width="1000"
+        Name="_main" KeyDown="_main_KeyDown">
     <Window.Title>
         <MultiBinding Converter="{x:Static local:TitleConverter.Instance}">
             <Binding Path="IR.審査支払機関" />
@@ -17,12 +18,12 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
             <Menu Name="menu1" DockPanel.Dock="Top">
-                <MenuItem Header="ファイル">
-                    <MenuItem Header="開く" Command="{Binding OpenCommand}" />
-                    <MenuItem Header="閉じる" Command="{Binding CloseCommand}" />
+                <MenuItem Header="ファイル(_F)">
+                    <MenuItem Header="開く(_O)" Command="{Binding OpenCommand}"/>
+                    <MenuItem Header="閉じる(_X)" Command="{Binding CloseCommand}" />
                 </MenuItem>
                 <MenuItem Header="検索">
-                    <MenuItem Header="患者番号検索" Command="{Binding NumberSearchCommand}" />
+                    <MenuItem Header="患者番号検索" Command="{Binding NumberSearchCommand}" CommandParameter="{Binding ElementName=_main}" />
                     <MenuItem Header="氏名検索" Command="{Binding NameSearchCommand}" />
                 </MenuItem>
                 <MenuItem Header="条件">
