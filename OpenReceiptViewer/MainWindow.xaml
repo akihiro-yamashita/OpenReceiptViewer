@@ -219,7 +219,7 @@
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="回数" Binding="{Binding Path=回数, Converter={x:Static local:ZeroHideConverter.Instance} }" Width="40">
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="算定日" Binding="{Binding Path=XX日の情報, Converter={x:Static local:算定日Converter.Instance} }" Width="100">
+                        <DataGridTextColumn Header="算定日" Binding="{Binding Path=XX日の情報, Converter={x:Static local:算定日Converter.Instance} }" Width="120">
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>

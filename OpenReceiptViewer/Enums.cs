@@ -196,6 +196,7 @@ namespace OpenReceiptViewer
         大正 = 2,
         昭和 = 3,
         平成 = 4,
+        令和 = 5,
     }
 
     /// <summary>本人区分</summary>
