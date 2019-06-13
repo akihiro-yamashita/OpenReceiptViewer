@@ -26,13 +26,15 @@ namespace OpenReceiptViewer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		ViewModel _vm;
+		private MainWindowViewModel _vm;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			_vm = new ViewModel();
+            this.DataContext = this;
+
+            this._vm = new MainWindowViewModel();
 			this.DataContext = _vm;
 		}
 
@@ -45,17 +47,32 @@ namespace OpenReceiptViewer
             }
         }
 
-		private void _main_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-		{
-			ModifierKeys modifyKey = Keyboard.Modifiers;
+        private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // 「＋」のタブを選択状態にさせない。
+            e.Handled = true;
+        }
 
-			if ((modifyKey & ModifierKeys.Control) != ModifierKeys.None)
-			{
-				if (e.Key == Key.F) {
-					ViewModel vm = this.DataContext as ViewModel;
-					if (vm != null) { vm.NumberSearchCommand.Execute(null); }
-				}
-			}
-		}
-	}
+        //private void _tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    var addNewTab = _tabControl.Items[_tabControl.Items.Count - 1] as TabItem;
+        //    if (addNewTab != null)
+        //    {
+        //        addNewTab.IsSelected = false;
+        //    }
+        //}
+
+        //private void _main_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        //{
+        //	ModifierKeys modifyKey = Keyboard.Modifiers;
+
+        //	if ((modifyKey & ModifierKeys.Control) != ModifierKeys.None)
+        //	{
+        //		if (e.Key == Key.F) {
+        //			ViewModel vm = this.DataContext as ViewModel;
+        //			if (vm != null) { vm.NumberSearchCommand.Execute(null); }
+        //		}
+        //	}
+        //}
+    }
 }

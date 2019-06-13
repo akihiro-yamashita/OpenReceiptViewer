@@ -410,24 +410,24 @@ namespace OpenReceiptViewer
         private static 算定日Converter _instance;
     }
 
-    public class TitleConverter : TypeSafeMultiConverter<string, 審査支払機関, int>
-    {
-        public override string Convert(審査支払機関 審査支払機関, int 請求年月, object parameter)
-        {
-            if (0 < 請求年月)
-            {
-                return 審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(請求年月, true);
-            }
+    //public class TitleConverter : TypeSafeMultiConverter<string, 審査支払機関, int>
+    //{
+    //    public override string Convert(審査支払機関 審査支払機関, int 請求年月, object parameter)
+    //    {
+    //        if (0 < 請求年月)
+    //        {
+    //            return 審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(請求年月, true);
+    //        }
 
-            return "OpenReceiptViewer";
-        }
+    //        return "OpenReceiptViewer";
+    //    }
 
-        public static TitleConverter Instance
-        {
-            get { return _instance = _instance ?? new TitleConverter(); }
-        }
-        private static TitleConverter _instance;
-    }
+    //    public static TitleConverter Instance
+    //    {
+    //        get { return _instance = _instance ?? new TitleConverter(); }
+    //    }
+    //    private static TitleConverter _instance;
+    //}
 
     public class レセプト種別Converter : TypeSafeConverter<string, int>
     {

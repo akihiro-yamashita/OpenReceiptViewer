@@ -14,11 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using CsvHelper;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 
 namespace OpenReceiptViewer
@@ -143,6 +142,26 @@ namespace OpenReceiptViewer
             }
 
             return default(TSource);
+        }
+    }
+
+    /// <summary></summary>
+    public static class CSVUtil
+    {
+        public static void Read(string filePath, Action<CsvReader> readAction)
+        {
+            using (var stream = new System.IO.StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
+            {
+                var config = new CsvHelper.Configuration.CsvConfiguration()
+                {
+                    HasHeaderRecord = false,
+                };
+
+                using (var csv = new CsvReader(stream, config))
+                {
+                    readAction(csv);
+                }
+            }
         }
     }
 }

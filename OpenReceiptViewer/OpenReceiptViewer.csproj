@@ -76,7 +76,11 @@
     <Compile Include="RelayCommand.cs" />
     <Compile Include="TypeSafeConverter.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="Viewer.xaml.cs">
+      <DependentUpon>Viewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewerViewModel.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Page Include="FilterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -95,6 +99,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SearchWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Viewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

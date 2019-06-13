@@ -20,13 +20,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Text;
-using System.Threading;
 using System.Windows;
 
 namespace OpenReceiptViewer
 {
-    public class ViewModel : NotifyPropertyChanged
+    public class ViewerViewModel : NotifyPropertyChanged
     {
         /// <summary>医療機関情報レコード</summary>
         public IR IR { get; set; }
@@ -78,10 +76,9 @@ namespace OpenReceiptViewer
         }
         private Patient _currentPatient;
 
-        private string ReceiptFilePath = string.Empty;
-		public string MasterDiretoryPath { get; set; }
+        public string ReceiptFilePath = string.Empty;
 
-		public ViewModel()
+		public ViewerViewModel()
         {
             this.IR = new IR();
             this.GO = new GO();
@@ -91,117 +88,73 @@ namespace OpenReceiptViewer
             this.SIIYTOCOList = new ObservableCollection<SIIYTOCO>();
 		}
 
-		void InitDict()
-		{
-			傷病名Converter.Instance.傷病名Dict = this.Read傷病名();
-			傷病名Converter.Instance.修飾語Dict = this.Read修飾語();
-			コメントConverter.Instance.コメントDict = this.Readコメント();
+        public string MasterDiretoryPath { get; set; }
 
-			var 診療行為List = this.Read診療行為();
-			DictConverter.診療行為Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);
-			DictConverter.診療行為単位Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.単位);
-			var 医薬品List = this.Read医薬品();
-			DictConverter.医薬品Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.名称);
-			DictConverter.医薬品単位Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.単位);
-			var 特定器材List = this.Read特定器材();
-			DictConverter.特定器材Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.名称);
-			DictConverter.特定器材単位Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.単位);
-		}
-
-		/// <summary></summary>
-		public RelayCommand OpenCommand
+        /// <summary></summary>
+        public RelayCommand OpenCommand
         {
             get
             {
                 return _openCommand = _openCommand ??
                 new RelayCommand(() =>
                 {
-                    var dialog = new Microsoft.Win32.OpenFileDialog();
-                    dialog.Filter = "*.UKE|*.*";
-                    dialog.FilterIndex = 0;
-                    var dialogResult = dialog.ShowDialog();
-					if (dialogResult.HasValue && dialogResult.Value)
-					{
-						this.ReceiptFilePath = dialog.FileName;
-						Tuple<IR, GO, List<Patient>> tuple;
-						try
-						{
-							tuple = ReadReceiptSummary(ReceiptFilePath);
-						}
-						catch (Exception ex)
-						{
-							MessageBox.Show(ex.Message);
-							return;
-						}
-
-						if (43005<=tuple.Item1.請求年月)
-						{
-							MasterDiretoryPath = @"Master\201804";
-						}
-						else
-						{
-							MasterDiretoryPath = @"Master\201604";
-						}
-
-						if (IR.請求年月 != tuple.Item1.請求年月)
-						{
-							if ((IR.請求年月 == 0)										// 読み込みなし
-							|| (IR.請求年月 < 43005 && 43005 <= tuple.Item1.請求年月)	// 2016年→2018年切替
-							|| (tuple.Item1.請求年月 < 43005 && 43005 <= IR.請求年月))  // 2018年→2016年切替
-							{
-								InitDict();
-							}
-						}
-
-						//// バインドが切れてしまう。
-						//this.IR = tuple.Item1;
-						this.IR.審査支払機関 = tuple.Item1.審査支払機関;
-                        this.IR.都道府県 = tuple.Item1.都道府県;
-                        this.IR.点数表 = tuple.Item1.点数表;
-                        this.IR.医療機関コード = tuple.Item1.医療機関コード;
-                        this.IR.予備 = tuple.Item1.予備;
-                        this.IR.医療機関名称 = tuple.Item1.医療機関名称;
-                        this.IR.請求年月 = tuple.Item1.請求年月;
-                        this.IR.マルチボリューム識別子 = tuple.Item1.マルチボリューム識別子;
-                        this.IR.電話番号 = tuple.Item1.電話番号;
-
-                        this.GO.総件数 = tuple.Item2.総件数;
-                        this.GO.総合計点数 = tuple.Item2.総合計点数;
-                        this.GO.マルチボリューム識別子 = tuple.Item2.マルチボリューム識別子;
-
-						this.PatientList.Clear();
-                        tuple.Item3.ForEach(x => this.PatientList.Add(x));
-                        this.PatientListOriginal = null;
-                        this.SYList.Clear();
-                        this.SIIYTOCOList.Clear();
-
-						this.CurrentPatient = this.PatientList[0];
+                    Tuple<IR, GO, List<Patient>> tuple;
+                    try
+                    {
+                        tuple = ReadReceiptSummary(ReceiptFilePath);
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
+                    }
+
+                    //if (43005 <= tuple.Item1.請求年月)
+                    //{
+                    //    MasterDiretoryPath = @"Master\201804";
+                    //}
+                    //else
+                    //{
+                    //    MasterDiretoryPath = @"Master\201604";
+                    //}
+
+                    //if (IR.請求年月 != tuple.Item1.請求年月)
+                    //{
+                    //    if ((IR.請求年月 == 0)                                      // 読み込みなし
+                    //    || (IR.請求年月 < 43005 && 43005 <= tuple.Item1.請求年月)   // 2016年→2018年切替
+                    //    || (tuple.Item1.請求年月 < 43005 && 43005 <= IR.請求年月))  // 2018年→2016年切替
+                    //    {
+                    //        InitDict();
+                    //    }
+                    //}
+
+                    //// バインドが切れてしまう。
+                    //this.IR = tuple.Item1;
+                    this.IR.審査支払機関 = tuple.Item1.審査支払機関;
+                    this.IR.都道府県 = tuple.Item1.都道府県;
+                    this.IR.点数表 = tuple.Item1.点数表;
+                    this.IR.医療機関コード = tuple.Item1.医療機関コード;
+                    this.IR.予備 = tuple.Item1.予備;
+                    this.IR.医療機関名称 = tuple.Item1.医療機関名称;
+                    this.IR.請求年月 = tuple.Item1.請求年月;
+                    this.IR.マルチボリューム識別子 = tuple.Item1.マルチボリューム識別子;
+                    this.IR.電話番号 = tuple.Item1.電話番号;
+
+                    this.GO.総件数 = tuple.Item2.総件数;
+                    this.GO.総合計点数 = tuple.Item2.総合計点数;
+                    this.GO.マルチボリューム識別子 = tuple.Item2.マルチボリューム識別子;
+
+                    this.PatientList.Clear();
+                    tuple.Item3.ForEach(x => this.PatientList.Add(x));
+                    this.PatientListOriginal = null;
+                    this.SYList.Clear();
+                    this.SIIYTOCOList.Clear();
+
+                    this.CurrentPatient = this.PatientList[0];
                 });
             }
         }
         private RelayCommand _openCommand;
-
-        /// <summary></summary>
-        public RelayCommand CloseCommand
-        {
-            get
-            {
-                return _closeCommand = _closeCommand ??
-                new RelayCommand(() =>
-                {
-                    this.IR.審査支払機関 = 審査支払機関.社保;
-                    this.IR.医療機関名称 = "";
-                    this.IR.請求年月 = 0;
-
-                    this.PatientList.Clear();
-                    this.PatientListOriginal = null;
-                    this.SYList.Clear();
-                    this.SIIYTOCOList.Clear();
-                });
-            }
-        }
-        private RelayCommand _closeCommand;
 
         /// <summary>患者番号検索</summary>
         public RelayCommand NumberSearchCommand
@@ -362,7 +315,7 @@ namespace OpenReceiptViewer
                     }
                 }
             };
-            this.Read(masterFilePath, sReadAction);
+            CSVUtil.Read(masterFilePath, sReadAction);
             if (masterIds.Count == 0)
             {
                 MessageBox.Show("「" + input + "」から始まる" + レコード識別名称 + "マスターがありません。");
@@ -398,7 +351,7 @@ namespace OpenReceiptViewer
                     }
                 }
             };
-            this.Read(ReceiptFilePath, readAction);
+            CSVUtil.Read(ReceiptFilePath, readAction);
 
             // オリジナル保存
             this.PatientListOriginal = new List<Patient>(this.PatientList);
@@ -570,7 +523,7 @@ namespace OpenReceiptViewer
 
                 add();  // 最後の患者を追加する。
             };
-            this.Read(filePath, readAction);
+            CSVUtil.Read(filePath, readAction);
             return new Tuple<IR, GO, List<Patient>>(ir, go, patientList);
         }
 
@@ -712,115 +665,8 @@ namespace OpenReceiptViewer
                     }
                 }
             };
-            this.Read(filePath, readAction);
+            CSVUtil.Read(filePath, readAction);
             return new Tuple<List<SY>, List<SIIYTOCO>>(syList, siiytocoList);
-        }
-
-        private Dictionary<int, string> Read傷病名()
-        {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "b.csv");
-
-            var dict = new Dictionary<int, string>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(5);
-                    dict.Add(id, name);
-                }
-            };
-            this.Read(filePath, readAction);
-            return dict;
-        }
-
-        private Dictionary<int, string> Read修飾語()
-        {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "z.csv");
-
-            var dict = new Dictionary<int, string>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(6);
-                    dict.Add(id, name);
-                }
-            };
-            this.Read(filePath, readAction);
-            return dict;
-        }
-
-        private List<名称単位マスター> Read名称単位マスター(string fileName)
-        {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, fileName);
-
-            var list = new List<名称単位マスター>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var 名称 = csv.GetField<string>(4);
-                    var 単位 = csv.GetField<string>(9);
-                    list.Add(new 名称単位マスター() { Id = id, 名称 = 名称, 単位 = 単位 });
-                }
-            };
-            this.Read(filePath, readAction);
-            return list;
-        }
-
-        private List<名称単位マスター> Read診療行為()
-        {
-            return Read名称単位マスター("s.csv");
-        }
-
-        private List<名称単位マスター> Read医薬品()
-        {
-            return Read名称単位マスター("y.csv");
-        }
-
-        private List<名称単位マスター> Read特定器材()
-        {
-            return Read名称単位マスター("t.csv");
-        }
-
-        private Dictionary<int, string> Readコメント()
-        {
-            var filePath = System.IO.Path.Combine(MasterDiretoryPath, "c.csv");
-
-            var dict = new Dictionary<int, string>();
-            Action<CsvReader> readAction = csv =>
-            {
-                while (csv.Read())
-                {
-                    var keta1 = csv.GetField<int>(2);
-                    var keta23 = csv.GetField<int>(3);
-                    var keta89 = csv.GetField<int>(4);
-                    var str = csv.GetField<string>(6);
-                    var id = (keta1 * 100000000) + (keta23 * 1000000) + keta89;
-                    dict.Add(id, str);
-                }
-            };
-            this.Read(filePath, readAction);
-            return dict;
-        }
-
-        private void Read(string filePath, Action<CsvReader> readAction)
-        {
-            using (var stream = new System.IO.StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
-            {
-                var config = new CsvHelper.Configuration.CsvConfiguration()
-                {
-                    HasHeaderRecord = false,
-                };
-
-                using (var csv = new CsvReader(stream, config))
-                {
-                    readAction(csv);
-                }
-            }
         }
 
         /// <summary>次の患者レセプトを表示</summary>
