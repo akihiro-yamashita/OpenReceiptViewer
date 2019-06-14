@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("OpenReceiptViewer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Yamashita Clinic")]
+[assembly: AssemblyCompany("Yamashita Thyroid Hospital")]
 [assembly: AssemblyProduct("OpenReceiptViewer")]
 [assembly: AssemblyCopyright("Copyright Akihiro Yamashita 2016")]
 [assembly: AssemblyTrademark("")]
@@ -51,5 +51,5 @@ using System.Windows;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.1.0")]
-[assembly: AssemblyFileVersion("0.1.1.0")]
+[assembly: AssemblyVersion("0.1.2.0")]
+[assembly: AssemblyFileVersion("0.1.2.0")]

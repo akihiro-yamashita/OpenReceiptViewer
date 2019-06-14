@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -33,6 +34,13 @@ namespace OpenReceiptViewer
 
             this._vm = new MainWindowViewModel();
             this.DataContext = _vm;
+
+            var args = Environment.GetCommandLineArgs();
+            if (1 < args.Length)
+            {
+                var filePath = args[1];
+                _vm.Open(_tabControl, filePath);
+            }
         }
 
         private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

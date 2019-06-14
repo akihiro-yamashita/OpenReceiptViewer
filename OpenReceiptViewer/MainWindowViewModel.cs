@@ -17,6 +17,7 @@ limitations under the License.
 using CsvHelper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -36,74 +37,100 @@ namespace OpenReceiptViewer
                 return _openCommand = _openCommand ??
                 new RelayCommand<TabControl>(tabControl =>
                 {
-                    if (string.IsNullOrEmpty(MasterDiretoryPath))
-                    {
-                        // TODO: 診療年月によっては古いマスターを読み込まなければいけない。
-                        //MasterDiretoryPath = @"Master\201604";
-                        MasterDiretoryPath = @"Master\201804";
-
-                        InitDict();
-                    }
-
                     var dialog = new Microsoft.Win32.OpenFileDialog();
                     dialog.Filter = "*.UKE|*.*";
                     dialog.FilterIndex = 0;
                     var dialogResult = dialog.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
                     {
-                        var viewer = new Viewer();
-                        var vm = viewer.DataContext as ViewerViewModel;
-                        vm.MasterDiretoryPath = this.MasterDiretoryPath;
-                        vm.ReceiptFilePath = dialog.FileName;
-                        vm.OpenCommand.Execute(null);
-                        var header = new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal,
-                            Children =
-                            {
-                                new Label
-                                {
-                                    Content = vm.IR.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IR.請求年月, true),
-                                },
-                                new Button
-                                {
-                                    Content = "×",
-                                    BorderBrush = System.Windows.Media.Brushes.Transparent,
-                                    Height = 20,
-                                    Width = 20,
-                                    ToolTip = "閉じる",
-                                    Command = CloseCommand,
-                                    CommandParameter = tabControl,
-                                },
-                            },
-                            ToolTip = vm.ReceiptFilePath,
-                        };
-                        var tabItem = new TabItem { Header = header, Content = viewer, };
-                        tabControl.Items.Insert(tabControl.Items.Count - 1, tabItem);
-                        //tabControl.Items.Add(tabItem);
-                        tabItem.IsSelected = true;
+                        Open(tabControl, dialog.FileName);
                     }
                 });
             }
         }
         private RelayCommand<TabControl> _openCommand;
 
+        public void Open(TabControl tabControl, string filePath)
+        {
+            if (string.IsNullOrEmpty(MasterDiretoryPath))
+            {
+                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                var currentDirectory = new FileInfo(location).Directory;
+
+                // TODO: 診療年月によっては古いマスターを読み込まなければいけない。
+                //MasterDiretoryPath = Path.Combine(currentDirectory.FullName, @"Master\201604");
+                MasterDiretoryPath = Path.Combine(currentDirectory.FullName, @"Master\201804");
+
+                InitDict();
+            }
+
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
+
+            var viewer = new Viewer();
+            var vm = viewer.DataContext as ViewerViewModel;
+            vm.MasterDiretoryPath = this.MasterDiretoryPath;
+            vm.ReceiptFilePath = filePath;
+            vm.OpenCommand.Execute(null);
+            var tabItem = new TabItem { Content = viewer, };
+            var header = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children =
+                {
+                    new Label
+                    {
+                        Content = vm.IR.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IR.請求年月, true),
+                    },
+                    new Button
+                    {
+                        Content = "×",
+                        BorderBrush = System.Windows.Media.Brushes.Transparent,
+                        Height = 20,
+                        Width = 20,
+                        ToolTip = "閉じる",
+                        Command = CloseCommand,
+                        CommandParameter = tabItem,
+                    },
+                },
+                ToolTip = vm.ReceiptFilePath,
+            };
+            tabItem.Header = header;
+            tabControl.Items.Insert(tabControl.Items.Count - 1, tabItem);
+            //tabControl.Items.Add(tabItem);
+            tabItem.IsSelected = true;
+        }
+
         /// <summary></summary>
-        public RelayCommand<TabControl> CloseCommand
+        public RelayCommand<TabItem> CloseCommand
         {
             get
             {
                 return _closeCommand = _closeCommand ??
-                new RelayCommand<TabControl>(tabControl =>
+                new RelayCommand<TabItem>(tabItem =>
                 {
-                    if (0 <= tabControl.SelectedIndex)
+                    var tabControl = tabItem.Parent as TabControl;
+                    if (tabControl != null && tabItem != null)
                     {
-                        tabControl.Items.RemoveAt(tabControl.SelectedIndex);
+                        tabControl.Items.Remove(tabItem);
+
+                        // タブの最後の「＋」が選択状態になってしまった場合
+                        if (tabControl.SelectedIndex == tabControl.Items.Count - 1)
+                        {
+                            // 「＋」より手前のタブを選択
+                            if (1 < tabControl.Items.Count)
+                            {
+                                var previousTab = tabControl.Items[tabControl.Items.Count - 2] as TabItem;
+                                previousTab.IsSelected = true;
+                            }
+                        }
                     }
                 });
             }
         }
-        private RelayCommand<TabControl> _closeCommand;
+        private RelayCommand<TabItem> _closeCommand;
 
         void InitDict()
         {
