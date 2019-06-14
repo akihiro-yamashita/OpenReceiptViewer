@@ -38,7 +38,10 @@ namespace OpenReceiptViewer
                 {
                     if (string.IsNullOrEmpty(MasterDiretoryPath))
                     {
+                        // TODO: 診療年月によっては古いマスターを読み込まなければいけない。
+                        //MasterDiretoryPath = @"Master\201604";
                         MasterDiretoryPath = @"Master\201804";
+
                         InitDict();
                     }
 
@@ -58,7 +61,10 @@ namespace OpenReceiptViewer
                             Orientation = Orientation.Horizontal,
                             Children =
                             {
-                                new Label{ Content = vm.IR.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IR.請求年月, true), },
+                                new Label
+                                {
+                                    Content = vm.IR.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IR.請求年月, true),
+                                },
                                 new Button
                                 {
                                     Content = "×",
@@ -70,6 +76,7 @@ namespace OpenReceiptViewer
                                     CommandParameter = tabControl,
                                 },
                             },
+                            ToolTip = vm.ReceiptFilePath,
                         };
                         var tabItem = new TabItem { Header = header, Content = viewer, };
                         tabControl.Items.Insert(tabControl.Items.Count - 1, tabItem);
@@ -187,21 +194,49 @@ namespace OpenReceiptViewer
             return Read名称単位マスター("t.csv");
         }
 
-        private Dictionary<int, string> Readコメント()
+        private Dictionary<int, コメントマスター> Readコメント()
         {
             var filePath = System.IO.Path.Combine(MasterDiretoryPath, "c.csv");
 
-            var dict = new Dictionary<int, string>();
+            var dict = new Dictionary<int, コメントマスター>();
             Action<CsvReader> readAction = csv =>
             {
                 while (csv.Read())
                 {
-                    var keta1 = csv.GetField<int>(2);
-                    var keta23 = csv.GetField<int>(3);
-                    var keta89 = csv.GetField<int>(4);
-                    var str = csv.GetField<string>(6);
-                    var id = (keta1 * 100000000) + (keta23 * 1000000) + keta89;
-                    dict.Add(id, str);
+                    var x = new コメントマスター();
+                    x.区分 = csv.GetField<int>(2);
+                    x.パターン = csv.GetField<int>(3);
+                    x.一連番号 = csv.GetField<int>(4);
+                    x.漢字名称 = csv.GetField<string>(6);
+                    x.カラム位置桁数 = new List<Tuple<int, int>>();
+
+                    // 4回まである。
+                    var カラム位置 = csv.GetField<int>(9);
+                    var カラム桁数 = csv.GetField<int>(10);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(11);
+                    カラム桁数 = csv.GetField<int>(12);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(13);
+                    カラム桁数 = csv.GetField<int>(14);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(15);
+                    カラム桁数 = csv.GetField<int>(16);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+
+                    dict.Add(x.コメントコード, x);
                 }
             };
             CSVUtil.Read(filePath, readAction);

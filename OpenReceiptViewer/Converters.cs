@@ -335,9 +335,9 @@ namespace OpenReceiptViewer
     public class コメントConverter : TypeSafeMultiConverter<string, int, string>
     {
         /// <summary></summary>
-        public Dictionary<int, string> コメントDict { get; set; }
+        public Dictionary<int, コメントマスター> コメントDict { get; set; }
 
-        private string Find(int コメントコード)
+        private コメントマスター Find(int コメントコード)
         {
             if (this.コメントDict != null)
             {
@@ -346,30 +346,51 @@ namespace OpenReceiptViewer
                     return this.コメントDict[コメントコード];
                 }
             }
-            return string.Empty;
+            return コメントマスター.Empty;
         }
 
         public override string Convert(int コメントコード, string 文字データ, object parameter)
         {
-            if (コメントコード == 810000001)
+            var x = this.Find(コメントコード);
+
+            if (x.パターン == 10)
             {
+                // 10: 症状の説明等、任意の文字列情報を記録する。
                 return 文字データ;
             }
-            else if (820000000 <= コメントコード && コメントコード < 830000000)
+            else if (x.パターン == 20)
             {
-                return this.Find(コメントコード);
+                // 20: 定型のコメント文を設定する。
+                return x.漢字名称;
             }
-            else if (830000000 <= コメントコード && コメントコード < 840000000)
+            else if (x.パターン == 30)
             {
-                return this.Find(コメントコード) + 文字データ;
+                // 30: 定型のコメント文に、一部の文字列情報を記録する。
+                return x.漢字名称 + 文字データ;
             }
-            else if (840000000 <= コメントコード && コメントコード < 850000000)
+            else if (x.パターン == 40)
             {
-                // TODO: 未実装
-                return "（未実装）" + this.Find(コメントコード) + 文字データ;
+                // 40: 定型のコメント文に、一部の数字情報を記録する。
+                var result = x.漢字名称;
+                var tmp文字データ = 文字データ;
+
+                foreach (var カラム位置桁数 in x.カラム位置桁数)
+                {
+                    var rep = tmp文字データ.Substring(0, カラム位置桁数.Item2);
+
+                    var idxカラム位置 = カラム位置桁数.Item1 - 1;
+                    result = result.Substring(0, idxカラム位置) + rep + result.Substring(idxカラム位置 + カラム位置桁数.Item2);
+
+                    // 置き換えが済んだ文字データは削除しておく。
+                    tmp文字データ = tmp文字データ.Substring(カラム位置桁数.Item2);
+                }
+
+                return result;
+                //return "（未実装）" + x.漢字名称 + 文字データ;
             }
-            else if (コメントコード == 890000001)
+            else if (x.パターン == 90)
             {
+                // 90: 処置、手術及び画像診断等を行った部位を、修飾語（部位）コードを使用して記録する。
                 return "（未実装）" + 文字データ;
             }
             else

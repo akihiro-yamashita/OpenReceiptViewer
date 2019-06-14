@@ -8,7 +8,7 @@ namespace OpenReceiptViewer
     /// </summary>
     public partial class Viewer : UserControl
     {
-        ViewerViewModel _vm;
+        private ViewerViewModel _vm;
 
         public Viewer()
         {
@@ -18,16 +18,16 @@ namespace OpenReceiptViewer
             this.DataContext = _vm;
         }
 
-        private void DataGrid_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
+        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
-            var obj = sender as System.Windows.Controls.DataGrid;
+            var obj = sender as DataGrid;
             if (obj != null && obj.SelectedItem != null)
             {
                 obj.ScrollIntoView(obj.SelectedItem);
             }
         }
 
-        private void _main_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
             var modifyKey = Keyboard.Modifiers;
 

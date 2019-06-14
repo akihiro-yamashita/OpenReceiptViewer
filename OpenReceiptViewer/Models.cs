@@ -1091,4 +1091,36 @@ namespace OpenReceiptViewer
         /// <summary></summary>
         public string 単位 { get; set; }
     }
+
+    /// <summary></summary>
+    public class コメントマスター
+    {
+        /// <summary>8しか入らない。</summary>
+        public int 区分 { get; set; }
+
+        /// <summary></summary>
+        public int パターン { get; set; }
+
+        /// <summary></summary>
+        public int 一連番号 { get; set; }
+
+        /// <summary></summary>
+        public string 漢字名称 { get; set; }
+
+        /// <summary></summary>
+        public List<Tuple<int, int>> カラム位置桁数 { get; set; }
+
+        /// <summary></summary>
+        public int コメントコード
+        {
+            get
+            {
+                return (区分 * 100000000) + (パターン * 1000000) + 一連番号;
+            }
+        }
+
+        /// <summary></summary>
+        public static コメントマスター Empty = new コメントマスター();
+    }
+
 }

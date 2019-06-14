@@ -15,64 +15,36 @@ limitations under the License.
 */
 
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace OpenReceiptViewer
 {
-	/// <summary>
-	/// MainWindow.xaml の相互作用ロジック
-	/// </summary>
-	public partial class MainWindow : Window
-	{
-		private MainWindowViewModel _vm;
+    /// <summary>
+    /// MainWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private MainWindowViewModel _vm;
 
-		public MainWindow()
-		{
-			InitializeComponent();
-
-            this.DataContext = this;
+        public MainWindow()
+        {
+            InitializeComponent();
 
             this._vm = new MainWindowViewModel();
-			this.DataContext = _vm;
-		}
-
-        private void DataGrid_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
-        {
-            var obj = sender as System.Windows.Controls.DataGrid;
-            if (obj != null && obj.SelectedItem != null)
-            {
-                obj.ScrollIntoView(obj.SelectedItem);
-            }
+            this.DataContext = _vm;
         }
 
         private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // 「＋」のタブを選択状態にさせない。
-            e.Handled = true;
+            if (e.Source != null && e.Source.GetType() == typeof(Button))
+            {
+            }
+            else
+            {
+                // 「＋」のタブを選択状態にさせないため、ボタン以外の部分を押されても無視。
+                e.Handled = true;
+            }
         }
-
-        //private void _tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    var addNewTab = _tabControl.Items[_tabControl.Items.Count - 1] as TabItem;
-        //    if (addNewTab != null)
-        //    {
-        //        addNewTab.IsSelected = false;
-        //    }
-        //}
-
-        //private void _main_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        //{
-        //	ModifierKeys modifyKey = Keyboard.Modifiers;
-
-        //	if ((modifyKey & ModifierKeys.Control) != ModifierKeys.None)
-        //	{
-        //		if (e.Key == Key.F) {
-        //			ViewModel vm = this.DataContext as ViewModel;
-        //			if (vm != null) { vm.NumberSearchCommand.Execute(null); }
-        //		}
-        //	}
-        //}
     }
 }

@@ -14,7 +14,7 @@
                     VerticalAlignment="Stretch"
                     >
             <TabItem
-                ToolTip="開く"
+                PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown"
                 >
                 <TabItem.Header>
                     <Button Content="＋"
@@ -23,7 +23,9 @@
                             Width="20"
                             Focusable="False"
                             Command="{Binding OpenCommand}"
-                            CommandParameter="{Binding ElementName=_tabControl}">
+                            CommandParameter="{Binding ElementName=_tabControl}"
+                            ToolTip="開く"
+                            >
                     </Button>
                 </TabItem.Header>
             </TabItem>
