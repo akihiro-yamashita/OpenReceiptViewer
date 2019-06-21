@@ -13,9 +13,9 @@
 ## 使い方
 
 「OpenReceiptViewer.exe」をダブルクリックし、
-左上メニューの「ファイル」、「開く」でレセプトファイル（.UKE拡張子）を選びます。
+タブ追加ボタン「＋」でレセプトファイル（.UKE拡張子）を選びます。
 
-![screen](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer/raw/6fe2785988b6a24f42afbb1588b0f514d99dbbd2/screen.png)
+![screen](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer/raw/f606a89bfd383b18c85ee8ebd9715dad22903c37/screen.png)
 
 ## システム要件
 
