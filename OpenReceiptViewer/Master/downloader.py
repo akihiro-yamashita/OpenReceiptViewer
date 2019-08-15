@@ -8,30 +8,37 @@ import zipfile
 import time
 import random
 
+cur_dir = os.path.dirname(__file__)
+master_dir = os.path.join(cur_dir)
 
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko'
 
 
 def download(url):
     request = urllib.request.Request(url, None, {'User-Agent': user_agent})
-    out_file_path = 'tmp.zip'
+    out_file_path = os.path.join(master_dir, 'tmp.zip')
     with urllib.request.urlopen(request) as response, open(out_file_path, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
     with zipfile.ZipFile(out_file_path) as z:
         for name in z.namelist():
-            print(name)
-            with z.open(name) as f1, open(name, 'wb') as f2:
+            csv_path = os.path.join(master_dir, name)
+            print(csv_path)
+            with z.open(name) as f1, open(csv_path, 'wb') as f2:
                 shutil.copyfileobj(f1, f2)
             if name.startswith('b_'):
-                new_name = 'b.csv'
-                if os.path.exists(new_name):
-                    os.remove(new_name)
-                os.rename(name, new_name)
+                new_csv_path = os.path.join(master_dir, 'b.csv')
+                if os.path.exists(new_csv_path):
+                    os.remove(new_csv_path)
+                os.rename(csv_path, new_csv_path)
             elif name.startswith('z_'):
-                new_name = 'z.csv'
-                if os.path.exists(new_name):
-                    os.remove(new_name)
-                os.rename(name, new_name)
+                # new_name = 'z.csv'
+                # if os.path.exists(new_name):
+                #     os.remove(new_name)
+                # os.rename(name, new_name)
+                new_csv_path = os.path.join(master_dir, 'z.csv')
+                if os.path.exists(new_csv_path):
+                    os.remove(new_csv_path)
+                os.rename(csv_path, new_csv_path)
     os.remove(out_file_path)
     time.sleep(random.random() * 2)
 
