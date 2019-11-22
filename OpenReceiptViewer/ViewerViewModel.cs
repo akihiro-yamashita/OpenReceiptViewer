@@ -32,63 +32,38 @@ namespace OpenReceiptViewer
         /// <summary>診療報酬請求書レコード</summary>
         public GO GO { get; set; }
 
-        /// <summary>患者リスト</summary>
-        public ObservableCollection<Patient> PatientList { get; set; }
+        /// <summary>レセプトリスト</summary>
+        public ObservableCollection<Receipt> ReceiptList { get; set; }
 
-        /// <summary>条件使用時のPatientList退避用</summary>
-        public List<Patient> PatientListOriginal { get; set; }
+        /// <summary>条件使用時のReceiptList退避用</summary>
+        public List<Receipt> ReceiptListOriginal { get; set; }
 
-        /// <summary>選択中レセプトの傷病名リスト</summary>
-        public ObservableCollection<SY> SYList { get; set; }
-
-        /// <summary>選択中レセプトの診療行為・医薬品・特定器材リスト</summary>
-        public ObservableCollection<SIIYTOCO> SIIYTOCOList { get; set; }
-
-        /// <summary>選択中レセプトの患者</summary>
-        public Patient CurrentPatient
+        /// <summary>選択中のレセプト</summary>
+        public Receipt CurrentReceipt
         {
             get
             {
-                return this._currentPatient;
+                return this._currentReceipt;
             }
             set
             {
-                this._currentPatient = value;
-                OnPropertyChanged("CurrentPatient");
-
-                if (value == null) { return; }
-
-                Tuple<List<SY>, List<SIIYTOCO>> tuple;
-                try
-                {
-                    tuple = this.ReadOneReceipt(ReceiptFilePath, value.RE.レセプト番号);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    return;
-                }
-                this.SYList.Clear();
-                tuple.Item1.ForEach(x => this.SYList.Add(x));
-                this.SIIYTOCOList.Clear();
-                tuple.Item2.ForEach(x => this.SIIYTOCOList.Add(x));
+                this._currentReceipt = value;
+                OnPropertyChanged("CurrentReceipt");
             }
         }
-        private Patient _currentPatient;
+        private Receipt _currentReceipt;
 
         public string ReceiptFilePath = string.Empty;
 
-		public ViewerViewModel()
+        public string MasterDiretoryPath { get; set; }
+
+        public ViewerViewModel()
         {
             this.IR = new IR();
             this.GO = new GO();
-            this.PatientList = new ObservableCollection<Patient>();
-            this.PatientListOriginal = null;
-            this.SYList = new ObservableCollection<SY>();
-            this.SIIYTOCOList = new ObservableCollection<SIIYTOCO>();
-		}
-
-        public string MasterDiretoryPath { get; set; }
+            this.ReceiptList = new ObservableCollection<Receipt>();
+            this.ReceiptListOriginal = null;
+        }
 
         /// <summary></summary>
         public RelayCommand OpenCommand
@@ -98,10 +73,9 @@ namespace OpenReceiptViewer
                 return _openCommand = _openCommand ??
                 new RelayCommand(() =>
                 {
-                    Tuple<IR, GO, List<Patient>> tuple;
                     try
                     {
-                        tuple = ReadReceiptSummary(ReceiptFilePath);
+                        Read(ReceiptFilePath);
                     }
                     catch (Exception ex)
                     {
@@ -128,33 +102,19 @@ namespace OpenReceiptViewer
                     //    }
                     //}
 
-                    //// バインドが切れてしまう。
-                    //this.IR = tuple.Item1;
-                    this.IR.審査支払機関 = tuple.Item1.審査支払機関;
-                    this.IR.都道府県 = tuple.Item1.都道府県;
-                    this.IR.点数表 = tuple.Item1.点数表;
-                    this.IR.医療機関コード = tuple.Item1.医療機関コード;
-                    this.IR.予備 = tuple.Item1.予備;
-                    this.IR.医療機関名称 = tuple.Item1.医療機関名称;
-                    this.IR.請求年月 = tuple.Item1.請求年月;
-                    this.IR.マルチボリューム識別子 = tuple.Item1.マルチボリューム識別子;
-                    this.IR.電話番号 = tuple.Item1.電話番号;
-
-                    this.GO.総件数 = tuple.Item2.総件数;
-                    this.GO.総合計点数 = tuple.Item2.総合計点数;
-                    this.GO.マルチボリューム識別子 = tuple.Item2.マルチボリューム識別子;
-
-                    this.PatientList.Clear();
-                    tuple.Item3.ForEach(x => this.PatientList.Add(x));
-                    this.PatientListOriginal = null;
-                    this.SYList.Clear();
-                    this.SIIYTOCOList.Clear();
-
-                    this.CurrentPatient = this.PatientList[0];
+                    SelectFirstReceipt();
                 });
             }
         }
         private RelayCommand _openCommand;
+
+        private void SelectFirstReceipt()
+        {
+            if (0 < this.ReceiptList.Count)
+            {
+                this.CurrentReceipt = this.ReceiptList[0];
+            }
+        }
 
         /// <summary>患者番号検索</summary>
         public RelayCommand NumberSearchCommand
@@ -164,12 +124,12 @@ namespace OpenReceiptViewer
                 return _numberSearchCommand = _numberSearchCommand ??
                 new RelayCommand(() =>
                 {
-                    if (this.PatientList.Count == 0) { return; }
+                    if (this.ReceiptList.Count == 0) { return; }
 
                     var window = new SearchWindow();
                     window.Title = "患者番号検索";
                     window.Label.Content = "患者番号";
-					window.Owner = Application.Current.MainWindow;
+                    window.Owner = Application.Current.MainWindow;
 
                     var dialogResult = window.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
@@ -178,14 +138,14 @@ namespace OpenReceiptViewer
                         int 患者番号;
                         if (Int32.TryParse(input, out 患者番号))
                         {
-                            var result = PatientList.FirstOrDefault(x => x.RE.患者番号 == 患者番号, CurrentPatient);
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.患者番号 == 患者番号, CurrentReceipt);
                             if (result == null)
                             {
                                 MessageBox.Show("指定された患者番号は見つかりませんでした。");
                             }
                             else
                             {
-                                this.CurrentPatient = result;
+                                this.CurrentReceipt = result;
                             }
                         }
                     }
@@ -202,7 +162,7 @@ namespace OpenReceiptViewer
                 return _nameSearchCommand = _nameSearchCommand ??
                 new RelayCommand(() =>
                 {
-                    if (this.PatientList.Count == 0) { return; }
+                    if (this.ReceiptList.Count == 0) { return; }
 
                     var window = new SearchWindow();
                     window.Title = "氏名検索";
@@ -213,14 +173,14 @@ namespace OpenReceiptViewer
                         var input = ((SearchWindowViewModel)window.DataContext).Input;
                         if (!string.IsNullOrEmpty(input))
                         {
-                            var result = PatientList.FirstOrDefault(x => x.RE.氏名.Contains(input), CurrentPatient);
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.氏名.Contains(input), CurrentReceipt);
                             if (result == null)
                             {
                                 MessageBox.Show("指定された患者は見つかりませんでした。");
                             }
                             else
                             {
-                                this.CurrentPatient = result;
+                                this.CurrentReceipt = result;
                             }
                         }
                     }
@@ -237,17 +197,19 @@ namespace OpenReceiptViewer
                 return _clearFilterCommand = _clearFilterCommand ??
                 new RelayCommand(() =>
                 {
-                    if (this.PatientListOriginal == null)
+                    if (this.ReceiptListOriginal == null)
                     {
                         return;
                     }
 
-                    this.PatientList.Clear();
-                    foreach (var re in this.PatientListOriginal)
+                    this.ReceiptList.Clear();
+                    foreach (var re in this.ReceiptListOriginal)
                     {
-                        this.PatientList.Add(re);
+                        this.ReceiptList.Add(re);
                     }
-                    this.PatientListOriginal = null;
+                    this.ReceiptListOriginal = null;
+
+                    SelectFirstReceipt();
                 });
             }
         }
@@ -255,7 +217,7 @@ namespace OpenReceiptViewer
 
         private void FilterAction(string レコード識別情報)
         {
-            if (this.PatientList.Count == 0) { return; }
+            if (this.ReceiptList.Count == 0) { return; }
 
             var レコード識別名称 = (string)null;
             var idField = 0;
@@ -354,17 +316,19 @@ namespace OpenReceiptViewer
             CSVUtil.Read(ReceiptFilePath, readAction);
 
             // オリジナル保存
-            this.PatientListOriginal = new List<Patient>(this.PatientList);
+            this.ReceiptListOriginal = new List<Receipt>(this.ReceiptList);
 
             // 条件一致のサマリー行のみ再追加
-            this.PatientList.Clear();
-            foreach (var patient in this.PatientListOriginal)
+            this.ReceiptList.Clear();
+            foreach (var patient in this.ReceiptListOriginal)
             {
                 if (dict.ContainsKey(patient.RE.レセプト番号))
                 {
-                    this.PatientList.Add(patient);
+                    this.ReceiptList.Add(patient);
                 }
             }
+
+            SelectFirstReceipt();
         }
 
         /// <summary>診療行為条件</summary>
@@ -409,18 +373,15 @@ namespace OpenReceiptViewer
         }
         private RelayCommand _特定器材FilterCommand;
 
-        private Tuple<IR, GO, List<Patient>> ReadReceiptSummary(string filePath)
+        private void Read(string filePath)
         {
-            var ir = new IR();
-            var go = new GO();
-            var patientList = new List<Patient>();
             Action<CsvReader> readAction = csv =>
             {
-                var patient = (Patient)null;
+                var patient = (Receipt)null;
 
                 Action add = () =>
                 {
-                    patientList.Add(patient);
+                    this.ReceiptList.Add(patient);
                     patient = null;
                 };
 
@@ -429,22 +390,22 @@ namespace OpenReceiptViewer
                     var lineDef = csv.GetField<string>(0);
                     if (lineDef == レコード識別情報定数.医療機関情報)
                     {
-                        ir.審査支払機関 = (審査支払機関)csv.GetField<int>((int)IR_IDX.審査支払機関);
-                        ir.都道府県 = csv.GetField<int>((int)IR_IDX.都道府県);
-                        ir.点数表 = csv.GetField<int>((int)IR_IDX.点数表);
-                        ir.医療機関コード = csv.GetField<int>((int)IR_IDX.医療機関コード);
-                        ir.予備 = csv.GetField<int?>((int)IR_IDX.予備);
-                        ir.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
-                        ir.請求年月 = csv.GetField<int>((int)IR_IDX.請求年月);
-                        ir.マルチボリューム識別子 = csv.GetField<int>((int)IR_IDX.マルチボリューム識別子);
-                        ir.電話番号 = csv.GetField<string>((int)IR_IDX.電話番号);
-                        ir.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
+                        this.IR.審査支払機関 = (審査支払機関)csv.GetField<int>((int)IR_IDX.審査支払機関);
+                        this.IR.都道府県 = csv.GetField<int>((int)IR_IDX.都道府県);
+                        this.IR.点数表 = csv.GetField<int>((int)IR_IDX.点数表);
+                        this.IR.医療機関コード = csv.GetField<int>((int)IR_IDX.医療機関コード);
+                        this.IR.予備 = csv.GetField<int?>((int)IR_IDX.予備);
+                        this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
+                        this.IR.請求年月 = csv.GetField<int>((int)IR_IDX.請求年月);
+                        this.IR.マルチボリューム識別子 = csv.GetField<int>((int)IR_IDX.マルチボリューム識別子);
+                        this.IR.電話番号 = csv.GetField<string>((int)IR_IDX.電話番号);
+                        this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
                     }
                     else if (lineDef == レコード識別情報定数.診療報酬請求書)
                     {
-                        go.総件数 = csv.GetField<int>((int)GO_IDX.総件数);
-                        go.総合計点数 = csv.GetField<int>((int)GO_IDX.総合計点数);
-                        go.マルチボリューム識別子 = csv.GetField<int>((int)GO_IDX.マルチボリューム識別子);
+                        this.GO.総件数 = csv.GetField<int>((int)GO_IDX.総件数);
+                        this.GO.総合計点数 = csv.GetField<int>((int)GO_IDX.総合計点数);
+                        this.GO.マルチボリューム識別子 = csv.GetField<int>((int)GO_IDX.マルチボリューム識別子);
                     }
                     else if (lineDef == レコード識別情報定数.レセプト共通)
                     {
@@ -463,7 +424,7 @@ namespace OpenReceiptViewer
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
                             患者番号 = csv.GetField<int>((int)RE_IDX.カルテ番号等),
                         };
-                        patient = new Patient();
+                        patient = new Receipt() { SIIYTOCOList = new List<SIIYTOCO>(), SYList = new List<SY>(), };
                         patient.RE = re;
                     }
                     else if (lineDef == レコード識別情報定数.保険者)
@@ -519,46 +480,7 @@ namespace OpenReceiptViewer
                             Debug.Assert(false, "公費レコードの順番が不正です。");
                         }
                     }
-                }
-
-                add();  // 最後の患者を追加する。
-            };
-            CSVUtil.Read(filePath, readAction);
-            return new Tuple<IR, GO, List<Patient>>(ir, go, patientList);
-        }
-
-        private Tuple<List<SY>, List<SIIYTOCO>> ReadOneReceipt(string filePath, int レセプト番号)
-        {
-            var syList = new List<SY>();
-            var siiytocoList = new List<SIIYTOCO>();
-            Action<CsvReader> readAction = csv =>
-            {
-                var reading = false;
-                while (csv.Read())
-                {
-                    var lineDef = csv.GetField<string>(0);
-                    if (lineDef == レコード識別情報定数.レセプト共通)
-                    {
-                        var currentReceiptNo = csv.GetField<int>((int)RE_IDX.レセプト番号);
-                        if (currentReceiptNo == レセプト番号)
-                        {
-                            if (!reading)
-                            {
-                                // 傷病名レコード読み込み開始
-                                reading = true;
-                            }
-                        }
-                        else
-                        {
-                            if (reading)
-                            {
-                                // 傷病名レコード読み込み終了
-                                reading = false;
-                                break;
-                            }
-                        }
-                    }
-                    else if (reading && lineDef == レコード識別情報定数.傷病名)
+                    else if (lineDef == レコード識別情報定数.傷病名)
                     {
                         var sy = new SY()
                         {
@@ -570,11 +492,9 @@ namespace OpenReceiptViewer
                             主傷病 = csv.GetField<string>((int)SY_IDX.主傷病),
                             補足コメント = csv.GetField<string>((int)SY_IDX.補足コメント),
                         };
-                        syList.Add(sy);
+                        patient.SYList.Add(sy);
                     }
-                    else if (reading
-                        && (lineDef == レコード識別情報定数.診療行為
-                        || lineDef == レコード識別情報定数.医薬品))
+                    else if (lineDef == レコード識別情報定数.診療行為 || lineDef == レコード識別情報定数.医薬品)
                     {
                         SIIYTO siiyto;
                         if (lineDef == レコード識別情報定数.診療行為)
@@ -616,9 +536,9 @@ namespace OpenReceiptViewer
                             }
                         }
 
-                        siiytocoList.Add(siiyto);
+                        patient.SIIYTOCOList.Add(siiyto);
                     }
-                    else if (reading && lineDef == レコード識別情報定数.特定器材)
+                    else if (lineDef == レコード識別情報定数.特定器材)
                     {
                         var to = new TO();
                         to.診療識別 = csv.GetField<int?>((int)TO_IDX.診療識別);
@@ -650,9 +570,9 @@ namespace OpenReceiptViewer
                                 to.XX日の情報.Add(dateIdx, tmp.Value);
                             }
                         }
-                        siiytocoList.Add(to);
+                        patient.SIIYTOCOList.Add(to);
                     }
-                    else if (reading && lineDef == レコード識別情報定数.コメント)
+                    else if (lineDef == レコード識別情報定数.コメント)
                     {
                         var co = new CO()
                         {
@@ -661,72 +581,76 @@ namespace OpenReceiptViewer
                             コメントコード = csv.GetField<int>((int)CO_IDX.コメントコード),
                             文字データ = csv.GetField<string>((int)CO_IDX.文字データ),
                         };
-                        siiytocoList.Add(co);
+                        patient.SIIYTOCOList.Add(co);
                     }
+
                 }
+
+                add();  // 最後の患者を追加する。
             };
             CSVUtil.Read(filePath, readAction);
-            return new Tuple<List<SY>, List<SIIYTOCO>>(syList, siiytocoList);
         }
 
-        /// <summary>次の患者レセプトを表示</summary>
-        public RelayCommand NextPatientCommand
+        /// <summary>次のレセプトを表示</summary>
+        public RelayCommand NextReceiptCommand
         {
             get
             {
-                return _nextPatientCommand = _nextPatientCommand ??
+                return _nextReceiptCommand = _nextReceiptCommand ??
                 new RelayCommand(() =>
                 {
-                    if (CurrentPatient != null)
+                    if (CurrentReceipt != null)
                     {
-                        var id = PatientList.IndexOf(CurrentPatient);
+                        var id = ReceiptList.IndexOf(CurrentReceipt);
 
-                        if (id < (PatientList.Count - 1))
+                        if (id < (ReceiptList.Count - 1))
                         {
-                            Patient pat = PatientList[id + 1];
-                            CurrentPatient = pat;
+                            var receipt = ReceiptList[id + 1];
+                            CurrentReceipt = receipt;
                         }
                     }
                 });
             }
         }
-        private RelayCommand _nextPatientCommand;
+        private RelayCommand _nextReceiptCommand;
 
-        /// <summary>前の患者レセプトを表示</summary>
-        public RelayCommand PreviousPatientCommand
+        /// <summary>前のレセプトを表示</summary>
+        public RelayCommand PreviousReceiptCommand
         {
             get
             {
-                return _previousPatientCommand = _previousPatientCommand ??
+                return _previousReceiptCommand = _previousReceiptCommand ??
                 new RelayCommand(() =>
                 {
-                    if (CurrentPatient != null)
+                    if (CurrentReceipt != null)
                     {
-                        var id = PatientList.IndexOf(CurrentPatient);
+                        var id = ReceiptList.IndexOf(CurrentReceipt);
 
                         if (0 < id)
                         {
-                            Patient pat = PatientList[id - 1];
-                            CurrentPatient = pat;
+                            var receipt = ReceiptList[id - 1];
+                            CurrentReceipt = receipt;
                         }
                     }
                 });
             }
         }
-        private RelayCommand _previousPatientCommand;
+        private RelayCommand _previousReceiptCommand;
 
         /// <summary></summary>
         /// <param name="orderByFunc"></param>
-        private void SortPatientList(Func<Patient, int> orderByFunc)
+        private void SortReceiptList(Func<Receipt, int> orderByFunc)
         {
-            if (this.PatientList == null) { return; }
+            if (this.ReceiptList == null) { return; }
 
-            var list = this.PatientList.ToList();
-            this.PatientList.Clear();
-            foreach (var patient in list.OrderBy(orderByFunc))
+            var list = this.ReceiptList.ToList();
+            this.ReceiptList.Clear();
+            foreach (var receipt in list.OrderBy(orderByFunc))
             {
-                this.PatientList.Add(patient);
+                this.ReceiptList.Add(receipt);
             }
+
+            SelectFirstReceipt();
         }
 
         /// <summary>レセプト番号順で並べ替え</summary>
@@ -737,7 +661,7 @@ namespace OpenReceiptViewer
                 return _orderByレセプト番号Command = _orderByレセプト番号Command ??
                 new RelayCommand(() =>
                 {
-                    this.SortPatientList(x => x.RE.レセプト番号);
+                    this.SortReceiptList(x => x.RE.レセプト番号);
                 });
             }
         }
@@ -751,7 +675,7 @@ namespace OpenReceiptViewer
                 return _orderBy患者番号Command = _orderBy患者番号Command ??
                 new RelayCommand(() =>
                 {
-                    this.SortPatientList(x => x.RE.患者番号);
+                    this.SortReceiptList(x => x.RE.患者番号);
                 });
             }
         }
@@ -766,7 +690,7 @@ namespace OpenReceiptViewer
                 new RelayCommand(() =>
                 {
                     // 高い順に並べたいので、合計点数のマイナスを返す。
-                    this.SortPatientList(x => -(x.HO == null ? 0 : x.HO.合計点数));
+                    this.SortReceiptList(x => -(x.HO == null ? 0 : x.HO.合計点数));
                 });
             }
         }

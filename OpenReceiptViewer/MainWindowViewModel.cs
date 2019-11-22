@@ -59,7 +59,7 @@ namespace OpenReceiptViewer
 
                 // TODO: 診療年月によっては古いマスターを読み込まなければいけない。
                 //MasterDiretoryPath = Path.Combine(currentDirectory.FullName, @"Master\201604");
-                MasterDiretoryPath = Path.Combine(currentDirectory.FullName, @"Master\201804");
+                MasterDiretoryPath = Path.Combine(currentDirectory.FullName, @"Master\201910");
 
                 InitDict();
             }

@@ -48,8 +48,8 @@
                 <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=GO.総合計点数, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Height ="Auto" Width="75"  Content="前へ" Command="{Binding PreviousPatientCommand}"/>
-                <Button Height ="Auto" Width="75" Content="次へ" Command="{Binding NextPatientCommand}"/>
+                <Button Height ="Auto" Width="75"  Content="前へ" Command="{Binding PreviousReceiptCommand}"/>
+                <Button Height ="Auto" Width="75" Content="次へ" Command="{Binding NextReceiptCommand}"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2">
@@ -57,7 +57,7 @@
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding PatientList}" SelectedItem="{Binding CurrentPatient}" SelectedCellsChanged="DataGrid_SelectedCellsChanged">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding ReceiptList}" SelectedItem="{Binding CurrentReceipt}" SelectedCellsChanged="DataGrid_SelectedCellsChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
@@ -115,54 +115,54 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">診療年月</Label>
                     <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.診療年月, Converter={x:Static local:日付表示Converter.年月表示Instance} }"></Label>
+                           Content="{Binding CurrentReceipt.RE.診療年月, Converter={x:Static local:日付表示Converter.年月表示Instance} }"></Label>
                     <!--<TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Text="{Binding CurrentRE.診療年月}" ></TextBlock>-->
                     <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">種別</Label>
                     <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.レセプト種別, Converter={x:Static local:レセプト種別Converter.Instance} }"></Label>
+                           Content="{Binding CurrentReceipt.RE.レセプト種別, Converter={x:Static local:レセプト種別Converter.Instance} }"></Label>
 
                     <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">患者番号</Label>
                     <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.患者番号}"></Label>
+                           Content="{Binding CurrentReceipt.RE.患者番号}"></Label>
                     <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">氏名</Label>
                     <Label Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.氏名}"></Label>
+                           Content="{Binding CurrentReceipt.RE.氏名}"></Label>
 
                     <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">生年月日</Label>
                     <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.生年月日, Converter={x:Static local:日付表示Converter.年月日表示Instance} }"></Label>
+                           Content="{Binding CurrentReceipt.RE.生年月日, Converter={x:Static local:日付表示Converter.年月日表示Instance} }"></Label>
                     <Label Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">年齢</Label>
                     <Label Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.生年月日, Converter={x:Static local:年齢Converter.Instance} }"></Label>
+                           Content="{Binding CurrentReceipt.RE.生年月日, Converter={x:Static local:年齢Converter.Instance} }"></Label>
                     <Label Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">性別</Label>
                     <Label Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.RE.男女区分}"></Label>
+                           Content="{Binding CurrentReceipt.RE.男女区分}"></Label>
 
                     <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">保険者番号</Label>
                     <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.HO.保険者番号}"></Label>
+                           Content="{Binding CurrentReceipt.HO.保険者番号}"></Label>
                     <Label Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">被保険者</Label>
                     <Label Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">
                         <MultiBinding Converter="{x:Static local:被保険者Converter.Instance}">
-                            <Binding Path="CurrentPatient.HO.被保険者証記号" />
-                            <Binding Path="CurrentPatient.HO.被保険者証番号" />
+                            <Binding Path="CurrentReceipt.HO.被保険者証記号" />
+                            <Binding Path="CurrentReceipt.HO.被保険者証番号" />
                         </MultiBinding>
                     </Label>
 
                     <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費負担者番号</Label>
                     <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.KO.負担者番号}"></Label>
+                           Content="{Binding CurrentReceipt.KO.負担者番号}"></Label>
                     <Label Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費受給者番号</Label>
                     <Label Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.KO.受給者番号}"></Label>
+                           Content="{Binding CurrentReceipt.KO.受給者番号}"></Label>
                     <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">保険合計点数</Label>
                     <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.HO.合計点数}"></Label>
+                           Content="{Binding CurrentReceipt.HO.合計点数}"></Label>
                     <Label Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費合計点数</Label>
                     <Label Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentPatient.KO.合計点数}"></Label>
+                           Content="{Binding CurrentReceipt.KO.合計点数}"></Label>
                 </Grid>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding SYList}" GridLinesVisibility="None">
+                <DataGrid Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SYList}" GridLinesVisibility="None">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="主" Binding="{Binding Path=主傷病, Converter={x:Static local:主傷病Converter.Instance} }" Width="30" MaxWidth="30">
                         </DataGridTextColumn>
@@ -180,7 +180,7 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding SIIYTOCOList}" GridLinesVisibility="None">
+                <DataGrid Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}" GridLinesVisibility="None">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="識別" Binding="{Binding Path=診療識別}" Width="40" MaxWidth="40">
                             <DataGridTextColumn.CellStyle>

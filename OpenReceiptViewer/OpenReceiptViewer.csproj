@@ -156,6 +156,24 @@
     <None Include="Master\201804\z.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Master\201910\b.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\201910\c.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\201910\s.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\201910\t.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\201910\y.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\201910\z.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -174,7 +192,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "$(TargetDir)Master" "$(SolutionDir)tmp_dist\Master\"
+    <PostBuildEvent>xcopy /e "$(TargetDir)Master" "$(SolutionDir)tmp_dist\Master\"
 copy "$(TargetDir)*exe" "$(SolutionDir)tmp_dist\"
 copy "$(TargetDir)*dll" "$(SolutionDir)tmp_dist\"
 copy "$(SolutionDir)LICENSE.txt" "$(SolutionDir)tmp_dist\"

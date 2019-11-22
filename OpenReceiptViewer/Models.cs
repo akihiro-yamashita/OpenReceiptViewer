@@ -24,6 +24,16 @@ namespace OpenReceiptViewer
 {
     public class Record : NotifyPropertyChanged
     {
+        //public int Id
+        //{
+        //    get { return this._id; }
+        //    set
+        //    {
+        //        this._id = value;
+        //    }
+        //}
+        //private int _id;
+
         /// <summary></summary>
         /// <param name="レコード識別情報"></param>
         public Record(string レコード識別情報)
@@ -572,19 +582,8 @@ namespace OpenReceiptViewer
     }
 
     /// <summary></summary>
-    public class Patient// : NotifyPropertyChanged
+    public class Receipt
     {
-        ///// <summary></summary>
-        //public RE RE
-        //{
-        //    get { return this._re; }
-        //    set
-        //    {
-        //        this._re = value;
-        //        OnPropertyChanged("RE");
-        //    }
-        //}
-        //private RE _re;
         public RE RE { get; set; }
 
         /// <summary></summary>
@@ -592,6 +591,12 @@ namespace OpenReceiptViewer
 
         /// <summary></summary>
         public KO KO { get; set; }
+
+        /// <summary></summary>
+        public List<SY> SYList { get; set; }
+
+        /// <summary></summary>
+        public List<SIIYTOCO> SIIYTOCOList { get; set; }
     }
 
     /// <summary>傷病名レコード</summary>    
@@ -688,6 +693,8 @@ namespace OpenReceiptViewer
     /// <summary>明細共通レコード</summary>
     public abstract class SIIYTOCO : Record
     {
+        public RE RE { get; set; }
+
         /// <summary></summary>
         /// <param name="レコード識別情報"></param>
         public SIIYTOCO(string レコード識別情報) : base(レコード識別情報) { }
