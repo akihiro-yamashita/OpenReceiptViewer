@@ -243,7 +243,7 @@ namespace OpenReceiptViewer
         private int _生年月日;
 
         /// <summary></summary>
-        public int 患者番号
+        public string 患者番号
         {
             get { return this._患者番号; }
             set
@@ -252,7 +252,7 @@ namespace OpenReceiptViewer
                 OnPropertyChanged("患者番号");
             }
         }
-        private int _患者番号;
+        private string _患者番号;
     }
 
     /// <summary>保険者レコード</summary>

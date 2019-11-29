@@ -57,6 +57,8 @@ namespace OpenReceiptViewer
 
         public string MasterDiretoryPath { get; set; }
 
+        public bool IsNumberOnly患者番号 { get; private set; } = true;
+
         public ViewerViewModel()
         {
             this.IR = new IR();
@@ -135,10 +137,11 @@ namespace OpenReceiptViewer
                     if (dialogResult.HasValue && dialogResult.Value)
                     {
                         var input = ((SearchWindowViewModel)window.DataContext).Input;
-                        int 患者番号;
-                        if (Int32.TryParse(input, out 患者番号))
+                        if (input == null){ return; }
+                        var inputTrim = input.Trim();
+                        if (0 < inputTrim.Length)
                         {
-                            var result = ReceiptList.FirstOrDefault(x => x.RE.患者番号 == 患者番号, CurrentReceipt);
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.患者番号 == inputTrim, CurrentReceipt);
                             if (result == null)
                             {
                                 MessageBox.Show("指定された患者番号は見つかりませんでした。");
@@ -422,8 +425,15 @@ namespace OpenReceiptViewer
                             氏名 = csv.GetField<string>((int)RE_IDX.氏名),
                             男女区分 = (男女区分)csv.GetField<int>((int)RE_IDX.男女区分),
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
-                            患者番号 = csv.GetField<int>((int)RE_IDX.カルテ番号等),
+                            患者番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
                         };
+
+                        // 1件でも数値変換不可能な患者番号が来たらIsNumberOnly患者番号をfalseに。
+                        if (IsNumberOnly患者番号 && Int32.TryParse(re.患者番号, out int _) == false)
+                        {
+                            IsNumberOnly患者番号 = false;
+                        }
+
                         patient = new Receipt() { SIIYTOCOList = new List<SIIYTOCO>(), SYList = new List<SY>(), };
                         patient.RE = re;
                     }
@@ -639,7 +649,7 @@ namespace OpenReceiptViewer
 
         /// <summary></summary>
         /// <param name="orderByFunc"></param>
-        private void SortReceiptList(Func<Receipt, int> orderByFunc)
+        private void SortReceiptList<TOrder>(Func<Receipt, TOrder> orderByFunc)
         {
             if (this.ReceiptList == null) { return; }
 
@@ -675,7 +685,14 @@ namespace OpenReceiptViewer
                 return _orderBy患者番号Command = _orderBy患者番号Command ??
                 new RelayCommand(() =>
                 {
-                    this.SortReceiptList(x => x.RE.患者番号);
+                    if (IsNumberOnly患者番号)
+                    {
+                        this.SortReceiptList(x => Int32.Parse(x.RE.患者番号));
+                    }
+                    else
+                    {
+                        this.SortReceiptList(x => x.RE.患者番号);
+                    }
                 });
             }
         }
