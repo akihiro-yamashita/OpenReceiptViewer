@@ -4,8 +4,7 @@
 
 ## セットアップ方法
 
-[プロジェクトページ](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer)の  
-左側ペインの「ソース」から「OpenReceiptViewer.zip」を選び、  
+[プロジェクトページ](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer)のファイル一覧から「OpenReceiptViewer.zip」を選び、  
 「View raw」をクリックして「OpenReceiptViewer.zip」をダウンロードします。  
 このzipファイルを任意の場所で展開します。  
 実行ファイルは「OpenReceiptViewer.exe」です。
