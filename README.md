@@ -26,3 +26,12 @@
 Apache License, Version 2.0
 
 http://opensource.org/licenses/Apache-2.0
+
+
+## 更新履歴
+
+ver 0.1.4    数値以外カルテ番号対応等
+ver 0.1.3    高速化
+ver 0.1.2    複数タブ対応
+ver 0.1.1    令和対応
+ver 0.1.0    リリース
