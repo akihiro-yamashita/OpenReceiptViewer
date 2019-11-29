@@ -97,4 +97,15 @@ namespace OpenReceiptViewerTest
             Assert.AreEqual("tanaka1", result.Name);
         }
     }
+
+    [TestClass]
+    public class StringUtilTest
+    {
+        [TestMethod]
+        public void HanToZenTest()
+        {
+            Assert.AreEqual("ＥＦ－喉頭", StringUtil.HanToZen("EF-喉頭"));
+            Assert.AreEqual("休日加算（初診）", StringUtil.HanToZen("休日加算(初診)"));
+        }
+    }
 }

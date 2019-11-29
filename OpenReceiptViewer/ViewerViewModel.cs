@@ -270,11 +270,12 @@ namespace OpenReceiptViewer
             var masterIds = new Dictionary<int, int>();
             Action<CsvReader> sReadAction = csv =>
             {
+                var inputUpper = input.ToUpper();
                 while (csv.Read())
                 {
                     var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(4);
-                    if (name.StartsWith(input))
+                    var name = csv.GetField<string>(4).ToUpper();
+                    if (name.StartsWith(inputUpper))  // 大文字同士で比較
                     {
                         masterIds.Add(id, id);
                     }

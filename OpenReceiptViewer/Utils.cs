@@ -16,6 +16,7 @@ limitations under the License.
 
 using CsvHelper;
 using System;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
@@ -161,6 +162,51 @@ namespace OpenReceiptViewer
                 {
                     readAction(csv);
                 }
+            }
+        }
+    }
+
+    public static class StringUtil
+    {
+        public static string HanToZen(string s)
+        {
+            if (s == null) { return null; }
+            return string.Join(string.Empty, s.Select(c => HanToZen(c)));
+        }
+
+        public static char HanToZen(char c)
+        {
+            if ('0' <= c && c <= '9')
+            {
+                return (char)('０' + (c - '0'));
+            }
+            else if ('a' <= c && c <= 'z')
+            {
+                return (char)('ａ' + (c - 'a'));
+            }
+            else if ('A' <= c && c <= 'Z')
+            {
+                return (char)('Ａ' + (c - 'A'));
+            }
+            else if (c == '/')
+            {
+                return '／';
+            }
+            else if (c == '-')
+            {
+                return '－';
+            }
+            else if (c == '(')
+            {
+                return '（';
+            }
+            else if (c == ')')
+            {
+                return '）';
+            }
+            else
+            {
+                return c;
             }
         }
     }

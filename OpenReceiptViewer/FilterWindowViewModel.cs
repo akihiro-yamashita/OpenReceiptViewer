@@ -32,7 +32,7 @@ namespace OpenReceiptViewer
             }
             set
             {
-                this._input = value;
+                this._input = StringUtil.HanToZen(value);
                 OnPropertyChanged("Input");
             }
         }
