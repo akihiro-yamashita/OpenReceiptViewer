@@ -1,7 +1,7 @@
 ﻿<Window x:Class="OpenReceiptViewer.SearchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="○○検索" Height="120" Width="240"
+        Title="○○検索" Height="120" Width="280"
         WindowStartupLocation="CenterOwner"
         FocusManager.FocusedElement = "{Binding ElementName= _textBox}"
         >

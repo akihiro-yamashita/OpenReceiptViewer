@@ -57,7 +57,7 @@ namespace OpenReceiptViewer
 
         public string MasterDiretoryPath { get; set; }
 
-        public bool IsNumberOnly患者番号 { get; private set; } = true;
+        public bool IsNumberOnlyカルテ番号 { get; private set; } = true;
 
         public ViewerViewModel()
         {
@@ -118,7 +118,7 @@ namespace OpenReceiptViewer
             }
         }
 
-        /// <summary>患者番号検索</summary>
+        /// <summary>カルテ番号検索</summary>
         public RelayCommand NumberSearchCommand
         {
             get
@@ -129,22 +129,22 @@ namespace OpenReceiptViewer
                     if (this.ReceiptList.Count == 0) { return; }
 
                     var window = new SearchWindow();
-                    window.Title = "患者番号検索";
-                    window.Label.Content = "患者番号";
+                    window.Title = "カルテ番号検索";
+                    window.Label.Content = "カルテ番号";
                     window.Owner = Application.Current.MainWindow;
 
                     var dialogResult = window.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
                     {
                         var input = ((SearchWindowViewModel)window.DataContext).Input;
-                        if (input == null){ return; }
+                        if (input == null) { return; }
                         var inputTrim = input.Trim();
                         if (0 < inputTrim.Length)
                         {
-                            var result = ReceiptList.FirstOrDefault(x => x.RE.患者番号 == inputTrim, CurrentReceipt);
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.カルテ番号 == inputTrim, CurrentReceipt);
                             if (result == null)
                             {
-                                MessageBox.Show("指定された患者番号は見つかりませんでした。");
+                                MessageBox.Show("指定されたカルテ番号は見つかりませんでした。");
                             }
                             else
                             {
@@ -321,7 +321,7 @@ namespace OpenReceiptViewer
             // オリジナル保存
             this.ReceiptListOriginal = new List<Receipt>(this.ReceiptList);
 
-            // 条件一致のサマリー行のみ再追加
+            // 条件一致のみ再追加
             this.ReceiptList.Clear();
             foreach (var patient in this.ReceiptListOriginal)
             {
@@ -425,13 +425,13 @@ namespace OpenReceiptViewer
                             氏名 = csv.GetField<string>((int)RE_IDX.氏名),
                             男女区分 = (男女区分)csv.GetField<int>((int)RE_IDX.男女区分),
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
-                            患者番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
+                            カルテ番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
                         };
 
-                        // 1件でも数値変換不可能な患者番号が来たらIsNumberOnly患者番号をfalseに。
-                        if (IsNumberOnly患者番号 && Int32.TryParse(re.患者番号, out int _) == false)
+                        // 1件でも数値変換不可能なカルテ番号が来たらIsNumberOnlyカルテ番号をfalseに。
+                        if (IsNumberOnlyカルテ番号 && Int32.TryParse(re.カルテ番号, out int _) == false)
                         {
-                            IsNumberOnly患者番号 = false;
+                            IsNumberOnlyカルテ番号 = false;
                         }
 
                         patient = new Receipt() { SIIYTOCOList = new List<SIIYTOCO>(), SYList = new List<SY>(), };
@@ -677,26 +677,26 @@ namespace OpenReceiptViewer
         }
         private RelayCommand _orderByレセプト番号Command;
 
-        /// <summary>患者番号順で並べ替え</summary>
-        public RelayCommand OrderBy患者番号Command
+        /// <summary>カルテ番号順で並べ替え</summary>
+        public RelayCommand OrderByカルテ番号Command
         {
             get
             {
-                return _orderBy患者番号Command = _orderBy患者番号Command ??
+                return _orderByカルテ番号Command = _orderByカルテ番号Command ??
                 new RelayCommand(() =>
                 {
-                    if (IsNumberOnly患者番号)
+                    if (IsNumberOnlyカルテ番号)
                     {
-                        this.SortReceiptList(x => Int32.Parse(x.RE.患者番号));
+                        this.SortReceiptList(x => Int32.Parse(x.RE.カルテ番号));
                     }
                     else
                     {
-                        this.SortReceiptList(x => x.RE.患者番号);
+                        this.SortReceiptList(x => x.RE.カルテ番号);
                     }
                 });
             }
         }
-        private RelayCommand _orderBy患者番号Command;
+        private RelayCommand _orderByカルテ番号Command;
 
         /// <summary>点数順で並べ替え</summary>
         public RelayCommand OrderBy合計点数Command

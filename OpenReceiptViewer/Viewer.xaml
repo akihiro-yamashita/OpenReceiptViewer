@@ -16,7 +16,7 @@
         <DockPanel Grid.Row="0">
             <Menu Name="menu1" DockPanel.Dock="Top">
                 <MenuItem Header="検索">
-                    <MenuItem Header="患者番号検索" Command="{Binding NumberSearchCommand}" />
+                    <MenuItem Header="カルテ番号検索" Command="{Binding NumberSearchCommand}" />
                     <MenuItem Header="氏名検索" Command="{Binding NameSearchCommand}" />
                 </MenuItem>
                 <MenuItem Header="条件">
@@ -27,7 +27,7 @@
                 </MenuItem>
                 <MenuItem Header="並び順">
                     <MenuItem Header="レセプト番号順" Command="{Binding OrderByレセプト番号Command}" />
-                    <MenuItem Header="患者番号順" Command="{Binding OrderBy患者番号Command}" />
+                    <MenuItem Header="カルテ番号順" Command="{Binding OrderByカルテ番号Command}" />
                     <MenuItem Header="点数高い順" Command="{Binding OrderBy合計点数Command}" />
                 </MenuItem>
             </Menu>
@@ -61,7 +61,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="患者番号" Binding="{Binding Path=RE.患者番号}" Width="60" MaxWidth="60" CanUserSort="False">
+                    <DataGridTextColumn Header="カルテ番号" Binding="{Binding Path=RE.カルテ番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="氏名" Binding="{Binding Path=RE.氏名}" Width="160" CanUserSort="False">
                     </DataGridTextColumn>
@@ -121,9 +121,9 @@
                     <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.レセプト種別, Converter={x:Static local:レセプト種別Converter.Instance} }"></Label>
 
-                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">患者番号</Label>
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">カルテ番号</Label>
                     <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentReceipt.RE.患者番号}"></Label>
+                           Content="{Binding CurrentReceipt.RE.カルテ番号}"></Label>
                     <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">氏名</Label>
                     <Label Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.氏名}"></Label>

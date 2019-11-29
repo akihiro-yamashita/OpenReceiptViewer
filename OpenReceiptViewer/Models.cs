@@ -243,16 +243,16 @@ namespace OpenReceiptViewer
         private int _生年月日;
 
         /// <summary></summary>
-        public string 患者番号
+        public string カルテ番号
         {
-            get { return this._患者番号; }
+            get { return this._カルテ番号; }
             set
             {
-                this._患者番号 = value;
-                OnPropertyChanged("患者番号");
+                this._カルテ番号 = value;
+                OnPropertyChanged("カルテ番号");
             }
         }
-        private string _患者番号;
+        private string _カルテ番号;
     }
 
     /// <summary>保険者レコード</summary>
