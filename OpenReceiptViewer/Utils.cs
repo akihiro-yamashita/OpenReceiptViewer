@@ -210,4 +210,46 @@ namespace OpenReceiptViewer
             }
         }
     }
+
+    /// <summary></summary>
+    public static class EnumUtil
+    {
+        /// <summary>診療年月からMasterVersionを計算</summary>
+        /// <param name="診療年月"></param>
+        /// <returns></returns>
+        public static MasterVersion CalcMasterVersion(int 診療年月)
+        {
+            var masterVersion = (MasterVersion?)null;
+            foreach (MasterVersion e in Enum.GetValues(typeof(MasterVersion)))
+            {
+                if ((int)e <= 診療年月)
+                {
+                    masterVersion = e;
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (masterVersion.HasValue)
+            {
+                return masterVersion.Value;
+            }
+            else
+            {
+                // 昔の診療年月が指定された場合、とりあえず一番古いマスターで対応
+                return MasterVersion.Ver201604;
+            }
+        }
+
+        /// <summary>TODO: 逆にフォルダ名にVerつけられないか</summary>
+        /// <param name="masterVersion"></param>
+        /// <returns></returns>
+        public static string GetMasterSubDiretoryName(MasterVersion masterVersion)
+        {
+            return masterVersion.ToString().Replace("Ver", "");
+        }
+    }
 }

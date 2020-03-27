@@ -270,4 +270,22 @@ namespace OpenReceiptViewer
         食事療法_生活療法_標準負担額 = 97,
         全体に係る識別コード99 = 99,
     }
+
+    /// <summary>診療報酬マスターバージョン</summary>
+    public enum MasterVersion
+    {
+        Ver201604 = 42804,
+        Ver201804 = 43004,
+        Ver201910 = 50110,
+        Ver202004 = 50204,
+    }
+
+    ///// <summary>診療報酬マスターバージョン</summary>
+    //public enum MasterVersion
+    //{
+    //    Ver201604 = 201604,
+    //    Ver201804 = 201804,
+    //    Ver201910 = 201910,
+    //    Ver202004 = 202004,
+    //}
 }
