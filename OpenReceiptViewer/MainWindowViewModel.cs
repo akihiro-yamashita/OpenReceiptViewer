@@ -25,9 +25,9 @@ namespace OpenReceiptViewer
 {
     public class MainWindowViewModel : NotifyPropertyChanged
     {
-		public MainWindowViewModel()
+        public MainWindowViewModel()
         {
-		}
+        }
 
         /// <summary></summary>
         public RelayCommand<TabControl> OpenCommand

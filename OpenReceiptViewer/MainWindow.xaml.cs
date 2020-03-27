@@ -54,5 +54,30 @@ namespace OpenReceiptViewer
                 e.Handled = true;
             }
         }
+
+        private void TabItem_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Copy;
+            e.Handled = e.Data.GetDataPresent(DataFormats.FileDrop);
+        }
+
+        private void TabItem_Drop(object sender, DragEventArgs e)
+        {
+            var filePathArray = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (0 < filePathArray.Length)
+            {
+                var filePath = filePathArray[0];
+
+                var tabItem = sender as TabItem;
+                if (tabItem != null)
+                {
+                    var tabControl = tabItem.Parent as TabControl;
+                    if (tabControl != null)
+                    {
+                        _vm.Open(tabControl, filePath);
+                    }
+                }
+            }
+        }
     }
 }

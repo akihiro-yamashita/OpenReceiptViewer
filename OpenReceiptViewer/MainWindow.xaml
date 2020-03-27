@@ -15,6 +15,9 @@
                     >
             <TabItem
                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown"
+                AllowDrop="True"
+                PreviewDragOver="TabItem_PreviewDragOver"
+                Drop="TabItem_Drop"
                 >
                 <TabItem.Header>
                     <Button Content="＋"

@@ -5,7 +5,7 @@
 ## セットアップ方法
 
 [プロジェクトページ](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer)のファイル一覧から「OpenReceiptViewer.zip」を選び、  
-「View raw」をクリックして「OpenReceiptViewer.zip」をダウンロードします。  
+「RAWで表示」をクリックして「OpenReceiptViewer.zip」をダウンロードします。  
 このzipファイルを任意の場所で展開します。  
 実行ファイルは「OpenReceiptViewer.exe」です。
 
@@ -29,6 +29,7 @@ http://opensource.org/licenses/Apache-2.0
 
 ## 更新履歴
 
+ver 0.1.5    レセプトファイルのドラッグアンドドロップ対応
 ver 0.1.4    数値以外カルテ番号対応等  
 ver 0.1.3    高速化  
 ver 0.1.2    複数タブ対応  
