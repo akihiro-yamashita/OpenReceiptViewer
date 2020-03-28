@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
+using System.IO;
 
 namespace OpenReceiptViewer
 {
@@ -55,8 +56,6 @@ namespace OpenReceiptViewer
 
         public string ReceiptFilePath = string.Empty;
 
-        public string MasterRootDiretoryPath { get; set; }
-
         public bool IsNumberOnlyカルテ番号 { get; private set; } = true;
 
         public ViewerViewModel()
@@ -65,6 +64,7 @@ namespace OpenReceiptViewer
             this.GO = new GO();
             this.ReceiptList = new ObservableCollection<Receipt>();
             this.ReceiptListOriginal = null;
+            this.MasterRootDiretoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Master");
         }
 
         /// <summary></summary>
@@ -85,303 +85,23 @@ namespace OpenReceiptViewer
                         return;
                     }
 
-                    //if (43005 <= tuple.Item1.請求年月)
-                    //{
-                    //    MasterDiretoryPath = @"Master\201804";
-                    //}
-                    //else
-                    //{
-                    //    MasterDiretoryPath = @"Master\201604";
-                    //}
-
-                    //if (IR.請求年月 != tuple.Item1.請求年月)
-                    //{
-                    //    if ((IR.請求年月 == 0)                                      // 読み込みなし
-                    //    || (IR.請求年月 < 43005 && 43005 <= tuple.Item1.請求年月)   // 2016年→2018年切替
-                    //    || (tuple.Item1.請求年月 < 43005 && 43005 <= IR.請求年月))  // 2018年→2016年切替
-                    //    {
-                    //        InitDict();
-                    //    }
-                    //}
+                    // TODO: Read内で都度マスター読んでもよい？
+                    foreach (var x in this.ReceiptList)
+                    {
+                        var masterVersion = EnumUtil.CalcMasterVersion(x.RE.診療年月);
+                        if (InitializedMasterVersions.Contains(masterVersion) == false)
+                        {
+                            // 該当診療年月に対応したマスターバージョンを読み込む。
+                            InitializeMasterConverter(masterVersion);
+                            InitializedMasterVersions.Add(masterVersion);
+                        }
+                    }
 
                     SelectFirstReceipt();
                 });
             }
         }
         private RelayCommand _openCommand;
-
-        private void SelectFirstReceipt()
-        {
-            if (0 < this.ReceiptList.Count)
-            {
-                this.CurrentReceipt = this.ReceiptList[0];
-            }
-        }
-
-        /// <summary>カルテ番号検索</summary>
-        public RelayCommand NumberSearchCommand
-        {
-            get
-            {
-                return _numberSearchCommand = _numberSearchCommand ??
-                new RelayCommand(() =>
-                {
-                    if (this.ReceiptList.Count == 0) { return; }
-
-                    var window = new SearchWindow();
-                    window.Title = "カルテ番号検索";
-                    window.Label.Content = "カルテ番号";
-                    window.Owner = Application.Current.MainWindow;
-
-                    var dialogResult = window.ShowDialog();
-                    if (dialogResult.HasValue && dialogResult.Value)
-                    {
-                        var input = ((SearchWindowViewModel)window.DataContext).Input;
-                        if (input == null) { return; }
-                        var inputTrim = input.Trim();
-                        if (0 < inputTrim.Length)
-                        {
-                            var result = ReceiptList.FirstOrDefault(x => x.RE.カルテ番号 == inputTrim, CurrentReceipt);
-                            if (result == null)
-                            {
-                                MessageBox.Show("指定されたカルテ番号は見つかりませんでした。");
-                            }
-                            else
-                            {
-                                this.CurrentReceipt = result;
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        private RelayCommand _numberSearchCommand;
-
-        /// <summary>氏名検索</summary>
-        public RelayCommand NameSearchCommand
-        {
-            get
-            {
-                return _nameSearchCommand = _nameSearchCommand ??
-                new RelayCommand(() =>
-                {
-                    if (this.ReceiptList.Count == 0) { return; }
-
-                    var window = new SearchWindow();
-                    window.Title = "氏名検索";
-                    window.Label.Content = "氏名";
-                    var dialogResult = window.ShowDialog();
-                    if (dialogResult.HasValue && dialogResult.Value)
-                    {
-                        var input = ((SearchWindowViewModel)window.DataContext).Input;
-                        if (!string.IsNullOrEmpty(input))
-                        {
-                            var result = ReceiptList.FirstOrDefault(x => x.RE.氏名.Contains(input), CurrentReceipt);
-                            if (result == null)
-                            {
-                                MessageBox.Show("指定された患者は見つかりませんでした。");
-                            }
-                            else
-                            {
-                                this.CurrentReceipt = result;
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        private RelayCommand _nameSearchCommand;
-
-        /// <summary>条件解除</summary>
-        public RelayCommand ClearFilterCommand
-        {
-            get
-            {
-                return _clearFilterCommand = _clearFilterCommand ??
-                new RelayCommand(() =>
-                {
-                    if (this.ReceiptListOriginal == null)
-                    {
-                        return;
-                    }
-
-                    this.ReceiptList.Clear();
-                    foreach (var re in this.ReceiptListOriginal)
-                    {
-                        this.ReceiptList.Add(re);
-                    }
-                    this.ReceiptListOriginal = null;
-
-                    SelectFirstReceipt();
-                });
-            }
-        }
-        private RelayCommand _clearFilterCommand;
-
-        private void FilterAction(string masterSubDiretoryPath, string レコード識別情報)
-        {
-            if (this.ReceiptList.Count == 0) { return; }
-
-            var レコード識別名称 = (string)null;
-            var idField = 0;
-            var fileName = (string)null;
-            if (レコード識別情報 == レコード識別情報定数.診療行為)
-            {
-                レコード識別名称 = "診療行為";
-                idField = (int)SI_IY_IDX.診療行為または医薬品コード;
-                fileName = "s.csv";
-            }
-            else if (レコード識別情報 == レコード識別情報定数.医薬品)
-            {
-                レコード識別名称 = "医薬品";
-                idField = (int)SI_IY_IDX.診療行為または医薬品コード;
-                fileName = "y.csv";
-            }
-            else if (レコード識別情報 == レコード識別情報定数.特定器材)
-            {
-                レコード識別名称 = "特定器材";
-                idField = (int)TO_IDX.特定器材コード;
-                fileName = "t.csv";
-            }
-            else
-            {
-                return;
-            }
-
-            var window = new FilterWindow();
-            window.Title = レコード識別名称 + "条件";
-            window.Label.Content = レコード識別名称 + "（前方一致）";
-            var input = (string)null;
-            var dialogResult = window.ShowDialog();
-            if (dialogResult.HasValue && dialogResult.Value)
-            {
-                input = ((FilterWindowViewModel)window.DataContext).Input;
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-
-            var masterFilePath = System.IO.Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
-            var masterIds = new Dictionary<int, int>();
-            Action<CsvReader> sReadAction = csv =>
-            {
-                var inputUpper = input.ToUpper();
-                while (csv.Read())
-                {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(4).ToUpper();
-                    if (name.StartsWith(inputUpper))  // 大文字同士で比較
-                    {
-                        masterIds.Add(id, id);
-                    }
-                }
-            };
-            CSVUtil.Read(masterFilePath, sReadAction);
-            if (masterIds.Count == 0)
-            {
-                MessageBox.Show("「" + input + "」から始まる" + レコード識別名称 + "マスターがありません。");
-                return;
-            }
-
-            // 一旦既存条件クリア
-            this.ClearFilterCommand.Execute(null);
-
-            var dict = new Dictionary<int, int>();
-            Action<CsvReader> readAction = csv =>
-            {
-                var currentReceiptNo = -1;
-                while (csv.Read())
-                {
-                    var lineDef = csv.GetField<string>(0);
-                    if (lineDef == レコード識別情報定数.レセプト共通)
-                    {
-                        currentReceiptNo = csv.GetField<int>((int)RE_IDX.レセプト番号);
-                    }
-                    else if (lineDef == レコード識別情報)
-                    {
-                        if (dict.ContainsKey(currentReceiptNo))
-                        {
-                            continue;
-                        }
-
-                        var id = (int)csv.GetField<int>(idField);
-                        if (masterIds.ContainsKey(id))
-                        {
-                            dict.Add(currentReceiptNo, currentReceiptNo);
-                        }
-                    }
-                }
-            };
-            CSVUtil.Read(ReceiptFilePath, readAction);
-
-            // オリジナル保存
-            this.ReceiptListOriginal = new List<Receipt>(this.ReceiptList);
-
-            // 条件一致のみ再追加
-            this.ReceiptList.Clear();
-            foreach (var patient in this.ReceiptListOriginal)
-            {
-                if (dict.ContainsKey(patient.RE.レセプト番号))
-                {
-                    this.ReceiptList.Add(patient);
-                }
-            }
-
-            SelectFirstReceipt();
-        }
-
-        /// <summary>診療行為条件</summary>
-        public RelayCommand<string> 診療行為FilterCommand
-        {
-            get
-            {
-                return _診療行為FilterCommand = _診療行為FilterCommand ??
-                new RelayCommand<string>(masterSubDiretoryPath =>
-                {
-                    // TODO: 最新のマスタで決め打ち
-
-                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.診療行為);
-                });
-            }
-        }
-        private RelayCommand<string> _診療行為FilterCommand;
-
-        /// <summary>医薬品条件</summary>
-        public RelayCommand<string> 医薬品FilterCommand
-        {
-            get
-            {
-                return _医薬品FilterCommand = _医薬品FilterCommand ??
-                new RelayCommand<string>(masterSubDiretoryPath =>
-                {
-                    // TODO: 最新のマスタで決め打ち
-
-                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.医薬品);
-                });
-            }
-        }
-        private RelayCommand<string> _医薬品FilterCommand;
-
-        /// <summary>特定器材条件</summary>
-        public RelayCommand<string> 特定器材FilterCommand
-        {
-            get
-            {
-                return _特定器材FilterCommand = _特定器材FilterCommand ??
-                new RelayCommand<string>(masterSubDiretoryPath =>
-                {
-                    // TODO: 最新のマスタで決め打ち
-
-                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.特定器材);
-                });
-            }
-        }
-        private RelayCommand<string> _特定器材FilterCommand;
 
         private void Read(string filePath)
         {
@@ -608,6 +328,15 @@ namespace OpenReceiptViewer
             CSVUtil.Read(filePath, readAction);
         }
 
+        #region 操作
+
+        private void SelectFirstReceipt()
+        {
+            if (0 < this.ReceiptList.Count)
+            {
+                this.CurrentReceipt = this.ReceiptList[0];
+            }
+        }
         /// <summary>次のレセプトを表示</summary>
         public RelayCommand NextReceiptCommand
         {
@@ -653,6 +382,299 @@ namespace OpenReceiptViewer
             }
         }
         private RelayCommand _previousReceiptCommand;
+
+        #endregion
+
+        #region 検索
+
+        /// <summary>カルテ番号検索</summary>
+        public RelayCommand NumberSearchCommand
+        {
+            get
+            {
+                return _numberSearchCommand = _numberSearchCommand ??
+                new RelayCommand(() =>
+                {
+                    if (this.ReceiptList.Count == 0) { return; }
+
+                    var window = new SearchWindow();
+                    window.Title = "カルテ番号検索";
+                    window.Label.Content = "カルテ番号";
+                    window.Owner = Application.Current.MainWindow;
+
+                    var dialogResult = window.ShowDialog();
+                    if (dialogResult.HasValue && dialogResult.Value)
+                    {
+                        var input = ((SearchWindowViewModel)window.DataContext).Input;
+                        if (input == null) { return; }
+                        var inputTrim = input.Trim();
+                        if (0 < inputTrim.Length)
+                        {
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.カルテ番号 == inputTrim, CurrentReceipt);
+                            if (result == null)
+                            {
+                                MessageBox.Show("指定されたカルテ番号は見つかりませんでした。");
+                            }
+                            else
+                            {
+                                this.CurrentReceipt = result;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        private RelayCommand _numberSearchCommand;
+
+        /// <summary>氏名検索</summary>
+        public RelayCommand NameSearchCommand
+        {
+            get
+            {
+                return _nameSearchCommand = _nameSearchCommand ??
+                new RelayCommand(() =>
+                {
+                    if (this.ReceiptList.Count == 0) { return; }
+
+                    var window = new SearchWindow();
+                    window.Title = "氏名検索";
+                    window.Label.Content = "氏名";
+                    var dialogResult = window.ShowDialog();
+                    if (dialogResult.HasValue && dialogResult.Value)
+                    {
+                        var input = ((SearchWindowViewModel)window.DataContext).Input;
+                        if (!string.IsNullOrEmpty(input))
+                        {
+                            var result = ReceiptList.FirstOrDefault(x => x.RE.氏名.Contains(input), CurrentReceipt);
+                            if (result == null)
+                            {
+                                MessageBox.Show("指定された患者は見つかりませんでした。");
+                            }
+                            else
+                            {
+                                this.CurrentReceipt = result;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        private RelayCommand _nameSearchCommand;
+
+        /// <summary>条件解除</summary>
+        public RelayCommand ClearFilterCommand
+        {
+            get
+            {
+                return _clearFilterCommand = _clearFilterCommand ??
+                new RelayCommand(() =>
+                {
+                    if (this.ReceiptListOriginal == null)
+                    {
+                        return;
+                    }
+
+                    this.ReceiptList.Clear();
+                    foreach (var re in this.ReceiptListOriginal)
+                    {
+                        this.ReceiptList.Add(re);
+                    }
+                    this.ReceiptListOriginal = null;
+
+                    SelectFirstReceipt();
+                });
+            }
+        }
+        private RelayCommand _clearFilterCommand;
+
+        private void FilterAction(string masterSubDiretoryPath, string レコード識別情報)
+        {
+            if (this.ReceiptList.Count == 0) { return; }
+
+            var レコード識別名称 = (string)null;
+            var idField = 0;
+            var fileName = (string)null;
+            if (レコード識別情報 == レコード識別情報定数.診療行為)
+            {
+                レコード識別名称 = "診療行為";
+                idField = (int)SI_IY_IDX.診療行為または医薬品コード;
+                fileName = "s.csv";
+            }
+            else if (レコード識別情報 == レコード識別情報定数.医薬品)
+            {
+                レコード識別名称 = "医薬品";
+                idField = (int)SI_IY_IDX.診療行為または医薬品コード;
+                fileName = "y.csv";
+            }
+            else if (レコード識別情報 == レコード識別情報定数.特定器材)
+            {
+                レコード識別名称 = "特定器材";
+                idField = (int)TO_IDX.特定器材コード;
+                fileName = "t.csv";
+            }
+            else
+            {
+                return;
+            }
+
+            var window = new FilterWindow();
+            window.Title = レコード識別名称 + "条件";
+            window.Label.Content = レコード識別名称 + "（前方一致）";
+            var input = (string)null;
+            var dialogResult = window.ShowDialog();
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                input = ((FilterWindowViewModel)window.DataContext).Input;
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            var masterFilePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
+            var masterIds = new Dictionary<int, int>();
+            Action<CsvReader> sReadAction = csv =>
+            {
+                var inputUpper = input.ToUpper();
+                while (csv.Read())
+                {
+                    var id = csv.GetField<int>(2);
+                    var name = csv.GetField<string>(4).ToUpper();
+                    if (name.StartsWith(inputUpper))  // 大文字同士で比較
+                    {
+                        masterIds.Add(id, id);
+                    }
+                }
+            };
+            CSVUtil.Read(masterFilePath, sReadAction);
+            if (masterIds.Count == 0)
+            {
+                MessageBox.Show("「" + input + "」から始まる" + レコード識別名称 + "マスターがありません。");
+                return;
+            }
+
+            // 一旦既存条件クリア
+            this.ClearFilterCommand.Execute(null);
+
+            var dict = new Dictionary<int, int>();
+            Action<CsvReader> readAction = csv =>
+            {
+                var currentReceiptNo = -1;
+                while (csv.Read())
+                {
+                    var lineDef = csv.GetField<string>(0);
+                    if (lineDef == レコード識別情報定数.レセプト共通)
+                    {
+                        currentReceiptNo = csv.GetField<int>((int)RE_IDX.レセプト番号);
+                    }
+                    else if (lineDef == レコード識別情報)
+                    {
+                        if (dict.ContainsKey(currentReceiptNo))
+                        {
+                            continue;
+                        }
+
+                        var id = (int)csv.GetField<int>(idField);
+                        if (masterIds.ContainsKey(id))
+                        {
+                            dict.Add(currentReceiptNo, currentReceiptNo);
+                        }
+                    }
+                }
+            };
+            CSVUtil.Read(ReceiptFilePath, readAction);
+
+            // オリジナル保存
+            this.ReceiptListOriginal = new List<Receipt>(this.ReceiptList);
+
+            // 条件一致のみ再追加
+            this.ReceiptList.Clear();
+            foreach (var patient in this.ReceiptListOriginal)
+            {
+                if (dict.ContainsKey(patient.RE.レセプト番号))
+                {
+                    this.ReceiptList.Add(patient);
+                }
+            }
+
+            SelectFirstReceipt();
+        }
+
+        private MasterVersion? GetFirstMasterVersion()
+        {
+            if (this.ReceiptList == null || this.ReceiptList.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return EnumUtil.CalcMasterVersion(this.ReceiptList[0].RE.診療年月);
+            }
+        }
+
+        /// <summary>診療行為条件</summary>
+        public RelayCommand<string> 診療行為FilterCommand
+        {
+            get
+            {
+                return _診療行為FilterCommand = _診療行為FilterCommand ??
+                new RelayCommand<string>(masterSubDiretoryPath =>
+                {
+                    // レセプト1件目の診療年月の対応マスターバージョンから検索対象を読み込む。
+                    // 月遅れレセプトが混在されても正しく検索できないが、この仕様で。
+                    var masterVersion = GetFirstMasterVersion();
+                    if (masterVersion.HasValue)
+                    {
+                        this.FilterAction(EnumUtil.GetMasterSubDiretoryName(masterVersion.Value), レコード識別情報定数.診療行為);
+                    }
+                });
+            }
+        }
+        private RelayCommand<string> _診療行為FilterCommand;
+
+        /// <summary>医薬品条件</summary>
+        public RelayCommand<string> 医薬品FilterCommand
+        {
+            get
+            {
+                return _医薬品FilterCommand = _医薬品FilterCommand ??
+                new RelayCommand<string>(masterSubDiretoryPath =>
+                {
+                    var masterVersion = GetFirstMasterVersion();
+                    if (masterVersion.HasValue)
+                    {
+                        this.FilterAction(EnumUtil.GetMasterSubDiretoryName(masterVersion.Value), レコード識別情報定数.医薬品);
+                    }
+                });
+            }
+        }
+        private RelayCommand<string> _医薬品FilterCommand;
+
+        /// <summary>特定器材条件</summary>
+        public RelayCommand<string> 特定器材FilterCommand
+        {
+            get
+            {
+                return _特定器材FilterCommand = _特定器材FilterCommand ??
+                new RelayCommand<string>(masterSubDiretoryPath =>
+                {
+                    var masterVersion = GetFirstMasterVersion();
+                    if (masterVersion.HasValue)
+                    {
+                        this.FilterAction(EnumUtil.GetMasterSubDiretoryName(masterVersion.Value), レコード識別情報定数.特定器材);
+                    }
+                });
+            }
+        }
+        private RelayCommand<string> _特定器材FilterCommand;
+
+        #endregion
+
+        #region 並べ替え
 
         /// <summary></summary>
         /// <param name="orderByFunc"></param>
@@ -719,5 +741,150 @@ namespace OpenReceiptViewer
             }
         }
         private RelayCommand _orderBy合計点数Command;
+
+        #endregion
+
+        #region マスター関連
+
+        public string MasterRootDiretoryPath { get; private set; }
+
+        private void InitializeMasterConverter(MasterVersion masterVersion)
+        {
+            傷病名Converter.Instance.傷病名Dict = this.Read傷病名(masterVersion);
+            傷病名Converter.Instance.修飾語Dict = this.Read修飾語(masterVersion);
+            コメントConverter.Instance.コメントDict = this.Readコメント(masterVersion);
+
+            var 診療行為List = this.Read診療行為(masterVersion);
+            DictConverter.診療行為Instance((int)masterVersion).Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);
+            DictConverter.診療行為単位Instance.Dict = 診療行為List.ToDictionary(x => x.Id, x => x.単位);
+            var 医薬品List = this.Read医薬品(masterVersion);
+            DictConverter.医薬品Instance((int)masterVersion).Dict = 医薬品List.ToDictionary(x => x.Id, x => x.名称);
+            DictConverter.医薬品単位Instance.Dict = 医薬品List.ToDictionary(x => x.Id, x => x.単位);
+            var 特定器材List = this.Read特定器材(masterVersion);
+            DictConverter.特定器材Instance((int)masterVersion).Dict = 特定器材List.ToDictionary(x => x.Id, x => x.名称);
+            DictConverter.特定器材単位Instance.Dict = 特定器材List.ToDictionary(x => x.Id, x => x.単位);
+        }
+        private static List<MasterVersion> InitializedMasterVersions = new List<MasterVersion>();
+
+        private Dictionary<int, string> Read傷病名(MasterVersion masterVersion)
+        {
+            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "b.csv");
+
+            var dict = new Dictionary<int, string>();
+            Action<CsvReader> readAction = csv =>
+            {
+                while (csv.Read())
+                {
+                    var id = csv.GetField<int>(2);
+                    var name = csv.GetField<string>(5);
+                    dict.Add(id, name);
+                }
+            };
+            CSVUtil.Read(filePath, readAction);
+            return dict;
+        }
+
+        private Dictionary<int, string> Read修飾語(MasterVersion masterVersion)
+        {
+            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "z.csv");
+
+            var dict = new Dictionary<int, string>();
+            Action<CsvReader> readAction = csv =>
+            {
+                while (csv.Read())
+                {
+                    var id = csv.GetField<int>(2);
+                    var name = csv.GetField<string>(6);
+                    dict.Add(id, name);
+                }
+            };
+            CSVUtil.Read(filePath, readAction);
+            return dict;
+        }
+
+        private List<名称単位マスター> Read名称単位マスター(MasterVersion masterVersion, string fileName)
+        {
+            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), fileName);
+
+            var list = new List<名称単位マスター>();
+            Action<CsvReader> readAction = csv =>
+            {
+                while (csv.Read())
+                {
+                    var id = csv.GetField<int>(2);
+                    var 名称 = csv.GetField<string>(4);
+                    var 単位 = csv.GetField<string>(9);
+                    list.Add(new 名称単位マスター() { Id = id, 名称 = 名称, 単位 = 単位 });
+                }
+            };
+            CSVUtil.Read(filePath, readAction);
+            return list;
+        }
+
+        private List<名称単位マスター> Read診療行為(MasterVersion masterVersion)
+        {
+            return Read名称単位マスター(masterVersion, "s.csv");
+        }
+
+        private List<名称単位マスター> Read医薬品(MasterVersion masterVersion)
+        {
+            return Read名称単位マスター(masterVersion, "y.csv");
+        }
+
+        private List<名称単位マスター> Read特定器材(MasterVersion masterVersion)
+        {
+            return Read名称単位マスター(masterVersion, "t.csv");
+        }
+
+        private Dictionary<int, コメントマスター> Readコメント(MasterVersion masterVersion)
+        {
+            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "c.csv");
+
+            var dict = new Dictionary<int, コメントマスター>();
+            Action<CsvReader> readAction = csv =>
+            {
+                while (csv.Read())
+                {
+                    var x = new コメントマスター();
+                    x.区分 = csv.GetField<int>(2);
+                    x.パターン = csv.GetField<int>(3);
+                    x.一連番号 = csv.GetField<int>(4);
+                    x.漢字名称 = csv.GetField<string>(6);
+                    x.カラム位置桁数 = new List<Tuple<int, int>>();
+
+                    // 4回まである。
+                    var カラム位置 = csv.GetField<int>(9);
+                    var カラム桁数 = csv.GetField<int>(10);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(11);
+                    カラム桁数 = csv.GetField<int>(12);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(13);
+                    カラム桁数 = csv.GetField<int>(14);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+                    カラム位置 = csv.GetField<int>(15);
+                    カラム桁数 = csv.GetField<int>(16);
+                    if (0 < カラム桁数)
+                    {
+                        x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
+                    }
+
+                    dict.Add(x.コメントコード, x);
+                }
+            };
+            CSVUtil.Read(filePath, readAction);
+            return dict;
+        }
+
+        #endregion
     }
 }

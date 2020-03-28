@@ -73,7 +73,7 @@
                                 <Setter Property="Background" Value="Orange" />
                             </Trigger>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="Background" Value="Navy" />
+                                <Setter Property="Background" Value="Orange" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
