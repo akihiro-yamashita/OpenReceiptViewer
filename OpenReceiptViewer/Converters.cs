@@ -104,19 +104,19 @@ namespace OpenReceiptViewer
         /// <summary></summary>
         public bool ReturnsKeyWhenNotFount { get; set; }
 
-        public override string Convert(int value, object parameter)
+        public override string Convert(int key, object parameter)
         {
             if (this.Dict != null)
             {
-                if (this.Dict.ContainsKey(value))
+                if (this.Dict.ContainsKey(key))
                 {
-                    return this.Dict[value];
+                    return this.Dict[key];
                 }
             }
 
             if (ReturnsKeyWhenNotFount)
             {
-                return value.ToString();
+                return key.ToString();
             }
             else
             {
@@ -124,11 +124,18 @@ namespace OpenReceiptViewer
             }
         }
 
-        public static DictConverter 診療行為Instance
+        public static DictConverter 診療行為Instance(int 診療年月)
         {
-            get { return _診療行為Instance = _診療行為Instance ?? new DictConverter(); }
+            var masterVersion = EnumUtil.CalcMasterVersion(診療年月);
+
+            if (_診療行為Dict.ContainsKey(masterVersion) == false)
+            {
+                _診療行為Dict.Add(masterVersion, new DictConverter());
+            }
+
+            return _診療行為Dict[masterVersion];
         }
-        private static DictConverter _診療行為Instance;
+        private static Dictionary<MasterVersion, DictConverter> _診療行為Dict = new Dictionary<MasterVersion, DictConverter>();
 
         public static DictConverter 診療行為単位Instance
         {
@@ -136,11 +143,18 @@ namespace OpenReceiptViewer
         }
         private static DictConverter _診療行為単位Instance;
 
-        public static DictConverter 医薬品Instance
+        public static DictConverter 医薬品Instance(int 診療年月)
         {
-            get { return _医薬品Instance = _医薬品Instance ?? new DictConverter(); }
+            var masterVersion = EnumUtil.CalcMasterVersion(診療年月);
+
+            if (_医薬品Dict.ContainsKey(masterVersion) == false)
+            {
+                _医薬品Dict.Add(masterVersion, new DictConverter());
+            }
+
+            return _医薬品Dict[masterVersion];
         }
-        private static DictConverter _医薬品Instance;
+        private static Dictionary<MasterVersion, DictConverter> _医薬品Dict = new Dictionary<MasterVersion, DictConverter>();
 
         public static DictConverter 医薬品単位Instance
         {
@@ -148,11 +162,18 @@ namespace OpenReceiptViewer
         }
         private static DictConverter _医薬品単位Instance;
 
-        public static DictConverter 特定器材Instance
+        public static DictConverter 特定器材Instance(int 診療年月)
         {
-            get { return _特定器材Instance = _特定器材Instance ?? new DictConverter(); }
+            var masterVersion = EnumUtil.CalcMasterVersion(診療年月);
+
+            if (_特定器材Dict.ContainsKey(masterVersion) == false)
+            {
+                _特定器材Dict.Add(masterVersion, new DictConverter());
+            }
+
+            return _特定器材Dict[masterVersion];
         }
-        private static DictConverter _特定器材Instance;
+        private static Dictionary<MasterVersion, DictConverter> _特定器材Dict = new Dictionary<MasterVersion, DictConverter>();
 
         public static DictConverter 特定器材単位Instance
         {
@@ -186,21 +207,21 @@ namespace OpenReceiptViewer
         }
     }
 
-    public class 内容Converter : TypeSafeMultiConverter<string, string, object>
+    public class 内容Converter : TypeSafeMultiConverter<string, int, string, object>
     {
-        public override string Convert(string レコード識別情報, object 内容, object parameter)
+        public override string Convert(int 診療年月, string レコード識別情報, object 内容, object parameter)
         {
             if (レコード識別情報 == レコード識別情報定数.診療行為)
             {
-                return DictConverter.診療行為Instance.Convert((int)内容, parameter);
+                return DictConverter.診療行為Instance(診療年月).Convert((int)内容, parameter);
             }
             else if (レコード識別情報 == レコード識別情報定数.医薬品)
             {
-                return DictConverter.医薬品Instance.Convert((int)内容, parameter);
+                return DictConverter.医薬品Instance(診療年月).Convert((int)内容, parameter);
             }
             else if (レコード識別情報 == レコード識別情報定数.特定器材)
             {
-                return DictConverter.特定器材Instance.Convert((int)内容, parameter);
+                return DictConverter.特定器材Instance(診療年月).Convert((int)内容, parameter);
             }
             else if (レコード識別情報 == レコード識別情報定数.コメント)
             {

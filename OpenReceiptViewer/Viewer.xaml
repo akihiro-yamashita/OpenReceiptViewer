@@ -180,7 +180,11 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}" GridLinesVisibility="None">
+                <DataGrid Grid.Row="2"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}"
+                          GridLinesVisibility="None">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="識別" Binding="{Binding Path=診療識別}" Width="40" MaxWidth="40">
                             <DataGridTextColumn.CellStyle>
@@ -192,6 +196,7 @@
                         <DataGridTextColumn Header="内容" Width="370">
                             <DataGridTextColumn.Binding>
                                 <MultiBinding Converter="{x:Static local:内容Converter.Instance}">
+                                    <Binding Path="DataContext.CurrentReceipt.RE.診療年月" RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
                                     <Binding Path="レコード識別情報" />
                                     <Binding Path="内容" />
                                 </MultiBinding>

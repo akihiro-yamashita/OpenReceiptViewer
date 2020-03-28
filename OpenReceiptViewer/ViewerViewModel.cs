@@ -55,7 +55,7 @@ namespace OpenReceiptViewer
 
         public string ReceiptFilePath = string.Empty;
 
-        public string MasterDiretoryPath { get; set; }
+        public string MasterRootDiretoryPath { get; set; }
 
         public bool IsNumberOnlyカルテ番号 { get; private set; } = true;
 
@@ -218,7 +218,7 @@ namespace OpenReceiptViewer
         }
         private RelayCommand _clearFilterCommand;
 
-        private void FilterAction(string レコード識別情報)
+        private void FilterAction(string masterSubDiretoryPath, string レコード識別情報)
         {
             if (this.ReceiptList.Count == 0) { return; }
 
@@ -266,7 +266,7 @@ namespace OpenReceiptViewer
                 return;
             }
 
-            var masterFilePath = System.IO.Path.Combine(MasterDiretoryPath, fileName);
+            var masterFilePath = System.IO.Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
             var masterIds = new Dictionary<int, int>();
             Action<CsvReader> sReadAction = csv =>
             {
@@ -336,46 +336,52 @@ namespace OpenReceiptViewer
         }
 
         /// <summary>診療行為条件</summary>
-        public RelayCommand 診療行為FilterCommand
+        public RelayCommand<string> 診療行為FilterCommand
         {
             get
             {
                 return _診療行為FilterCommand = _診療行為FilterCommand ??
-                new RelayCommand(() =>
+                new RelayCommand<string>(masterSubDiretoryPath =>
                 {
-                    this.FilterAction(レコード識別情報定数.診療行為);
+                    // TODO: 最新のマスタで決め打ち
+
+                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.診療行為);
                 });
             }
         }
-        private RelayCommand _診療行為FilterCommand;
+        private RelayCommand<string> _診療行為FilterCommand;
 
         /// <summary>医薬品条件</summary>
-        public RelayCommand 医薬品FilterCommand
+        public RelayCommand<string> 医薬品FilterCommand
         {
             get
             {
                 return _医薬品FilterCommand = _医薬品FilterCommand ??
-                new RelayCommand(() =>
+                new RelayCommand<string>(masterSubDiretoryPath =>
                 {
-                    this.FilterAction(レコード識別情報定数.医薬品);
+                    // TODO: 最新のマスタで決め打ち
+
+                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.医薬品);
                 });
             }
         }
-        private RelayCommand _医薬品FilterCommand;
+        private RelayCommand<string> _医薬品FilterCommand;
 
         /// <summary>特定器材条件</summary>
-        public RelayCommand 特定器材FilterCommand
+        public RelayCommand<string> 特定器材FilterCommand
         {
             get
             {
                 return _特定器材FilterCommand = _特定器材FilterCommand ??
-                new RelayCommand(() =>
+                new RelayCommand<string>(masterSubDiretoryPath =>
                 {
-                    this.FilterAction(レコード識別情報定数.特定器材);
+                    // TODO: 最新のマスタで決め打ち
+
+                    this.FilterAction(EnumUtil.GetMasterSubDiretoryName(MasterVersion.Ver202004), レコード識別情報定数.特定器材);
                 });
             }
         }
-        private RelayCommand _特定器材FilterCommand;
+        private RelayCommand<string> _特定器材FilterCommand;
 
         private void Read(string filePath)
         {

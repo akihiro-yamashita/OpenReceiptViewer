@@ -39,6 +39,9 @@ namespace OpenReceiptViewerTest
             showDate = DateUtil.ReceiptDateToShowDate(43012, true);
             Assert.AreEqual("平成30.12", showDate);
 
+            showDate = DateUtil.ReceiptDateToShowDate(50105, true);
+            Assert.AreEqual("令和01.05", showDate);
+
             showDate = DateUtil.ReceiptDateToShowDate(430123, true);
             Assert.AreEqual("?", showDate);
         }
@@ -106,6 +109,20 @@ namespace OpenReceiptViewerTest
         {
             Assert.AreEqual("ＥＦ－喉頭", StringUtil.HanToZen("EF-喉頭"));
             Assert.AreEqual("休日加算（初診）", StringUtil.HanToZen("休日加算(初診)"));
+        }
+    }
+
+    [TestClass]
+    public class EnumUtilTest
+    {
+        [TestMethod]
+        public void CalcMasterVersionTest()
+        {
+            Assert.AreEqual(MasterVersion.Ver201604, EnumUtil.CalcMasterVersion(201603));
+            Assert.AreEqual(MasterVersion.Ver201604, EnumUtil.CalcMasterVersion(201604));
+            Assert.AreEqual(MasterVersion.Ver201910, EnumUtil.CalcMasterVersion(202003));
+            Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(202004));
+            Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(202005));
         }
     }
 }
