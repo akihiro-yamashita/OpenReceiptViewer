@@ -68,16 +68,7 @@ namespace OpenReceiptViewer
             {
                 var filePath = filePathArray[0];
 
-                if (sender is TabItem)
-                {
-                    var tabItem = sender as TabItem;
-                    var tabControl = tabItem.Parent as TabControl;
-                    if (tabControl != null)
-                    {
-                        _vm.Open(tabControl, filePath);
-                    }
-                }
-                else if (sender is TabControl)
+                if (sender is TabControl)
                 {
                     var tabControl = sender as TabControl;
                     _vm.Open(tabControl, filePath);
