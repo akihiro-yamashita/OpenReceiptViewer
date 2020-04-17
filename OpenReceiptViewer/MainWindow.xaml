@@ -12,6 +12,8 @@
                     Name="_tabControl"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    AllowDrop="True"
+                    Drop="TabItem_Drop"
                     >
             <TabItem
                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown"
