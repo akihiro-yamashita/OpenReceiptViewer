@@ -33,9 +33,12 @@ namespace OpenReceiptViewer
         public static string ReceiptDateToShowDate(int receiptDate, bool withoutDay = false)
         {
             var receiptDateStr = receiptDate.ToString();
+
             if ((!withoutDay && receiptDateStr.Length == 7)
                 || (withoutDay && receiptDateStr.Length == 5))
             {
+                // 和暦
+
                 var showDate = "??";
                 var nengo = Int32.Parse(receiptDateStr.Substring(0, 1));
                 foreach (var x in Enum.GetValues(typeof(年号区分)))
@@ -58,6 +61,23 @@ namespace OpenReceiptViewer
 
                 return showDate;
             }
+            else if ((!withoutDay && receiptDateStr.Length == 8)
+                || (withoutDay && receiptDateStr.Length == 6))
+            {
+                // 西暦
+
+                var showDate = string.Empty;
+                showDate += receiptDateStr.Substring(0, 4);
+                showDate += ".";
+                showDate += receiptDateStr.Substring(4, 2);
+                if (!withoutDay)
+                {
+                    showDate += ".";
+                    showDate += receiptDateStr.Substring(6, 2);
+                }
+
+                return showDate;
+            }
 
             return "?";
         }
@@ -74,9 +94,18 @@ namespace OpenReceiptViewer
                 return null;
             }
 
+            var is西暦 = char.IsDigit(showDate[0]);
+
             try
             {
-                return DateTime.ParseExact(showDate, "ggyy.MM.dd", Culture);
+                if (is西暦)
+                {
+                    return DateTime.ParseExact(showDate, "yyyy.MM.dd", null);
+                }
+                else
+                {
+                    return DateTime.ParseExact(showDate, "ggyy.MM.dd", Culture);
+                }
             }
             catch (Exception)
             {

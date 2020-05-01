@@ -30,6 +30,7 @@ namespace OpenReceiptViewerTest
         {
             string showDate;
 
+            // 和暦
             showDate = DateUtil.ReceiptDateToShowDate(4301231);
             Assert.AreEqual("平成30.12.31", showDate);
 
@@ -42,7 +43,15 @@ namespace OpenReceiptViewerTest
             showDate = DateUtil.ReceiptDateToShowDate(50105, true);
             Assert.AreEqual("令和01.05", showDate);
 
-            showDate = DateUtil.ReceiptDateToShowDate(430123, true);
+            // 西暦
+            showDate = DateUtil.ReceiptDateToShowDate(20191231, false);
+            Assert.AreEqual("2019.12.31", showDate);
+
+            showDate = DateUtil.ReceiptDateToShowDate(201901, true);
+            Assert.AreEqual("2019.01", showDate);
+
+            // 変な値
+            showDate = DateUtil.ReceiptDateToShowDate(201912312, false);
             Assert.AreEqual("?", showDate);
         }
 
@@ -51,12 +60,21 @@ namespace OpenReceiptViewerTest
         {
             DateTime? dateTime;
 
+            // 和暦
             dateTime = DateUtil.ReceiptDateToDateTime(4301231);
             Assert.AreEqual(new DateTime(2018, 12, 31), dateTime.Value);
 
             dateTime = DateUtil.ReceiptDateToDateTime(3010203);
             Assert.AreEqual(new DateTime(1926, 2, 3), dateTime.Value);
 
+            // 西暦
+            dateTime = DateUtil.ReceiptDateToDateTime(20191231);
+            Assert.AreEqual(new DateTime(2019, 12, 31), dateTime.Value);
+
+            dateTime = DateUtil.ReceiptDateToDateTime(20190102);
+            Assert.AreEqual(new DateTime(2019, 1, 2), dateTime.Value);
+
+            // 変な値
             dateTime = DateUtil.ReceiptDateToDateTime(430123);
             Assert.IsNull(dateTime);
         }
