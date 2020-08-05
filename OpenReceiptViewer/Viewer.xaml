@@ -57,7 +57,13 @@
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding ReceiptList}" SelectedItem="{Binding CurrentReceipt}" SelectedCellsChanged="DataGrid_SelectedCellsChanged">
+            <DataGrid Grid.Column="0"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      ItemsSource="{Binding ReceiptList}"
+                      SelectionMode="Single"
+                      SelectedItem="{Binding CurrentReceipt}"
+                      SelectedCellsChanged="DataGrid_SelectedCellsChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>
@@ -90,15 +96,14 @@
             </DataGrid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="180"></RowDefinition>
+                    <RowDefinition Height="90"></RowDefinition>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="30"></RowDefinition>
                     <RowDefinition Height="150"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="28"></RowDefinition>
-                        <RowDefinition Height="28"></RowDefinition>
-                        <RowDefinition Height="28"></RowDefinition>
                         <RowDefinition Height="28"></RowDefinition>
                         <RowDefinition Height="28"></RowDefinition>
                         <RowDefinition Height="28"></RowDefinition>
@@ -137,32 +142,92 @@
                     <Label Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">性別</Label>
                     <Label Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.男女区分}"></Label>
-
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">保険者番号</Label>
-                    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">保険者番号</Label>
+                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.HO.保険者番号}"></Label>
-                    <Label Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">被保険者</Label>
-                    <Label Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">
+                    <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">被保険者</Label>
+                    <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">
                         <MultiBinding Converter="{x:Static local:被保険者Converter.Instance}">
                             <Binding Path="CurrentReceipt.HO.被保険者証記号" />
                             <Binding Path="CurrentReceipt.HO.被保険者証番号" />
                         </MultiBinding>
                     </Label>
-
-                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費負担者番号</Label>
-                    <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentReceipt.KO.負担者番号}"></Label>
-                    <Label Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費受給者番号</Label>
-                    <Label Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentReceipt.KO.受給者番号}"></Label>
-                    <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">保険合計点数</Label>
-                    <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">保険合計点数</Label>
+                    <Label Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.HO.合計点数}"></Label>
-                    <Label Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1">公費合計点数</Label>
-                    <Label Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentReceipt.KO.合計点数}"></Label>
                 </Grid>
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SYList}" GridLinesVisibility="None">
+                <ScrollViewer Grid.Row="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"></RowDefinition>
+                            <RowDefinition Height="28"></RowDefinition>
+                            <RowDefinition Height="28"></RowDefinition>
+                            <RowDefinition Height="28"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1">公費1負担者番号</Label>
+                        <Label Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[0].負担者番号}"></Label>
+                        <Label Grid.Row="0" Grid.Column="2" BorderBrush="Black" BorderThickness="1">公費1受給者番号</Label>
+                        <Label Grid.Row="0" Grid.Column="3" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[0].受給者番号}"></Label>
+                        <Label Grid.Row="0" Grid.Column="4" BorderBrush="Black" BorderThickness="1">公費1合計点数</Label>
+                        <Label Grid.Row="0" Grid.Column="5" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[0].合計点数}"></Label>
+
+                        <Label Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1">公費2負担者番号</Label>
+                        <Label Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[1].負担者番号}"></Label>
+                        <Label Grid.Row="1" Grid.Column="2" BorderBrush="Black" BorderThickness="1">公費2受給者番号</Label>
+                        <Label Grid.Row="1" Grid.Column="3" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[1].受給者番号}"></Label>
+                        <Label Grid.Row="1" Grid.Column="4" BorderBrush="Black" BorderThickness="1">公費2合計点数</Label>
+                        <Label Grid.Row="1" Grid.Column="5" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[1].合計点数}"></Label>
+
+                        <Label Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1">公費3負担者番号</Label>
+                        <Label Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[2].負担者番号}"></Label>
+                        <Label Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1">公費3受給者番号</Label>
+                        <Label Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[2].受給者番号}"></Label>
+                        <Label Grid.Row="2" Grid.Column="4" BorderBrush="Black" BorderThickness="1">公費3合計点数</Label>
+                        <Label Grid.Row="2" Grid.Column="5" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[2].合計点数}"></Label>
+
+                        <Label Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1">公費4負担者番号</Label>
+                        <Label Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[3].負担者番号}"></Label>
+                        <Label Grid.Row="3" Grid.Column="2" BorderBrush="Black" BorderThickness="1">公費4受給者番号</Label>
+                        <Label Grid.Row="3" Grid.Column="3" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[3].受給者番号}"></Label>
+                        <Label Grid.Row="3" Grid.Column="4" BorderBrush="Black" BorderThickness="1">公費4合計点数</Label>
+                        <Label Grid.Row="3" Grid.Column="5" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.KOList[3].合計点数}"></Label>
+                    </Grid>
+                </ScrollViewer>
+                <DataGrid Grid.Row="3" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SYList}" GridLinesVisibility="None">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="主" Binding="{Binding Path=主傷病, Converter={x:Static local:主傷病Converter.Instance} }" Width="30" MaxWidth="30">
                         </DataGridTextColumn>
@@ -180,7 +245,7 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid Grid.Row="2"
+                <DataGrid Grid.Row="4"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}"

@@ -111,6 +111,19 @@ namespace OpenReceiptViewer
 
                 Action add = () =>
                 {
+                    // 公費の件数調整
+                    int 公費最大件数 = 4;
+                    while (公費最大件数 < patient.KOList.Count)
+                    {
+                        Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", 公費最大件数));
+                        patient.KOList.RemoveAt(patient.KOList.Count - 1);
+                    }
+                    while (patient.KOList.Count < 公費最大件数)
+                    {
+                        // KOListをindex指定でバインドしているため、空データ入れた方が都合が良い。
+                        patient.KOList.Add(null);
+                    }
+
                     this.ReceiptList.Add(patient);
                     patient = null;
                 };
@@ -161,7 +174,12 @@ namespace OpenReceiptViewer
                             IsNumberOnlyカルテ番号 = false;
                         }
 
-                        patient = new Receipt() { SIIYTOCOList = new List<SIIYTOCO>(), SYList = new List<SY>(), };
+                        patient = new Receipt()
+                        {
+                            KOList = new List<KO>(),
+                            SIIYTOCOList = new List<SIIYTOCO>(),
+                            SYList = new List<SY>(),
+                        };
                         patient.RE = re;
                     }
                     else if (lineDef == レコード識別情報定数.保険者)
@@ -210,7 +228,7 @@ namespace OpenReceiptViewer
                         };
                         if (patient != null && patient.RE != null)
                         {
-                            patient.KO = ko;
+                            patient.KOList.Add(ko);
                         }
                         else
                         {

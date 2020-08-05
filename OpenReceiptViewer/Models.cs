@@ -584,18 +584,19 @@ namespace OpenReceiptViewer
     /// <summary></summary>
     public class Receipt
     {
+        /// <summary>レセプト共通</summary>
         public RE RE { get; set; }
 
-        /// <summary></summary>
+        /// <summary>保険者</summary>
         public HO HO { get; set; }
 
-        /// <summary></summary>
-        public KO KO { get; set; }
+        /// <summary>公費4つまで</summary>
+        public List<KO> KOList { get; set; }
 
-        /// <summary></summary>
+        /// <summary>傷病名</summary>
         public List<SY> SYList { get; set; }
 
-        /// <summary></summary>
+        /// <summary>明細共通</summary>
         public List<SIIYTOCO> SIIYTOCOList { get; set; }
     }
 
