@@ -313,6 +313,11 @@ namespace OpenReceiptViewer
 
         public override string Convert(int value1, string value2, object parameter)
         {
+            if (value1 == Define.未コード化傷病コード)
+            {
+                return "（未コード化傷病名）";
+            }
+
             var tmp = _dictConverter.Convert(value1, null);
 
             if (this.修飾語Dict != null && !string.IsNullOrEmpty(value2) && value2.Length % 4 == 0)
@@ -528,6 +533,21 @@ namespace OpenReceiptViewer
                 case 135:
                     tmp += "医科・後期高齢と公費４";
                     break;
+                case 141:
+                    tmp += "医科・退職者単独";
+                    break;
+                case 142:
+                    tmp += "医科・退職者と公費１";
+                    break;
+                case 143:
+                    tmp += "医科・退職者と公費２";
+                    break;
+                case 144:
+                    tmp += "医科・退職者と公費３";
+                    break;
+                case 145:
+                    tmp += "医科・退職者と公費４";
+                    break;
                 default:
                     break;
             }
@@ -550,7 +570,7 @@ namespace OpenReceiptViewer
                         break;
                     case 7:
                     case 8:
-                        if (keta12 == 13)
+                        if (keta12 != 13)
                         {
                             //tmp += "高齢受給者一般・低所得者";
                             tmp += "高齢一般・低所得者";
@@ -562,7 +582,7 @@ namespace OpenReceiptViewer
                         break;
                     case 9:
                     case 0:
-                        if (keta12 == 13)
+                        if (keta12 != 13)
                         {
                             //tmp += "高齢受給者７割";
                             tmp += "高齢７割";
@@ -630,5 +650,26 @@ namespace OpenReceiptViewer
             get { return _instance = _instance ?? new 被保険者Converter(); }
         }
         private static 被保険者Converter _instance;
+    }
+
+    public class 氏名カタカナConverter : TypeSafeMultiConverter<object, string, string>
+    {
+        public override object Convert(string 氏名, string カタカナ, object parameter)
+        {
+            if (string.IsNullOrEmpty(カタカナ))
+            {
+                return 氏名;
+            }
+            else
+            {
+                return string.Format("{0} （ {1} ）", 氏名, カタカナ);
+            }
+        }
+
+        public static 氏名カタカナConverter Instance
+        {
+            get { return _instance = _instance ?? new 氏名カタカナConverter(); }
+        }
+        private static 氏名カタカナConverter _instance;
     }
 }

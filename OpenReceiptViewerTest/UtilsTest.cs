@@ -30,6 +30,9 @@ namespace OpenReceiptViewerTest
         {
             string showDate;
 
+            showDate = DateUtil.ReceiptDateToShowDate(0);
+            Assert.AreEqual("", showDate);
+
             // 和暦
             showDate = DateUtil.ReceiptDateToShowDate(4301231);
             Assert.AreEqual("平成30.12.31", showDate);

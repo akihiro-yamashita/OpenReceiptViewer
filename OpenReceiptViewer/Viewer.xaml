@@ -118,29 +118,37 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">診療年月</Label>
-                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1">診療年月</Label>
+                    <Label Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.診療年月, Converter={x:Static local:日付表示Converter.年月表示Instance} }"></Label>
-                    <!--<TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Text="{Binding CurrentRE.診療年月}" ></TextBlock>-->
-                    <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">種別</Label>
-                    <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="0" Grid.Column="2" BorderBrush="Black" BorderThickness="1">種別</Label>
+                    <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.レセプト種別, Converter={x:Static local:レセプト種別Converter.Instance} }"></Label>
+                    <Label Grid.Row="0" Grid.Column="6" BorderBrush="Black" BorderThickness="1">入院年月日</Label>
+                    <Label Grid.Row="0" Grid.Column="7" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.RE.入院年月日, Converter={x:Static local:日付表示Converter.年月日表示Instance} }"></Label>
 
-                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">カルテ番号</Label>
-                    <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1">カルテ番号</Label>
+                    <Label Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.カルテ番号}"></Label>
-                    <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">氏名</Label>
-                    <Label Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
-                           Content="{Binding CurrentReceipt.RE.氏名}"></Label>
+                    <Label Grid.Row="1" Grid.Column="2" BorderBrush="Black" BorderThickness="1">氏名</Label>
+                    <!--<Label Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"
+                           Content="{Binding CurrentReceipt.RE.氏名}"></Label>-->
+                    <Label Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1">
+                        <MultiBinding Converter="{x:Static local:氏名カタカナConverter.Instance}">
+                            <Binding Path="CurrentReceipt.RE.氏名" />
+                            <Binding Path="CurrentReceipt.RE.カタカナ" />
+                        </MultiBinding>
+                    </Label>
 
-                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">生年月日</Label>
+                    <Label Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1">生年月日</Label>
                     <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.生年月日, Converter={x:Static local:日付表示Converter.年月日表示Instance} }"></Label>
-                    <Label Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">年齢</Label>
-                    <Label Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1">年齢</Label>
+                    <Label Grid.Row="2" Grid.Column="4" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.生年月日, Converter={x:Static local:年齢Converter.Instance} }"></Label>
-                    <Label Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">性別</Label>
-                    <Label Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1"
+                    <Label Grid.Row="2" Grid.Column="5" BorderBrush="Black" BorderThickness="1">性別</Label>
+                    <Label Grid.Row="2" Grid.Column="6" BorderBrush="Black" BorderThickness="1"
                            Content="{Binding CurrentReceipt.RE.男女区分}"></Label>
                 </Grid>
                 <Grid Grid.Row="1">

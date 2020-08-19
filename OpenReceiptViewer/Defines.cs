@@ -36,6 +36,18 @@ namespace OpenReceiptViewer
         public const string 公費 = "KO";
 
         /// <summary></summary>
+        public const string 資格確認 = "SN";
+
+        /// <summary></summary>
+        public const string 受診日 = "JD";
+
+        /// <summary></summary>
+        public const string 窓口負担額 = "MF";
+
+        /// <summary></summary>
+        public const string 包括評価対象外理由 = "GR";
+
+        /// <summary></summary>
         public const string 傷病名 = "SY";
 
         /// <summary></summary>
@@ -51,6 +63,19 @@ namespace OpenReceiptViewer
         public const string コメント = "CO";
 
         /// <summary></summary>
+        public const string 症状詳記 = "SJ";
+
+        /// <summary></summary>
         public const string 診療報酬請求書 = "GO";
+    }
+
+    /// <summary></summary>
+    public static class Define
+    {
+        /// <summary></summary>
+        public const int 公費最大件数 = 4;
+
+        /// <summary></summary>
+        public const int 未コード化傷病コード = 999;
     }
 }

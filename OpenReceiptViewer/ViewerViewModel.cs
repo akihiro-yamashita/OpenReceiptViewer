@@ -112,13 +112,12 @@ namespace OpenReceiptViewer
                 Action add = () =>
                 {
                     // 公費の件数調整
-                    int 公費最大件数 = 4;
-                    while (公費最大件数 < patient.KOList.Count)
+                    while (Define.公費最大件数 < patient.KOList.Count)
                     {
-                        Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", 公費最大件数));
+                        Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", Define.公費最大件数));
                         patient.KOList.RemoveAt(patient.KOList.Count - 1);
                     }
-                    while (patient.KOList.Count < 公費最大件数)
+                    while (patient.KOList.Count < Define.公費最大件数)
                     {
                         // KOListをindex指定でバインドしているため、空データ入れた方が都合が良い。
                         patient.KOList.Add(null);
@@ -167,6 +166,21 @@ namespace OpenReceiptViewer
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
                             カルテ番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
                         };
+                        if (csv.TryGetField<int>((int)RE_IDX.入院年月日, out int tmp入院年月日))
+                        {
+                            // 入院レセプトのみ
+                            re.入院年月日 = tmp入院年月日;
+                        }
+                        if (csv.TryGetField<string>((int)RE_IDX.カタカナ, out string tmpカタカナ))
+                        {
+                            // H30年4月以降
+                            re.カタカナ = tmpカタカナ;
+                        }
+                        if (csv.TryGetField<string>((int)RE_IDX.患者の状態, out string tmp患者の状態))
+                        {
+                            // H30年4月以降
+                            re.患者の状態 = tmp患者の状態;
+                        }
 
                         // 1件でも数値変換不可能なカルテ番号が来たらIsNumberOnlyカルテ番号をfalseに。
                         if (IsNumberOnlyカルテ番号 && Int32.TryParse(re.カルテ番号, out int _) == false)
@@ -234,6 +248,18 @@ namespace OpenReceiptViewer
                         {
                             Debug.Assert(false, "公費レコードの順番が不正です。");
                         }
+                    }
+                    else if (lineDef == レコード識別情報定数.資格確認)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.受診日)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.窓口負担額)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.包括評価対象外理由)
+                    {
                     }
                     else if (lineDef == レコード識別情報定数.傷病名)
                     {
@@ -337,6 +363,9 @@ namespace OpenReceiptViewer
                             文字データ = csv.GetField<string>((int)CO_IDX.文字データ),
                         };
                         patient.SIIYTOCOList.Add(co);
+                    }
+                    else if (lineDef == レコード識別情報定数.症状詳記)
+                    {
                     }
 
                 }
@@ -793,8 +822,8 @@ namespace OpenReceiptViewer
             {
                 while (csv.Read())
                 {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(5);
+                    var id = csv.GetField<int>((int)MASTER_B_IDX.傷病名コード);
+                    var name = csv.GetField<string>((int)MASTER_B_IDX.傷病名基本名称);
                     dict.Add(id, name);
                 }
             };
@@ -811,8 +840,8 @@ namespace OpenReceiptViewer
             {
                 while (csv.Read())
                 {
-                    var id = csv.GetField<int>(2);
-                    var name = csv.GetField<string>(6);
+                    var id = csv.GetField<int>((int)MASTER_Z_IDX.修飾語コード);
+                    var name = csv.GetField<string>((int)MASTER_Z_IDX.修飾語名称);
                     dict.Add(id, name);
                 }
             };
@@ -829,9 +858,9 @@ namespace OpenReceiptViewer
             {
                 while (csv.Read())
                 {
-                    var id = csv.GetField<int>(2);
-                    var 名称 = csv.GetField<string>(4);
-                    var 単位 = csv.GetField<string>(9);
+                    var id = csv.GetField<int>((int)MASTER_S_Y_T_IDX.コード);
+                    var 名称 = csv.GetField<string>((int)MASTER_S_Y_T_IDX.名称);
+                    var 単位 = csv.GetField<string>((int)MASTER_S_Y_T_IDX.単位);
                     list.Add(new 名称単位マスター() { Id = id, 名称 = 名称, 単位 = 単位 });
                 }
             };
@@ -864,33 +893,33 @@ namespace OpenReceiptViewer
                 while (csv.Read())
                 {
                     var x = new コメントマスター();
-                    x.区分 = csv.GetField<int>(2);
-                    x.パターン = csv.GetField<int>(3);
-                    x.一連番号 = csv.GetField<int>(4);
-                    x.漢字名称 = csv.GetField<string>(6);
+                    x.区分 = csv.GetField<int>((int)MASTER_C_IDX.区分);
+                    x.パターン = csv.GetField<int>((int)MASTER_C_IDX.パターン);
+                    x.一連番号 = csv.GetField<int>((int)MASTER_C_IDX.一連番号);
+                    x.漢字名称 = csv.GetField<string>((int)MASTER_C_IDX.漢字名称);
                     x.カラム位置桁数 = new List<Tuple<int, int>>();
 
                     // 4回まである。
-                    var カラム位置 = csv.GetField<int>(9);
-                    var カラム桁数 = csv.GetField<int>(10);
+                    var カラム位置 = csv.GetField<int>((int)MASTER_C_IDX.カラム1位置);
+                    var カラム桁数 = csv.GetField<int>((int)MASTER_C_IDX.カラム1桁数);
                     if (0 < カラム桁数)
                     {
                         x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
                     }
-                    カラム位置 = csv.GetField<int>(11);
-                    カラム桁数 = csv.GetField<int>(12);
+                    カラム位置 = csv.GetField<int>((int)MASTER_C_IDX.カラム2位置);
+                    カラム桁数 = csv.GetField<int>((int)MASTER_C_IDX.カラム2桁数);
                     if (0 < カラム桁数)
                     {
                         x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
                     }
-                    カラム位置 = csv.GetField<int>(13);
-                    カラム桁数 = csv.GetField<int>(14);
+                    カラム位置 = csv.GetField<int>((int)MASTER_C_IDX.カラム3位置);
+                    カラム桁数 = csv.GetField<int>((int)MASTER_C_IDX.カラム3桁数);
                     if (0 < カラム桁数)
                     {
                         x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
                     }
-                    カラム位置 = csv.GetField<int>(15);
-                    カラム桁数 = csv.GetField<int>(16);
+                    カラム位置 = csv.GetField<int>((int)MASTER_C_IDX.カラム4位置);
+                    カラム桁数 = csv.GetField<int>((int)MASTER_C_IDX.カラム4桁数);
                     if (0 < カラム桁数)
                     {
                         x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));

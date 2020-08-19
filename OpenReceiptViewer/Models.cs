@@ -243,6 +243,18 @@ namespace OpenReceiptViewer
         private int _生年月日;
 
         /// <summary></summary>
+        public int 入院年月日
+        {
+            get { return this._入院年月日; }
+            set
+            {
+                this._入院年月日 = value;
+                OnPropertyChanged("入院年月日");
+            }
+        }
+        private int _入院年月日;
+
+        /// <summary></summary>
         public string カルテ番号
         {
             get { return this._カルテ番号; }
@@ -253,6 +265,30 @@ namespace OpenReceiptViewer
             }
         }
         private string _カルテ番号;
+
+        /// <summary></summary>
+        public string カタカナ
+        {
+            get { return this._カタカナ; }
+            set
+            {
+                this._カタカナ = value;
+                OnPropertyChanged("カタカナ");
+            }
+        }
+        private string _カタカナ;
+
+        /// <summary></summary>
+        public string 患者の状態
+        {
+            get { return this._患者の状態; }
+            set
+            {
+                this._患者の状態 = value;
+                OnPropertyChanged("患者の状態");
+            }
+        }
+        private string _患者の状態;
     }
 
     /// <summary>保険者レコード</summary>
@@ -579,6 +615,34 @@ namespace OpenReceiptViewer
             }
         }
         private int? _合計金額;
+    }
+
+    /// <summary>資格確認レコード</summary>
+    public class SN : Record
+    {
+        /// <summary></summary>
+        public SN() : base(レコード識別情報定数.資格確認) { }
+    }
+
+    /// <summary>受診日レコード</summary>
+    public class JD : Record
+    {
+        /// <summary></summary>
+        public JD() : base(レコード識別情報定数.受診日) { }
+    }
+
+    /// <summary>窓口負担額レコード</summary>
+    public class MF : Record
+    {
+        /// <summary></summary>
+        public MF() : base(レコード識別情報定数.窓口負担額) { }
+    }
+
+    /// <summary>包括評価対象外理由レコード</summary>
+    public class GR : Record
+    {
+        /// <summary></summary>
+        public GR() : base(レコード識別情報定数.包括評価対象外理由) { }
     }
 
     /// <summary></summary>
@@ -1042,6 +1106,13 @@ namespace OpenReceiptViewer
             get { return null; }
             set { }
         }
+    }
+
+    /// <summary>症状詳記レコード</summary>
+    public class SJ : Record
+    {
+        /// <summary></summary>
+        public SJ() : base(レコード識別情報定数.症状詳記) { }
     }
 
     /// <summary>診療報酬請求書レコード</summary>    

@@ -32,6 +32,11 @@ namespace OpenReceiptViewer
         /// <returns></returns>
         public static string ReceiptDateToShowDate(int receiptDate, bool withoutDay = false)
         {
+            if (receiptDate == 0)
+            {
+                return string.Empty;  // 外来レセプトの入院年月日等
+            }
+
             var receiptDateStr = receiptDate.ToString();
 
             if ((!withoutDay && receiptDateStr.Length == 7)

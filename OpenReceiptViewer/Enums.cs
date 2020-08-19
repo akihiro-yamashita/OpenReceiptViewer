@@ -21,6 +21,8 @@ using System.Text;
 
 namespace OpenReceiptViewer
 {
+    #region 各レコードのインデックス
+
     /// <summary>医療機関情報レコード</summary>
     public enum IR_IDX
     {
@@ -56,7 +58,7 @@ namespace OpenReceiptViewer
         予備2 = 16,
         予備3 = 17,
         検索番号 = 18,
-        記録条件仕様年月情報 = 19,
+        記録条件仕様年月情報 = 19,  // TODO: 項目名なんか違う。
         請求情報 = 20,
         診療科1_診療科名 = 21,
         診療科1_人体の部位等 = 22,
@@ -73,6 +75,8 @@ namespace OpenReceiptViewer
         診療科3_性別等 = 33,
         診療科3_医学的処置 = 34,
         診療科3_特定疾病 = 35,
+        カタカナ = 36,  // H30年4月以降
+        患者の状態 = 37,  // H30年4月以降
     }
 
     /// <summary>保険者レコード</summary>
@@ -108,6 +112,42 @@ namespace OpenReceiptViewer
         予備 = 9,
         回数 = 10,
         合計金額 = 11,
+    }
+
+    /// <summary>資格確認レコード</summary>
+    public enum SN_IDX
+    {
+        負担者種別 = 1,
+        確認区分 = 2,
+        保険者番号 = 3,
+        被保険者証記号 = 4,
+        被保険者証番号 = 5,
+        枝番 = 6,
+        受給者番号 = 7,
+        予備 = 8,
+    }
+
+    /// <summary>受診日レコード</summary>
+    public enum JD_IDX
+    {
+        負担者種別 = 1,
+        X01日の情報 = 2,
+        X31日の情報 = 32,
+    }
+
+    /// <summary>窓口負担額レコード</summary>
+    public enum MF_IDX
+    {
+        窓口負担額区分 = 1,
+        予備01 = 2,
+        予備31 = 32,
+    }
+
+    /// <summary>包括評価対象外理由レコード</summary>
+    public enum GR_IDX
+    {
+        医科点数表算定理由 = 1,
+        DPCコード = 2,
     }
 
     /// <summary>傷病名レコード</summary>
@@ -173,6 +213,13 @@ namespace OpenReceiptViewer
         文字データ = 4,
     }
 
+    /// <summary>症状詳記レコード</summary>
+    public enum SJ_IDX
+    {
+        症状詳記区分 = 1,
+        症状詳記データ = 2,
+    }
+
     /// <summary>診療報酬請求書レコード</summary>
     public enum GO_IDX
     {
@@ -181,15 +228,82 @@ namespace OpenReceiptViewer
         マルチボリューム識別子 = 3,
     }
 
-    /// <summary></summary>
+    /// <summary>傷病名マスターレコード</summary>
+    /// <remarks>Masterフォルダb.csv用</remarks>
+    public enum MASTER_B_IDX
+    {
+        傷病名コード = 2,
+        傷病名基本名称 = 5,
+    }
+
+    /// <summary>修飾語マスターレコード</summary>
+    /// <remarks>Masterフォルダz.csv用</remarks>
+    public enum MASTER_Z_IDX
+    {
+        修飾語コード = 2,
+        修飾語名称 = 6,
+    }
+
+    /// <summary>診療行為・医薬品・特定器材マスターレコード</summary>
+    /// <remarks>Masterフォルダs.csv,y.csv,t.csv用</remarks>
+    public enum MASTER_S_Y_T_IDX
+    {
+        コード = 2,
+        名称 = 4,
+        単位 = 9,
+    }
+
+    /// <summary>コメントマスターレコード</summary>
+    /// <remarks>Masterフォルダc.csv用</remarks>
+    public enum MASTER_C_IDX
+    {
+        区分 = 2,
+        パターン = 3,
+        一連番号 = 4,
+        漢字名称 = 6,
+        カラム1位置 = 9,
+        カラム1桁数 = 10,
+        カラム2位置 = 11,
+        カラム2桁数 = 12,
+        カラム3位置 = 13,
+        カラム3桁数 = 14,
+        カラム4位置 = 15,
+        カラム4桁数 = 16,
+    }
+
+    #endregion
+
+    /// <summary>審査支払機関</summary>
+    /// <remarks>別表1</remarks>
     public enum 審査支払機関
     {
         社保 = 1,
         国保 = 2,
     }
 
+    // 使っていない。レセプト種別Converter参照。
+    ///// <summary>本人区分</summary>
+    ///// <remarks>別表5の3桁目</remarks>
+    //public enum 本人区分
+    //{
+    //    本人,
+    //    未就学者,
+    //    家族,
+    //    高齢受給者一般低所得者,
+    //    高齢受給者７割,
+    //    後期高齢一般低所得者,
+    //    後期高齢７割,
+    //}
+    ///// <summary>入院入院外区分</summary>
+    ///// <remarks>別表5の4桁目</remarks>
+    //public enum 入院入院外区分
+    //{
+    //    入院,
+    //    入院外,
+    //}
+
     /// <summary>年号区分</summary>
-    /// <remarks>別表２</remarks>
+    /// <remarks>別表4、削除済み</remarks>
     public enum 年号区分
     {
         明治 = 1,
@@ -199,29 +313,8 @@ namespace OpenReceiptViewer
         令和 = 5,
     }
 
-    /// <summary>本人区分</summary>
-    /// <remarks>別表３</remarks>
-    public enum 本人区分
-    {
-        本人,
-        未就学者,
-        家族,
-        高齢受給者一般低所得者,
-        高齢受給者７割,
-        後期高齢一般低所得者,
-        後期高齢７割,
-    }
-
-    /// <summary>入院入院外区分</summary>
-    /// <remarks>別表３</remarks>
-    public enum 入院入院外区分
-    {
-        入院,
-        入院外,
-    }
-
     /// <summary>男女区分</summary>
-    /// <remarks>別表４</remarks>
+    /// <remarks>別表6</remarks>
     public enum 男女区分
     {
         男 = 1,
@@ -229,7 +322,7 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>転帰区分</summary>
-    /// <remarks>別表１５</remarks>
+    /// <remarks>別表18</remarks>
     public enum 転帰区分
     {
         継続 = 1,
@@ -239,7 +332,7 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>診療識別</summary>
-    /// <remarks>別表１６</remarks>
+    /// <remarks>別表20</remarks>
     public enum 診療識別
     {
         全体に係る識別コード01 = 1,
