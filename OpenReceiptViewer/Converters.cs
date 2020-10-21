@@ -22,6 +22,29 @@ using System.Text;
 
 namespace OpenReceiptViewer
 {
+#if DEBUG
+    public class DebugConverter : TypeSafeConverter<string, object>
+    {
+        public override string Convert(object value, object parameter)
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+            else
+            {
+                return string.Format("type: {0}, value: {1}", value.GetType().ToString(), value.ToString());
+            }
+        }
+
+        public static DebugConverter Instance
+        {
+            get { return _instance = _instance ?? new DebugConverter(); }
+        }
+        private static DebugConverter _instance;
+    }
+#endif
+
     public class 日付表示Converter : TypeSafeConverter<string, int>
     {
         /// <summary></summary>
@@ -379,10 +402,17 @@ namespace OpenReceiptViewer
         {
             var x = this.Find(コメントコード);
 
+            // TODO: コメントパターンについては10/20/30/40/90以外の資料が見当たらない。
+            // 他のコメントパターンはとりあえず↓のorcaの資料を参考にして作っている。
+            // https://ftp.orca.med.or.jp/pub/data/receipt/outline/update/improvement/pdf/2020comment-2020-06-30.pdf
+
+            // 自由入力の文字データを定型コメント文と区別するために表示を変える。
+            Func<string, string> 文字データの表示 = s => string.Format("※{0}", s);
+
             if (x.パターン == 10)
             {
                 // 10: 症状の説明等、任意の文字列情報を記録する。
-                return 文字データ;
+                return 文字データの表示(文字データ);
             }
             else if (x.パターン == 20)
             {
@@ -392,7 +422,27 @@ namespace OpenReceiptViewer
             else if (x.パターン == 30)
             {
                 // 30: 定型のコメント文に、一部の文字列情報を記録する。
-                return x.漢字名称 + 文字データ;
+                // 
+                return x.漢字名称 + 文字データの表示(文字データ);
+            }
+            else if (x.パターン == 31)
+            {
+                // 31: 定型のコメント文に、診療行為を記載する。
+                var 診療行為名 = string.Empty;
+                if (int.TryParse(StringUtil.ZenToHan(文字データ), out int 診療行為コード))
+                {
+                    // TODO: マスターバージョン指定が必要。面倒なので最新版。
+                    診療行為名 = DictConverter.診療行為Instance(99999).Convert(診療行為コード, null);
+                }
+
+                if (string.IsNullOrEmpty(診療行為名))
+                {
+                    return x.漢字名称 + "；" + 文字データの表示(文字データ);  // 妥協して元の文字列を返す。
+                }
+                else
+                {
+                    return x.漢字名称 + "；" + 診療行為名;
+                }
             }
             else if (x.パターン == 40)
             {
@@ -412,16 +462,79 @@ namespace OpenReceiptViewer
                 }
 
                 return result;
-                //return "（未実装）" + x.漢字名称 + 文字データ;
+            }
+            else if (x.パターン == 42)
+            {
+                // 42: 定型のコメント文に、実施回数や検査値など数値を記載する。
+                // 30との違いは、30は定型文に「；」が既についている模様。
+                return x.漢字名称 + "；" + 文字データの表示(文字データ);
+            }
+            else if (x.パターン == 50)
+            {
+                // 50: コメント内容に年月日を記載する。
+                var split = StringUtil.ZenToHan(文字データ).Split(new char[] { ' ', '　', }, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length == 1)
+                {
+                    if (int.TryParse(split[0], out int ymd))
+                    {
+                        var showDate = DateUtil.ReceiptDateToShowDate(ymd);
+                        if (!string.IsNullOrEmpty(showDate))
+                        {
+                            return x.漢字名称 + "；" + showDate;
+                        }
+                    }
+                }
+                else if (split.Length == 3)
+                {
+                    if (int.TryParse(split[0], out int y)
+                        && int.TryParse(split[1], out int m)
+                        && int.TryParse(split[2], out int d))
+                    {
+                        var ymd = (y * 10000) + (m * 100) + d;
+                        var showDate = DateUtil.ReceiptDateToShowDate(ymd);
+                        if (!string.IsNullOrEmpty(showDate))
+                        {
+                            return x.漢字名称 + "；" + showDate;
+                        }
+                    }
+                }
+                return x.漢字名称 + "；" + 文字データの表示(文字データ);
+            }
+            else if (x.パターン == 51)
+            {
+                // 51: コメント内容に時刻を記載する。
+                var split = StringUtil.ZenToHan(文字データ).Split(new char[] { ' ', '　', }, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length == 2)
+                {
+                    if (int.TryParse(split[0], out int h)
+                        && int.TryParse(split[1], out int m))
+                    {
+                        var time = string.Format("{0}時{1}分", h, m);
+                        return x.漢字名称 + "；" + time;
+                    }
+                }
+                return x.漢字名称 + "；" + 文字データの表示(文字データ);
+            }
+            else if (x.パターン == 52)
+            {
+                // 52: コメント内容に時間（分単位）を記載する。
+                if (int.TryParse(StringUtil.ZenToHan(文字データ), out int m))
+                {
+                    return x.漢字名称 + "；" + m + "分";
+                }
+                else
+                {
+                    return x.漢字名称 + "；" + 文字データの表示(文字データ);
+                }
             }
             else if (x.パターン == 90)
             {
                 // 90: 処置、手術及び画像診断等を行った部位を、修飾語（部位）コードを使用して記録する。
-                return "（未実装）" + 文字データ;
+                return "（未実装）" + 文字データの表示(文字データ);
             }
             else
             {
-                return "（コメント）" + コメントコード.ToString();
+                return コメントコード.ToString() + "；" + 文字データの表示(文字データ);
             }
         }
 

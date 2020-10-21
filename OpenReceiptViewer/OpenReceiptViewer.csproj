@@ -210,7 +210,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /e "$(TargetDir)Master" "$(SolutionDir)tmp_dist\Master\"
+    <PostBuildEvent>xcopy /e /y "$(TargetDir)Master" "$(SolutionDir)tmp_dist\Master\"
 copy "$(TargetDir)*exe" "$(SolutionDir)tmp_dist\"
 copy "$(TargetDir)*dll" "$(SolutionDir)tmp_dist\"
 copy "$(SolutionDir)LICENSE.txt" "$(SolutionDir)tmp_dist\"

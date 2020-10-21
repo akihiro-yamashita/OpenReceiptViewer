@@ -84,7 +84,7 @@ namespace OpenReceiptViewer
                 return showDate;
             }
 
-            return "?";
+            return string.Empty;
         }
 
         /// <summary></summary>
@@ -237,6 +237,48 @@ namespace OpenReceiptViewer
             else if (c == ')')
             {
                 return '）';
+            }
+            else
+            {
+                return c;
+            }
+        }
+
+        public static string ZenToHan(string s)
+        {
+            if (s == null) { return null; }
+            return string.Join(string.Empty, s.Select(c => ZenToHan(c)));
+        }
+
+        public static char ZenToHan(char c)
+        {
+            if ('０' <= c && c <= '９')
+            {
+                return (char)('0' + (c - '０'));
+            }
+            else if ('ａ' <= c && c <= 'ｚ')
+            {
+                return (char)('a' + (c - 'ａ'));
+            }
+            else if ('Ａ' <= c && c <= 'Ｚ')
+            {
+                return (char)('A' + (c - 'Ａ'));
+            }
+            else if (c == '／')
+            {
+                return '/';
+            }
+            else if (c == '－')
+            {
+                return '-';
+            }
+            else if (c == '（')
+            {
+                return '(';
+            }
+            else if (c == '）')
+            {
+                return ')';
             }
             else
             {

@@ -55,7 +55,7 @@ namespace OpenReceiptViewerTest
 
             // 変な値
             showDate = DateUtil.ReceiptDateToShowDate(201912312, false);
-            Assert.AreEqual("?", showDate);
+            Assert.AreEqual("", showDate);
         }
 
         [TestMethod]
@@ -128,8 +128,17 @@ namespace OpenReceiptViewerTest
         [TestMethod]
         public void HanToZenTest()
         {
+            Assert.AreEqual("0123456789", StringUtil.HanToZen("０１２３４５６７８９"));
             Assert.AreEqual("ＥＦ－喉頭", StringUtil.HanToZen("EF-喉頭"));
             Assert.AreEqual("休日加算（初診）", StringUtil.HanToZen("休日加算(初診)"));
+        }
+
+        [TestMethod]
+        public void ZenToHanTest()
+        {
+            Assert.AreEqual("０１２３４５６７８９", StringUtil.ZenToHan("0123456789"));
+            Assert.AreEqual("EF-喉頭", StringUtil.ZenToHan("ＥＦ－喉頭"));
+            Assert.AreEqual("休日加算(初診)", StringUtil.ZenToHan("休日加算（初診）"));
         }
     }
 

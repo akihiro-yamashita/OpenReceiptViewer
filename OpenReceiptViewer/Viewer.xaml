@@ -1,8 +1,8 @@
 ﻿<UserControl x:Class="OpenReceiptViewer.Viewer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:OpenReceiptViewer"
              mc:Ignorable="d"
              KeyDown="OnKeyDown"
@@ -274,9 +274,12 @@
                                     <Binding Path="内容" />
                                 </MultiBinding>
                             </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}}"></Setter>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <!--<DataGridTextColumn Header="数量" Binding="{Binding Path=数量}" Width="40">
-                        </DataGridTextColumn>-->
                         <DataGridTextColumn Header="数量" Width="50">
                             <DataGridTextColumn.Binding>
                                 <MultiBinding Converter="{x:Static local:数量Converter.Instance}">

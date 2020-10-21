@@ -536,7 +536,16 @@ namespace OpenReceiptViewer
 
         private void FilterAction(string masterSubDiretoryPath, string レコード識別情報)
         {
-            if (this.ReceiptList.Count == 0) { return; }
+            if (this.ReceiptListOriginal == null)
+            {
+                // 条件がかかっていない時は表示中レセプトのカウントをチェック
+                if (this.ReceiptList.Count == 0) { return; }
+            }
+            else
+            {
+                // 条件がかかっている時は退避レセプトのカウントをチェック
+                if (this.ReceiptListOriginal.Count == 0) { return; }
+            }
 
             var レコード識別名称 = (string)null;
             var idField = 0;
@@ -924,6 +933,11 @@ namespace OpenReceiptViewer
                     {
                         x.カラム位置桁数.Add(new Tuple<int, int>(カラム位置, カラム桁数));
                     }
+
+#if DEBUG
+                    var コメントコード = csv.GetField<int>((int)MASTER_C_IDX.コメントコード);
+                    Debug.Assert(コメントコード == x.コメントコード);
+#endif
 
                     dict.Add(x.コメントコード, x);
                 }
