@@ -452,6 +452,14 @@ namespace OpenReceiptViewer
 
                 foreach (var カラム位置桁数 in x.カラム位置桁数)
                 {
+                    var 文字足りない = カラム位置桁数.Item2 - tmp文字データ.Length;
+                    if (0 < 文字足りない)
+                    {
+                        // 桁数分ゼロ埋めまたは空白埋めしていないレセコン対策
+                        // コメントマスターは全角なので、全角スペースで問題ない。
+                        tmp文字データ = new string('　', 文字足りない) + tmp文字データ;
+                    }
+
                     var rep = tmp文字データ.Substring(0, カラム位置桁数.Item2);
 
                     var idxカラム位置 = カラム位置桁数.Item1 - 1;

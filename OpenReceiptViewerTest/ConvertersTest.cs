@@ -37,7 +37,7 @@ namespace OpenReceiptViewerTest
             コメントConverter.Instance.コメントDict.Add(id
                 , new コメントマスター { パターン = 10, 漢字名称 = "定型コメント10", });
             text = コメントConverter.Instance.Convert(id, "あああ", null);
-            Assert.AreEqual("あああ", text);
+            Assert.AreEqual("※あああ", text);
 
             // 20: 定型のコメント文を設定する。
             id++;
@@ -51,7 +51,7 @@ namespace OpenReceiptViewerTest
             コメントConverter.Instance.コメントDict.Add(id
                 , new コメントマスター { パターン = 30, 漢字名称 = "定型コメント30；", });
             text = コメントConverter.Instance.Convert(id, "あああ", null);
-            Assert.AreEqual("定型コメント30；あああ", text);
+            Assert.AreEqual("定型コメント30；※あああ", text);
 
             DictConverter.診療行為Instance(99999).Dict = new Dictionary<int, string>();
             DictConverter.診療行為Instance(99999).Dict.Add(12345, "しんりょうこうい");
@@ -65,7 +65,7 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "１２３４５", null);
             Assert.AreEqual("定型コメント31；しんりょうこうい", text);
             text = コメントConverter.Instance.Convert(id, "123456", null);
-            Assert.AreEqual("定型コメント31；123456", text);
+            Assert.AreEqual("定型コメント31；※123456", text);
 
             // 40: 定型のコメント文に、一部の数字情報を記録する。
             id++;
@@ -85,13 +85,19 @@ namespace OpenReceiptViewerTest
             Assert.AreEqual("傷病手当金意見書交付　平成30年12月31日", text);
             text = コメントConverter.Instance.Convert(id, "３０１２３１", null);
             Assert.AreEqual("傷病手当金意見書交付　平成３０年１２月３１日", text);
+            text = コメントConverter.Instance.Convert(id, "０１０２０３", null);
+            Assert.AreEqual("傷病手当金意見書交付　平成０１年０２月０３日", text);
+            text = コメントConverter.Instance.Convert(id, "　１　２　３", null);
+            Assert.AreEqual("傷病手当金意見書交付　平成　１年　２月　３日", text);
+            text = コメントConverter.Instance.Convert(id, "０１０２３", null);
+            Assert.AreEqual("傷病手当金意見書交付　平成０１年０２月　３日", text);
 
             // 42: 定型のコメント文に、実施回数や検査値など数値を記載する。
             id++;
             コメントConverter.Instance.コメントDict.Add(id
                 , new コメントマスター { パターン = 42, 漢字名称 = "定型コメント42", });
             text = コメントConverter.Instance.Convert(id, "あああ", null);
-            Assert.AreEqual("定型コメント42；あああ", text);
+            Assert.AreEqual("定型コメント42；※あああ", text);
 
             // 50: コメント内容に年月日を記載する。
             id++;
@@ -108,7 +114,7 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "501 12 31", null);
             Assert.AreEqual("定型コメント50；令和01.12.31", text);
             text = コメントConverter.Instance.Convert(id, "501831", null);
-            Assert.AreEqual("定型コメント50；501831", text);
+            Assert.AreEqual("定型コメント50；※501831", text);
 
             // 51: コメント内容に時刻を記載する。
             id++;
@@ -119,7 +125,7 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "２３　５９", null);
             Assert.AreEqual("定型コメント51；23時59分", text);
             text = コメントConverter.Instance.Convert(id, "2359", null);
-            Assert.AreEqual("定型コメント51；2359", text);
+            Assert.AreEqual("定型コメント51；※2359", text);
 
             // 52: コメント内容に時間（分単位）を記載する。
             id++;
@@ -130,7 +136,7 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "１２３", null);
             Assert.AreEqual("定型コメント52；123分", text);
             text = コメントConverter.Instance.Convert(id, "あああ", null);
-            Assert.AreEqual("定型コメント52；あああ", text);
+            Assert.AreEqual("定型コメント52；※あああ", text);
 
             // 90: TODO: 未実装
             id++;
