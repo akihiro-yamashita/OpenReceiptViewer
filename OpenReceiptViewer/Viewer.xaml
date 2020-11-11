@@ -23,6 +23,7 @@
                     <MenuItem Header="診療行為条件" Command="{Binding 診療行為FilterCommand}" />
                     <MenuItem Header="医薬品条件" Command="{Binding 医薬品FilterCommand}" />
                     <MenuItem Header="特定器材条件" Command="{Binding 特定器材FilterCommand}" />
+                    <MenuItem Header="コメント条件" Command="{Binding コメントFilterCommand}" />
                     <MenuItem Header="条件解除" Command="{Binding ClearFilterCommand}" />
                 </MenuItem>
                 <MenuItem Header="並び順">

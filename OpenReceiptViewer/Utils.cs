@@ -183,13 +183,13 @@ namespace OpenReceiptViewer
     /// <summary></summary>
     public static class CSVUtil
     {
-        public static void Read(string filePath, Action<CsvReader> readAction)
+        public static void Read(string filePath, Action<CsvReader> readAction, bool hasHeaderRecord = false)
         {
             using (var stream = new System.IO.StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
             {
                 var config = new CsvHelper.Configuration.CsvConfiguration()
                 {
-                    HasHeaderRecord = false,
+                    HasHeaderRecord = hasHeaderRecord,
                 };
 
                 using (var csv = new CsvReader(stream, config))
