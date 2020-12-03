@@ -1,11 +1,14 @@
 # OpenReceiptViewer
 
 オープンソースのレセプトビューアー（レセ電ビューアー）です。
+[GitHub](https://github.com/akihiro-yamashita/OpenReceiptViewer)に移行しました。
+
+<!--
 
 ## セットアップ方法
 
-[プロジェクトページ](https://bitbucket.org/ayamashita_kojosen/openreceiptviewer)のファイル一覧から「OpenReceiptViewer.zip」を選び、  
-「RAWで表示」をクリックして「OpenReceiptViewer.zip」をダウンロードします。  
+[プロジェクトページ](https://github.com/akihiro-yamashita/OpenReceiptViewer)のファイル一覧から「OpenReceiptViewer.zip」を選び、  
+「Download」ボタンをクリックして「OpenReceiptViewer.zip」をダウンロードします。  
 このzipファイルを任意の場所で展開します。  
 実行ファイルは「OpenReceiptViewer.exe」です。
 
@@ -44,3 +47,5 @@ ver 0.1.3    高速化
 ver 0.1.2    複数タブ対応  
 ver 0.1.1    令和対応  
 ver 0.1.0    リリース  
+
+-->
