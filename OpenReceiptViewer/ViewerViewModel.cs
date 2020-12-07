@@ -1021,8 +1021,12 @@ namespace OpenReceiptViewer
                     }
 
 #if DEBUG
-                    var コメントコード = csv.GetField<int>((int)MASTER_C_IDX.コメントコード);
-                    Debug.Assert(コメントコード == x.コメントコード);
+                    // 2020年以降しかコメントコード列がない。
+                    if (MasterVersion.Ver202004 <= masterVersion)
+                    {
+                        var コメントコード = csv.GetField<int>((int)MASTER_C_IDX.コメントコード);
+                        Debug.Assert(コメントコード == x.コメントコード);
+                    }
 #endif
 
                     dict.Add(x.コメントコード, x);
