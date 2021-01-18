@@ -457,7 +457,21 @@ namespace OpenReceiptViewer
                         var inputTrim = input.Trim();
                         if (0 < inputTrim.Length)
                         {
-                            var result = ReceiptList.FirstOrDefault(x => x.RE.カルテ番号 == inputTrim, CurrentReceipt);
+                            var result = (Receipt)null;
+
+                            if (IsNumberOnlyカルテ番号)
+                            {
+                                if (Int32.TryParse(inputTrim, out int inputNumber))
+                                {
+                                    // ゼロ埋めカルテ番号をゼロ埋め無しでひっかかるよう数値で比較する。
+                                    result = ReceiptList.FirstOrDefault(x => Int32.Parse(x.RE.カルテ番号) == inputNumber, CurrentReceipt);
+                                }
+                            }
+                            else
+                            {
+                                result = ReceiptList.FirstOrDefault(x => x.RE.カルテ番号 == inputTrim, CurrentReceipt);
+                            }
+
                             if (result == null)
                             {
                                 MessageBox.Show("指定されたカルテ番号は見つかりませんでした。");
