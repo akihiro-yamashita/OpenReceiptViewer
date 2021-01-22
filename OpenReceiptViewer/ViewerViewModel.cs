@@ -105,6 +105,24 @@ namespace OpenReceiptViewer
 
         private void Read(string filePath)
         {
+            // 01～31日の情報
+            Action<CsvReader, int, int, SIIYTO> readXX日の情報 = (csv, X01日, X31日, target) =>
+            {
+                for (int i = X01日; i <= X31日; i++)
+                {
+                    var tmp = csv.GetField<int?>(i);
+                    if (tmp.HasValue)
+                    {
+                        if (target.XX日の情報 == null)
+                        {
+                            target.XX日の情報 = new Dictionary<int, int>();
+                        }
+                        var dateIdx = i - X01日;
+                        target.XX日の情報.Add(dateIdx, tmp.Value);
+                    }
+                }
+            };
+
             Action<CsvReader> readAction = csv =>
             {
                 var patient = (Receipt)null;
@@ -303,20 +321,7 @@ namespace OpenReceiptViewer
                         siiyto.コメント2_文字データ = csv.GetField<string>((int)SI_IY_IDX.コメント2_文字データ);
                         siiyto.コメント3_コメントコード = csv.GetField<int?>((int)SI_IY_IDX.コメント3_コメントコード) ?? 0;
                         siiyto.コメント3_文字データ = csv.GetField<string>((int)SI_IY_IDX.コメント3_文字データ);
-                        for (int i = (int)SI_IY_IDX.X01日の情報; i <= (int)SI_IY_IDX.X31日の情報; i++)
-                        {
-                            var tmp = csv.GetField<int?>(i);
-                            if (tmp.HasValue)
-                            {
-                                if (siiyto.XX日の情報 == null)
-                                {
-                                    siiyto.XX日の情報 = new Dictionary<int, int>();
-                                }
-                                var dateIdx = i - (int)SI_IY_IDX.X01日の情報;
-                                siiyto.XX日の情報.Add(dateIdx, tmp.Value);
-                            }
-                        }
-
+                        readXX日の情報(csv, (int)SI_IY_IDX.X01日の情報, (int)SI_IY_IDX.X31日の情報, siiyto);
                         patient.SIIYTOCOList.Add(siiyto);
                     }
                     else if (lineDef == レコード識別情報定数.特定器材)
@@ -338,19 +343,7 @@ namespace OpenReceiptViewer
                         to.コメント2_文字データ = csv.GetField<string>((int)TO_IDX.コメント2_文字データ);
                         to.コメント3_コメントコード = csv.GetField<int?>((int)TO_IDX.コメント3_コメントコード) ?? 0;
                         to.コメント3_文字データ = csv.GetField<string>((int)TO_IDX.コメント3_文字データ);
-                        for (int i = (int)TO_IDX.X01日の情報; i <= (int)TO_IDX.X31日の情報; i++)
-                        {
-                            var tmp = csv.GetField<int?>(i);
-                            if (tmp.HasValue)
-                            {
-                                if (to.XX日の情報 == null)
-                                {
-                                    to.XX日の情報 = new Dictionary<int, int>();
-                                }
-                                var dateIdx = i - (int)TO_IDX.X01日の情報;
-                                to.XX日の情報.Add(dateIdx, tmp.Value);
-                            }
-                        }
+                        readXX日の情報(csv, (int)TO_IDX.X01日の情報, (int)TO_IDX.X31日の情報, to);
                         patient.SIIYTOCOList.Add(to);
                     }
                     else if (lineDef == レコード識別情報定数.コメント)
