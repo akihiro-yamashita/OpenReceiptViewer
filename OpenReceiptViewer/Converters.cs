@@ -264,6 +264,28 @@ namespace OpenReceiptViewer
         private static 内容Converter _instance;
     }
 
+    /// <summary>CO行ではなくSIIYTO行で使うようのコメントコンバーター</summary>
+    public class コメントListConverter : TypeSafeConverter<string, List<SIIYTO.コメント>>
+    {
+        public override string Convert(List<SIIYTO.コメント> コメントList, object parameter)
+        {
+            if (コメントList == null)
+            {
+                return null;
+            }
+
+            var tmp = コメントList.Select(x => コメントConverter.Instance.Convert(x.コメントコード, x.文字データ, parameter)).ToList();
+
+            return string.Join(", ", tmp);
+        }
+
+        public static コメントListConverter Instance
+        {
+            get { return _instance = _instance ?? new コメントListConverter(); }
+        }
+        private static コメントListConverter _instance;
+    }
+
     public class 数量Converter : TypeSafeMultiConverter<string, string, float?, object>
     {
         public override string Convert(string レコード識別情報, float? 数量, object 内容, object parameter)
@@ -757,6 +779,27 @@ namespace OpenReceiptViewer
             get { return _instance = _instance ?? new ZeroHideConverter(); }
         }
         private static ZeroHideConverter _instance;
+    }
+
+    public class StringEmptyToNullConverter : TypeSafeConverter<object, string>
+    {
+        public override object Convert(string value, object parameter)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+            else
+            {
+                return value;
+            }
+        }
+
+        public static StringEmptyToNullConverter Instance
+        {
+            get { return _instance = _instance ?? new StringEmptyToNullConverter(); }
+        }
+        private static StringEmptyToNullConverter _instance;
     }
 
     public class 被保険者Converter : TypeSafeMultiConverter<object, string, string>

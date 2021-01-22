@@ -807,6 +807,34 @@ namespace OpenReceiptViewer
     /// <summary>診療行為と医薬品と特定器材レコード</summary>
     public abstract class SIIYTO : SIIYTOCO
     {
+        /// <summary>SIIYTO行内のコメント</summary>
+        public class コメント : NotifyPropertyChanged
+        {
+            /// <summary></summary>
+            public int コメントコード
+            {
+                get { return this._コメントコード; }
+                set
+                {
+                    this._コメントコード = value;
+                    OnPropertyChanged("コメントコード");
+                }
+            }
+            private int _コメントコード;
+
+            /// <summary></summary>
+            public string 文字データ
+            {
+                get { return this._文字データ; }
+                set
+                {
+                    this._文字データ = value;
+                    OnPropertyChanged("文字データ");
+                }
+            }
+            private string _文字データ;
+        }
+
         /// <summary></summary>
         /// <param name="レコード識別情報"></param>
         public SIIYTO(string レコード識別情報) : base(レコード識別情報) { }
@@ -866,77 +894,17 @@ namespace OpenReceiptViewer
         }
         private int _回数;
 
-        /// <summary></summary>
-        public int コメント1_コメントコード
+        /// <summary>コメント1～3</summary>
+        public List<コメント> コメントList
         {
-            get { return this._コメント1_コメントコード; }
+            get { return this._コメントList; }
             set
             {
-                this._コメント1_コメントコード = value;
-                OnPropertyChanged("コメント1_コメントコード");
+                this._コメントList = value;
+                OnPropertyChanged("コメントList");
             }
         }
-        private int _コメント1_コメントコード;
-
-        /// <summary></summary>
-        public string コメント1_文字データ
-        {
-            get { return this._コメント1_文字データ; }
-            set
-            {
-                this._コメント1_文字データ = value;
-                OnPropertyChanged("コメント1_文字データ");
-            }
-        }
-        private string _コメント1_文字データ;
-
-        /// <summary></summary>
-        public int コメント2_コメントコード
-        {
-            get { return this._コメント2_コメントコード; }
-            set
-            {
-                this._コメント2_コメントコード = value;
-                OnPropertyChanged("コメント2_コメントコード");
-            }
-        }
-        private int _コメント2_コメントコード;
-
-        /// <summary></summary>
-        public string コメント2_文字データ
-        {
-            get { return this._コメント2_文字データ; }
-            set
-            {
-                this._コメント2_文字データ = value;
-                OnPropertyChanged("コメント2_文字データ");
-            }
-        }
-        private string _コメント2_文字データ;
-
-        /// <summary></summary>
-        public int コメント3_コメントコード
-        {
-            get { return this._コメント3_コメントコード; }
-            set
-            {
-                this._コメント3_コメントコード = value;
-                OnPropertyChanged("コメント3_コメントコード");
-            }
-        }
-        private int _コメント3_コメントコード;
-
-        /// <summary></summary>
-        public string コメント3_文字データ
-        {
-            get { return this._コメント3_文字データ; }
-            set
-            {
-                this._コメント3_文字データ = value;
-                OnPropertyChanged("コメント3_文字データ");
-            }
-        }
-        private string _コメント3_文字データ;
+        private List<コメント> _コメントList;
 
         /// <summary>XX日の情報</summary>
         public override Dictionary<int, int> XX日の情報

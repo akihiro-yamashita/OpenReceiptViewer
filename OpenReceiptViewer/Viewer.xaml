@@ -267,7 +267,7 @@
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="内容" Width="370">
+                        <DataGridTextColumn Header="内容" Width="330">
                             <DataGridTextColumn.Binding>
                                 <MultiBinding Converter="{x:Static local:内容Converter.Instance}">
                                     <Binding Path="DataContext.CurrentReceipt.RE.診療年月" RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
@@ -278,6 +278,16 @@
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}}"></Setter>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="コメント" Width="40">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="コメントList" Converter="{x:Static local:コメントListConverter.Instance}"></Binding>
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}, Converter={x:Static local:StringEmptyToNullConverter.Instance}}"></Setter>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>

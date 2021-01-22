@@ -105,6 +105,31 @@ namespace OpenReceiptViewer
 
         private void Read(string filePath)
         {
+            // SIIYTO行内のコメント1～3
+            Action<CsvReader, int, int, SIIYTO> readコメント = (csv, コメントコード1, コメントコード3, target) =>
+            {
+                for (int i = コメントコード1; i <= コメントコード3; i = i + 2)  // コメントコード、文字データ、コメントコード・・・となるので+2で進む。
+                {
+                    var tmp = csv.GetField<int?>(i);
+                    if (tmp.HasValue)
+                    {
+                        if (target.コメントList == null)
+                        {
+                            target.コメントList = new List<SIIYTO.コメント>();
+                        }
+                        target.コメントList.Add(new SIIYTO.コメント()
+                        {
+                            コメントコード = tmp.Value,
+                            文字データ = csv.GetField<string>(i + 1),
+                        });
+                    }
+                    else
+                    {
+                        break;  // なければコメント3まで待たずに終わる。
+                    }
+                }
+            };
+
             // 01～31日の情報
             Action<CsvReader, int, int, SIIYTO> readXX日の情報 = (csv, X01日, X31日, target) =>
             {
@@ -315,12 +340,7 @@ namespace OpenReceiptViewer
                         siiyto.数量 = csv.GetField<float?>((int)SI_IY_IDX.数量);
                         siiyto.点数 = csv.GetField<int?>((int)SI_IY_IDX.点数);
                         siiyto.回数 = csv.GetField<int>((int)SI_IY_IDX.回数);
-                        siiyto.コメント1_コメントコード = csv.GetField<int?>((int)SI_IY_IDX.コメント1_コメントコード) ?? 0;
-                        siiyto.コメント1_文字データ = csv.GetField<string>((int)SI_IY_IDX.コメント1_文字データ);
-                        siiyto.コメント2_コメントコード = csv.GetField<int?>((int)SI_IY_IDX.コメント2_コメントコード) ?? 0;
-                        siiyto.コメント2_文字データ = csv.GetField<string>((int)SI_IY_IDX.コメント2_文字データ);
-                        siiyto.コメント3_コメントコード = csv.GetField<int?>((int)SI_IY_IDX.コメント3_コメントコード) ?? 0;
-                        siiyto.コメント3_文字データ = csv.GetField<string>((int)SI_IY_IDX.コメント3_文字データ);
+                        readコメント(csv, (int)SI_IY_IDX.コメント1_コメントコード, (int)SI_IY_IDX.コメント3_コメントコード, siiyto);
                         readXX日の情報(csv, (int)SI_IY_IDX.X01日の情報, (int)SI_IY_IDX.X31日の情報, siiyto);
                         patient.SIIYTOCOList.Add(siiyto);
                     }
@@ -337,12 +357,7 @@ namespace OpenReceiptViewer
                         to.単価 = csv.GetField<float?>((int)TO_IDX.単価);
                         to.特定器材名称 = csv.GetField<string>((int)TO_IDX.特定器材名称);
                         to.商品名及び規格 = csv.GetField<string>((int)TO_IDX.商品名及び規格);
-                        to.コメント1_コメントコード = csv.GetField<int?>((int)TO_IDX.コメント1_コメントコード) ?? 0;
-                        to.コメント1_文字データ = csv.GetField<string>((int)TO_IDX.コメント1_文字データ);
-                        to.コメント2_コメントコード = csv.GetField<int?>((int)TO_IDX.コメント2_コメントコード) ?? 0;
-                        to.コメント2_文字データ = csv.GetField<string>((int)TO_IDX.コメント2_文字データ);
-                        to.コメント3_コメントコード = csv.GetField<int?>((int)TO_IDX.コメント3_コメントコード) ?? 0;
-                        to.コメント3_文字データ = csv.GetField<string>((int)TO_IDX.コメント3_文字データ);
+                        readコメント(csv, (int)TO_IDX.コメント1_コメントコード, (int)TO_IDX.コメント3_コメントコード, to);
                         readXX日の情報(csv, (int)TO_IDX.X01日の情報, (int)TO_IDX.X31日の情報, to);
                         patient.SIIYTOCOList.Add(to);
                     }
