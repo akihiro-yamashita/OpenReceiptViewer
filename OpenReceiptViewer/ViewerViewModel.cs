@@ -90,15 +90,15 @@ namespace OpenReceiptViewer
                         if (this.CurrentReceipt == null) { return; }
 
                         // 文字列置き換え
-                        args = args.Replace("{%カルテ番号%}", this.CurrentReceipt.RE.カルテ番号);
-                        args = args.Replace("{%レセプト番号%}", this.CurrentReceipt.RE.レセプト番号.ToString());
-                        args = args.Replace("{%氏名%}", this.CurrentReceipt.RE.氏名);
-                        args = args.Replace("{%審査支払機関%}", ((int)this.IR.審査支払機関).ToString());
-                        args = args.Replace("{%請求年月%}", this.IR.請求年月.ToString());
+                        var tmp = args.Replace("{%カルテ番号%}", this.CurrentReceipt.RE.カルテ番号);
+                        tmp = tmp.Replace("{%レセプト番号%}", this.CurrentReceipt.RE.レセプト番号.ToString());
+                        tmp = tmp.Replace("{%氏名%}", this.CurrentReceipt.RE.氏名);
+                        tmp = tmp.Replace("{%審査支払機関%}", ((int)this.IR.審査支払機関).ToString());
+                        tmp = tmp.Replace("{%請求年月%}", this.IR.請求年月.ToString());
 
                         try
                         {
-                            Process.Start(path, args);
+                            Process.Start(path, tmp);
                         }
                         catch (Exception ex)
                         {
