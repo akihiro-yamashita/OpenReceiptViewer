@@ -74,6 +74,7 @@ namespace OpenReceiptViewer
             const string MY_MENU_PATH = @"MyMenu.csv";
 
             var useMyMenu = File.Exists(MY_MENU_PATH);
+            if (!useMyMenu) { return null; }
 
             var dict = new Dictionary<string, RelayCommand>();
             Action<CsvReader> readAction = csv =>
