@@ -67,6 +67,52 @@ namespace OpenReceiptViewer
             this.MasterRootDiretoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Master");
         }
 
+        /// <summary>mymenu.csvを読み込んでメニューコマンド生成</summary>
+        /// <returns></returns>
+        public Dictionary<string, RelayCommand> CreateMyMenuCommands()
+        {
+            const string MY_MENU_PATH = @"MyMenu.csv";
+
+            var useMyMenu = File.Exists(MY_MENU_PATH);
+
+            var dict = new Dictionary<string, RelayCommand>();
+            Action<CsvReader> readAction = csv =>
+            {
+                while (csv.Read())
+                {
+                    var title = csv.GetField<string>(0);
+                    var path = csv.GetField<string>(1);
+                    var args = csv.GetField<string>(2);
+
+                    var command = new RelayCommand(() =>
+                    {
+                        if (this.CurrentReceipt == null) { return; }
+
+                        // 文字列置き換え
+                        args = args.Replace("{%カルテ番号%}", this.CurrentReceipt.RE.カルテ番号);
+                        args = args.Replace("{%レセプト番号%}", this.CurrentReceipt.RE.レセプト番号.ToString());
+                        args = args.Replace("{%氏名%}", this.CurrentReceipt.RE.氏名);
+                        args = args.Replace("{%審査支払機関%}", ((int)this.IR.審査支払機関).ToString());
+                        args = args.Replace("{%請求年月%}", this.IR.請求年月.ToString());
+
+                        try
+                        {
+                            Process.Start(path, args);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(string.Format("{0}の起動に失敗しました。", path));
+                        }
+                    });
+
+                    dict.Add(title, command);
+                };
+            };
+            CSVUtil.Read(MY_MENU_PATH, readAction);
+
+            return dict;
+        }
+
         /// <summary></summary>
         public RelayCommand OpenCommand
         {

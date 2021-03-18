@@ -59,6 +59,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <DataGrid Grid.Column="0"
+                      x:Name="_dataGrid"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       ItemsSource="{Binding ReceiptList}"
@@ -85,15 +86,6 @@
                         </Style.Triggers>
                     </Style>
                 </DataGrid.CellStyle>
-                <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="Green" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
             </DataGrid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>

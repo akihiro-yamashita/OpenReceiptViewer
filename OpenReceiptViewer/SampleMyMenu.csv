@@ -1,0 +1,3 @@
+"患者フォルダー","explorer.exe","\\nas\patient\{%カルテ番号%}"
+"電子カルテ","C:\Program Files\Mozilla Firefox\firefox.exe","http://karteserver.lan/patient_no={%カルテ番号%}"
+"レセコン","C:\Program Files\Receipt\main.exe","審査支払機関={%審査支払機関%} 請求年月={%請求年月%} レセプト番号={%レセプト番号%}"
