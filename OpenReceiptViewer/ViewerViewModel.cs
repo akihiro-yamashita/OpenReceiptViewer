@@ -72,8 +72,9 @@ namespace OpenReceiptViewer
         public Dictionary<string, RelayCommand> CreateMyMenuCommands()
         {
             const string MY_MENU_PATH = @"MyMenu.csv";
+            var myMenuFullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, MY_MENU_PATH);
 
-            var useMyMenu = File.Exists(MY_MENU_PATH);
+            var useMyMenu = File.Exists(myMenuFullpath);
             if (!useMyMenu) { return null; }
 
             var dict = new Dictionary<string, RelayCommand>();
@@ -109,7 +110,7 @@ namespace OpenReceiptViewer
                     dict.Add(title, command);
                 };
             };
-            CSVUtil.Read(MY_MENU_PATH, readAction);
+            CSVUtil.Read(myMenuFullpath, readAction);
 
             return dict;
         }
