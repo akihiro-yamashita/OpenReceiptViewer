@@ -35,6 +35,8 @@ namespace OpenReceiptViewer
             this._vm = new MainWindowViewModel();
             this.DataContext = _vm;
 
+            //this.Title = string.Format("OpenReceiptViewer {0}", "version");
+
             var args = Environment.GetCommandLineArgs();
             if (1 < args.Length)
             {

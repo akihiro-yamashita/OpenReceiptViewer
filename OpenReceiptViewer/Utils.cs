@@ -94,6 +94,10 @@ namespace OpenReceiptViewer
         {
             var showDate = ReceiptDateToShowDate(receiptDate);
 
+            if (string.IsNullOrEmpty(showDate))
+            {
+                return null;
+            }
             if (showDate.StartsWith("?"))
             {
                 return null;
@@ -290,34 +294,68 @@ namespace OpenReceiptViewer
     /// <summary></summary>
     public static class EnumUtil
     {
+        public static MasterVersion MasterVersionOldToMasterVersion(this MasterVersionOld old)
+        {
+            foreach (MasterVersion e in Enum.GetValues(typeof(MasterVersion)))
+            {
+                if (old.ToString() == e.ToString())
+                {
+                    return e;
+                }
+            }
+
+            // とりあえず一番古いマスター
+            return MasterVersion.Ver201604;
+        }
+
         /// <summary>診療年月からMasterVersionを計算</summary>
         /// <param name="診療年月"></param>
         /// <returns></returns>
         public static MasterVersion CalcMasterVersion(int 診療年月)
         {
-            var masterVersion = (MasterVersion?)null;
-            foreach (MasterVersion e in Enum.GetValues(typeof(MasterVersion)))
+            var 診療年月Str = 診療年月.ToString();
+            if (診療年月Str.Length == 5)
             {
-                if ((int)e <= 診療年月)
+                var masterVersion = (MasterVersionOld?)null;
+                foreach (MasterVersionOld e in Enum.GetValues(typeof(MasterVersionOld)))
                 {
-                    masterVersion = e;
-                    continue;
+                    if ((int)e <= 診療年月)
+                    {
+                        masterVersion = e;
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
+                if (masterVersion.HasValue)
                 {
-                    break;
+                    return masterVersion.Value.MasterVersionOldToMasterVersion();
+                }
+            }
+            else if (診療年月Str.Length == 6)
+            {
+                var masterVersion = (MasterVersion?)null;
+                foreach (MasterVersion e in Enum.GetValues(typeof(MasterVersion)))
+                {
+                    if ((int)e <= 診療年月)
+                    {
+                        masterVersion = e;
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (masterVersion.HasValue)
+                {
+                    return masterVersion.Value;
                 }
             }
 
-            if (masterVersion.HasValue)
-            {
-                return masterVersion.Value;
-            }
-            else
-            {
-                // 昔の診療年月が指定された場合、とりあえず一番古いマスターで対応
-                return MasterVersion.Ver201604;
-            }
+            return MasterVersion.Ver201604;
         }
 
         /// <summary>TODO: 逆にフォルダ名にVerつけられないか</summary>

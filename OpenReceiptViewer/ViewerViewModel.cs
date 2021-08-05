@@ -101,7 +101,7 @@ namespace OpenReceiptViewer
                         {
                             Process.Start(path, tmp);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             MessageBox.Show(string.Format("{0}の起動に失敗しました。", path));
                         }
@@ -198,24 +198,24 @@ namespace OpenReceiptViewer
 
             Action<CsvReader> readAction = csv =>
             {
-                var patient = (Receipt)null;
+                var receipt = (Receipt)null;
 
                 Action add = () =>
                 {
                     // 公費の件数調整
-                    while (Define.公費最大件数 < patient.KOList.Count)
+                    while (Define.公費最大件数 < receipt.KOList.Count)
                     {
                         Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", Define.公費最大件数));
-                        patient.KOList.RemoveAt(patient.KOList.Count - 1);
+                        receipt.KOList.RemoveAt(receipt.KOList.Count - 1);
                     }
-                    while (patient.KOList.Count < Define.公費最大件数)
+                    while (receipt.KOList.Count < Define.公費最大件数)
                     {
                         // KOListをindex指定でバインドしているため、空データ入れた方が都合が良い。
-                        patient.KOList.Add(null);
+                        receipt.KOList.Add(null);
                     }
 
-                    this.ReceiptList.Add(patient);
-                    patient = null;
+                    this.ReceiptList.Add(receipt);
+                    receipt = null;
                 };
 
                 while (csv.Read())
@@ -242,7 +242,7 @@ namespace OpenReceiptViewer
                     }
                     else if (lineDef == レコード識別情報定数.レセプト共通)
                     {
-                        if (patient != null)
+                        if (receipt != null)
                         {
                             add();  // 前の患者を追加する。
                         }
@@ -279,13 +279,13 @@ namespace OpenReceiptViewer
                             IsNumberOnlyカルテ番号 = false;
                         }
 
-                        patient = new Receipt()
+                        receipt = new Receipt()
                         {
                             KOList = new List<KO>(),
                             SIIYTOCOList = new List<SIIYTOCO>(),
                             SYList = new List<SY>(),
                         };
-                        patient.RE = re;
+                        receipt.RE = re;
                     }
                     else if (lineDef == レコード識別情報定数.保険者)
                     {
@@ -306,9 +306,9 @@ namespace OpenReceiptViewer
                             減額割合 = csv.GetField<int?>((int)HO_IDX.減額割合),
                             減額金額 = csv.GetField<int?>((int)HO_IDX.減額金額),
                         };
-                        if (patient != null && patient.RE != null)
+                        if (receipt != null && receipt.RE != null)
                         {
-                            patient.HO = ho;
+                            receipt.HO = ho;
                         }
                         else
                         {
@@ -331,9 +331,9 @@ namespace OpenReceiptViewer
                             回数 = csv.GetField<int?>((int)KO_IDX.回数),
                             合計金額 = csv.GetField<int?>((int)KO_IDX.合計金額),
                         };
-                        if (patient != null && patient.RE != null)
+                        if (receipt != null && receipt.RE != null)
                         {
-                            patient.KOList.Add(ko);
+                            receipt.KOList.Add(ko);
                         }
                         else
                         {
@@ -364,7 +364,7 @@ namespace OpenReceiptViewer
                             主傷病 = csv.GetField<string>((int)SY_IDX.主傷病),
                             補足コメント = csv.GetField<string>((int)SY_IDX.補足コメント),
                         };
-                        patient.SYList.Add(sy);
+                        receipt.SYList.Add(sy);
                     }
                     else if (lineDef == レコード識別情報定数.診療行為 || lineDef == レコード識別情報定数.医薬品)
                     {
@@ -390,7 +390,7 @@ namespace OpenReceiptViewer
                         siiyto.回数 = csv.GetField<int>((int)SI_IY_IDX.回数);
                         readコメント(csv, (int)SI_IY_IDX.コメント1_コメントコード, (int)SI_IY_IDX.コメント3_コメントコード, siiyto);
                         readXX日の情報(csv, (int)SI_IY_IDX.X01日の情報, (int)SI_IY_IDX.X31日の情報, siiyto);
-                        patient.SIIYTOCOList.Add(siiyto);
+                        receipt.SIIYTOCOList.Add(siiyto);
                     }
                     else if (lineDef == レコード識別情報定数.特定器材)
                     {
@@ -407,7 +407,7 @@ namespace OpenReceiptViewer
                         to.商品名及び規格 = csv.GetField<string>((int)TO_IDX.商品名及び規格);
                         readコメント(csv, (int)TO_IDX.コメント1_コメントコード, (int)TO_IDX.コメント3_コメントコード, to);
                         readXX日の情報(csv, (int)TO_IDX.X01日の情報, (int)TO_IDX.X31日の情報, to);
-                        patient.SIIYTOCOList.Add(to);
+                        receipt.SIIYTOCOList.Add(to);
                     }
                     else if (lineDef == レコード識別情報定数.コメント)
                     {
@@ -418,7 +418,7 @@ namespace OpenReceiptViewer
                             コメントコード = csv.GetField<int>((int)CO_IDX.コメントコード),
                             文字データ = csv.GetField<string>((int)CO_IDX.文字データ),
                         };
-                        patient.SIIYTOCOList.Add(co);
+                        receipt.SIIYTOCOList.Add(co);
                     }
                     else if (lineDef == レコード識別情報定数.症状詳記)
                     {

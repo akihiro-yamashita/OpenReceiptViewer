@@ -372,20 +372,22 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>診療報酬マスターバージョン</summary>
-    public enum MasterVersion
+    public enum MasterVersionOld
     {
         Ver201604 = 42804,
         Ver201804 = 43004,
         Ver201910 = 50110,
         Ver202004 = 50204,
+        Ver202104 = 50304,
     }
 
-    ///// <summary>診療報酬マスターバージョン</summary>
-    //public enum MasterVersion
-    //{
-    //    Ver201604 = 201604,
-    //    Ver201804 = 201804,
-    //    Ver201910 = 201910,
-    //    Ver202004 = 202004,
-    //}
+    /// <summary>診療報酬マスターバージョン</summary>
+    public enum MasterVersion
+    {
+        Ver201604 = 201604,
+        Ver201804 = 201804,
+        Ver201910 = 201910,
+        Ver202004 = 202004,
+        Ver202104 = 202104,
+    }
 }

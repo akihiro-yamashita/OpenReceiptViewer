@@ -128,7 +128,7 @@ namespace OpenReceiptViewerTest
         [TestMethod]
         public void HanToZenTest()
         {
-            Assert.AreEqual("0123456789", StringUtil.HanToZen("０１２３４５６７８９"));
+            Assert.AreEqual("０１２３４５６７８９", StringUtil.HanToZen("0123456789"));
             Assert.AreEqual("ＥＦ－喉頭", StringUtil.HanToZen("EF-喉頭"));
             Assert.AreEqual("休日加算（初診）", StringUtil.HanToZen("休日加算(初診)"));
         }
@@ -136,7 +136,7 @@ namespace OpenReceiptViewerTest
         [TestMethod]
         public void ZenToHanTest()
         {
-            Assert.AreEqual("０１２３４５６７８９", StringUtil.ZenToHan("0123456789"));
+            Assert.AreEqual("0123456789", StringUtil.ZenToHan("０１２３４５６７８９"));
             Assert.AreEqual("EF-喉頭", StringUtil.ZenToHan("ＥＦ－喉頭"));
             Assert.AreEqual("休日加算(初診)", StringUtil.ZenToHan("休日加算（初診）"));
         }
@@ -146,6 +146,13 @@ namespace OpenReceiptViewerTest
     public class EnumUtilTest
     {
         [TestMethod]
+        public void MasterVersionOldToMasterVersionTest()
+        {
+            Assert.AreEqual(MasterVersion.Ver201910, EnumUtil.MasterVersionOldToMasterVersion(MasterVersionOld.Ver201910));
+            Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.MasterVersionOldToMasterVersion(MasterVersionOld.Ver202104));
+        }
+
+        [TestMethod]
         public void CalcMasterVersionTest()
         {
             Assert.AreEqual(MasterVersion.Ver201604, EnumUtil.CalcMasterVersion(201603));
@@ -153,6 +160,12 @@ namespace OpenReceiptViewerTest
             Assert.AreEqual(MasterVersion.Ver201910, EnumUtil.CalcMasterVersion(202003));
             Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(202004));
             Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(202005));
+            Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(202103));
+            Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(202104));
+            Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(202105));
+            Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(50303));
+            Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(50304));
+            Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(50305));
         }
     }
 }
