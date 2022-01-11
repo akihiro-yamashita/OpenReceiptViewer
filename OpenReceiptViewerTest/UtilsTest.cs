@@ -166,6 +166,7 @@ namespace OpenReceiptViewerTest
             Assert.AreEqual(MasterVersion.Ver202004, EnumUtil.CalcMasterVersion(50303));
             Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(50304));
             Assert.AreEqual(MasterVersion.Ver202104, EnumUtil.CalcMasterVersion(50305));
+            Assert.AreEqual(MasterVersion.Ver202201, EnumUtil.CalcMasterVersion(50401));
         }
     }
 }

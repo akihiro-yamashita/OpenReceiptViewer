@@ -374,11 +374,13 @@ namespace OpenReceiptViewer
     /// <summary>診療報酬マスターバージョン</summary>
     public enum MasterVersionOld
     {
+        // 4: 平成、5: 令和
         Ver201604 = 42804,
         Ver201804 = 43004,
         Ver201910 = 50110,
         Ver202004 = 50204,
         Ver202104 = 50304,
+        Ver202201 = 50401,
     }
 
     /// <summary>診療報酬マスターバージョン</summary>
@@ -389,5 +391,9 @@ namespace OpenReceiptViewer
         Ver201910 = 201910,
         Ver202004 = 202004,
         Ver202104 = 202104,
+
+        // 実際は2021/12/31にマスター更新があったので、31日の診療行為の表示がバグる。
+        // 根本的には全ての診療行為の日付ごとにマスターを切り替えないといけない。
+        Ver202201 = 202201,
     }
 }
