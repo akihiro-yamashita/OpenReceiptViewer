@@ -116,16 +116,22 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "501831", null);
             Assert.AreEqual("定型コメント50；※501831", text);
 
-            // 51: コメント内容に時刻を記載する。
+            // 51: 定型のコメント文に、一部の時刻情報（時間及び分を4桁）で記録する。
             id++;
             コメントConverter.Instance.コメントDict.Add(id
                 , new コメントマスター { パターン = 51, 漢字名称 = "定型コメント51", });
+            text = コメントConverter.Instance.Convert(id, "2359", null);
+            Assert.AreEqual("定型コメント51；23時59分", text);
+            text = コメントConverter.Instance.Convert(id, "２３５９", null);
+            Assert.AreEqual("定型コメント51；23時59分", text);
             text = コメントConverter.Instance.Convert(id, "23 59", null);
             Assert.AreEqual("定型コメント51；23時59分", text);
             text = コメントConverter.Instance.Convert(id, "２３　５９", null);
             Assert.AreEqual("定型コメント51；23時59分", text);
-            text = コメントConverter.Instance.Convert(id, "2359", null);
-            Assert.AreEqual("定型コメント51；※2359", text);
+            text = コメントConverter.Instance.Convert(id, "０３５９", null);
+            Assert.AreEqual("定型コメント51；3時59分", text);
+            text = コメントConverter.Instance.Convert(id, "３５９", null);
+            Assert.AreEqual("定型コメント51；※３５９", text);
 
             // 52: コメント内容に時間（分単位）を記載する。
             id++;
@@ -134,6 +140,8 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "123", null);
             Assert.AreEqual("定型コメント52；123分", text);
             text = コメントConverter.Instance.Convert(id, "１２３", null);
+            Assert.AreEqual("定型コメント52；123分", text);
+            text = コメントConverter.Instance.Convert(id, "００１２３", null);  // 本来全角数値5桁ゼロ埋めが正しいっぽい。
             Assert.AreEqual("定型コメント52；123分", text);
             text = コメントConverter.Instance.Convert(id, "あああ", null);
             Assert.AreEqual("定型コメント52；※あああ", text);

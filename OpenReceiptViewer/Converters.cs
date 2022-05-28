@@ -532,17 +532,35 @@ namespace OpenReceiptViewer
             }
             else if (x.パターン == 51)
             {
-                // 51: コメント内容に時刻を記載する。
-                var split = StringUtil.ZenToHan(文字データ).Split(new char[] { ' ', '　', }, StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length == 2)
+                // 51: 定型のコメント文に、一部の時刻情報（時間及び分を4桁）で記録する。
+                var strH = string.Empty;  // 時
+                var strM = string.Empty;  // 分
+
+                var han = StringUtil.ZenToHan(文字データ);
+
+                if (han.Length == 4)
                 {
-                    if (int.TryParse(split[0], out int h)
-                        && int.TryParse(split[1], out int m))
+                    strH = han.Substring(0, 2);
+                    strM = han.Substring(2, 2);
+                }
+                else
+                {
+                    // 公式仕様を守っていればこちらの分岐を通らない。
+                    var split = han.Split(new char[] { ' ', '　', }, StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length == 2)
                     {
-                        var time = string.Format("{0}時{1}分", h, m);
-                        return x.漢字名称 + "；" + time;
+                        strH = split[0];
+                        strM = split[1];
                     }
                 }
+
+                if (int.TryParse(strH, out int h)
+                    && int.TryParse(strM, out int m))
+                {
+                    var time = string.Format("{0}時{1}分", h, m);
+                    return x.漢字名称 + "；" + time;
+                }
+
                 return x.漢字名称 + "；" + 文字データの表示(文字データ);
             }
             else if (x.パターン == 52)
