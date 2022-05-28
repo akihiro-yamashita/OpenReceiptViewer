@@ -29,6 +29,9 @@ namespace OpenReceiptViewerTest
         public void コメントConverterTest()
         {
             コメントConverter.Instance.コメントDict = new Dictionary<int, コメントマスター>();
+            コメントConverter.Instance.修飾語Dict = new Dictionary<int, string>();
+            コメントConverter.Instance.修飾語Dict.Add(2056, "右");
+            コメントConverter.Instance.修飾語Dict.Add(1066, "足");
             var text = string.Empty;
             var id = 0;
 
@@ -146,10 +149,41 @@ namespace OpenReceiptViewerTest
             text = コメントConverter.Instance.Convert(id, "あああ", null);
             Assert.AreEqual("定型コメント52；※あああ", text);
 
-            // 90: TODO: 未実装
+            // 53: 定型のコメント文に、一部の日時情報（日、時間及び分を6桁）で記録する。
+            id++;
+            コメントConverter.Instance.コメントDict.Add(id
+                , new コメントマスター { パターン = 53, 漢字名称 = "定型コメント53", });
+            text = コメントConverter.Instance.Convert(id, "031259", null);
+            Assert.AreEqual("定型コメント53；3日12時59分", text);
+            text = コメントConverter.Instance.Convert(id, "23 12 59", null);
+            Assert.AreEqual("定型コメント53；23日12時59分", text);
+            text = コメントConverter.Instance.Convert(id, "31259", null);
+            Assert.AreEqual("定型コメント53；※31259", text);
+
+            // 80: 定型のコメント文に、一部の年月日情報（和暦年月日）及び一部の数字情報（数値として扱うもの（先頭を0埋めした8桁）に限る。）を記録する。
+            id++;
+            コメントConverter.Instance.コメントDict.Add(id
+                , new コメントマスター { パターン = 80, 漢字名称 = "定型コメント80", });
+            text = コメントConverter.Instance.Convert(id, "501123198.75", null);
+            Assert.AreEqual("定型コメント80；令和01.12.31　検査値：98.75", text);
+            text = コメントConverter.Instance.Convert(id, "5011231", null);
+            Assert.AreEqual("定型コメント80；令和01.12.31　検査値：", text);
+            text = コメントConverter.Instance.Convert(id, "2018123198.75", null);
+            // もし西暦が来た場合は2から始まるので大正で表示されるし内容もおかしい。和暦のみという仕様がおかしい。
+            Assert.AreEqual("定型コメント80；大正01.81.23　検査値：198.75", text);
+
+            // 90: 処置、手術及び画像診断等を行った部位を、修飾語（部位）コードを使用して記録する。
             id++;
             コメントConverter.Instance.コメントDict.Add(id
                 , new コメントマスター { パターン = 90, 漢字名称 = "定型コメント90", });
+            text = コメントConverter.Instance.Convert(id, "２０５６１０６６", null);
+            Assert.AreEqual("右足", text);
+            text = コメントConverter.Instance.Convert(id, "20561066", null);
+            Assert.AreEqual("右足", text);
+            text = コメントConverter.Instance.Convert(id, "205610661", null);
+            Assert.AreEqual("※205610661", text);
+            text = コメントConverter.Instance.Convert(id, "1066", null);
+            Assert.AreEqual("足", text);
         }
     }
 }

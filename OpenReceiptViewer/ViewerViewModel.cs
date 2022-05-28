@@ -964,9 +964,11 @@ namespace OpenReceiptViewer
 
         private void InitializeMasterConverter(MasterVersion masterVersion)
         {
+            var 修飾語Dict = this.Read修飾語(masterVersion);
             傷病名Converter.Instance.傷病名Dict = this.Read傷病名(masterVersion);
-            傷病名Converter.Instance.修飾語Dict = this.Read修飾語(masterVersion);
+            傷病名Converter.Instance.修飾語Dict = 修飾語Dict;
             コメントConverter.Instance.コメントDict = this.Readコメント(masterVersion);
+            コメントConverter.Instance.修飾語Dict = 修飾語Dict;
 
             var 診療行為List = this.Read診療行為(masterVersion);
             DictConverter.診療行為Instance((int)masterVersion).Dict = 診療行為List.ToDictionary(x => x.Id, x => x.名称);

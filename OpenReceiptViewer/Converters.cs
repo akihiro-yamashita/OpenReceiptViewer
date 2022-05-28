@@ -408,6 +408,9 @@ namespace OpenReceiptViewer
         /// <summary></summary>
         public Dictionary<int, コメントマスター> コメントDict { get; set; }
 
+        /// <summary></summary>
+        public Dictionary<int, string> 修飾語Dict { get; set; }
+
         private コメントマスター Find(int コメントコード)
         {
             if (this.コメントDict != null)
@@ -423,10 +426,6 @@ namespace OpenReceiptViewer
         public override string Convert(int コメントコード, string 文字データ, object parameter)
         {
             var x = this.Find(コメントコード);
-
-            // TODO: コメントパターンについては10/20/30/40/90以外の資料が見当たらない。
-            // 他のコメントパターンはとりあえず↓のorcaの資料を参考にして作っている。
-            // https://ftp.orca.med.or.jp/pub/data/receipt/outline/update/improvement/pdf/2020comment-2020-06-30.pdf
 
             // 自由入力の文字データを定型コメント文と区別するために表示を変える。
             Func<string, string> 文字データの表示 = s => string.Format("※{0}", s);
@@ -636,7 +635,32 @@ namespace OpenReceiptViewer
             else if (x.パターン == 90)
             {
                 // 90: 処置、手術及び画像診断等を行った部位を、修飾語（部位）コードを使用して記録する。
-                return "（未実装）" + 文字データの表示(文字データ);
+
+                var han = StringUtil.ZenToHan(文字データ);
+                var tmp = string.Empty;
+
+                // TODO: 傷病名Converterに似たロジックがあるので共通化したい。
+                if (this.修飾語Dict != null && !string.IsNullOrEmpty(han) && han.Length % 4 == 0)
+                {
+                    for (int i = 0; i < 20; i++)  // 複数記録可だが、実際に何個必要か不明。たぶん5も要らない。
+                    {
+                        if (((i + 1) * 4) <= han.Length)
+                        {
+                            int id;
+                            if (int.TryParse(han.Substring((i * 4), 4), out id))
+                            {
+                                if (this.修飾語Dict.ContainsKey(id))
+                                {
+                                    tmp = tmp + this.修飾語Dict[id];
+                                }
+                            }
+                        }
+                    }
+
+                    return tmp;
+                }
+
+                return 文字データの表示(文字データ);
             }
             else
             {
