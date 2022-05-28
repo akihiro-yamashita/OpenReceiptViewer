@@ -575,6 +575,64 @@ namespace OpenReceiptViewer
                     return x.漢字名称 + "；" + 文字データの表示(文字データ);
                 }
             }
+            else if (x.パターン == 53)
+            {
+                // 53: 定型のコメント文に、一部の日時情報（日、時間及び分を6桁）で記録する。
+                var strD = string.Empty;  // 日
+                var strH = string.Empty;  // 時
+                var strM = string.Empty;  // 分
+
+                var han = StringUtil.ZenToHan(文字データ);
+
+                if (han.Length == 6)
+                {
+                    strD = han.Substring(0, 2);
+                    strH = han.Substring(2, 2);
+                    strM = han.Substring(4, 2);
+                }
+                else
+                {
+                    // 公式仕様を守っていればこちらの分岐を通らない。
+                    var split = han.Split(new char[] { ' ', '　', }, StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length == 3)
+                    {
+                        strD = split[0];
+                        strH = split[1];
+                        strM = split[2];
+                    }
+                }
+
+                if (int.TryParse(strD, out int d)
+                    && int.TryParse(strH, out int h)
+                    && int.TryParse(strM, out int m))
+                {
+                    var time = string.Format("{0}日{1}時{2}分", d, h, m);
+                    return x.漢字名称 + "；" + time;
+                }
+
+                return x.漢字名称 + "；" + 文字データの表示(文字データ);
+            }
+            else if (x.パターン == 80)
+            {
+                // 80: 定型のコメント文に、一部の年月日情報（和暦年月日）及び一部の数字情報（数値として扱うもの（先頭を0埋めした8桁）に限る。）を記録する。
+
+                if (7 <= 文字データ.Length)
+                {
+                    var strGYMD = 文字データ.Substring(0, 7);
+                    var datePart = strGYMD;
+
+                    if (int.TryParse(StringUtil.ZenToHan(strGYMD), out int intGYMD))
+                    {
+                        datePart = DateUtil.ReceiptDateToShowDate(intGYMD);
+                    }
+
+                    var valuePart = 文字データ.Substring(7);
+
+                    return string.Format("{0}；{1}　検査値：{2}", x.漢字名称, datePart, valuePart);
+                }
+
+                return x.漢字名称 + "；" + 文字データの表示(文字データ);
+            }
             else if (x.パターン == 90)
             {
                 // 90: 処置、手術及び画像診断等を行った部位を、修飾語（部位）コードを使用して記録する。

@@ -253,6 +253,7 @@ namespace OpenReceiptViewer
                             レセプト種別 = csv.GetField<int>((int)RE_IDX.レセプト種別),
                             診療年月 = csv.GetField<int>((int)RE_IDX.診療年月),
                             氏名 = csv.GetField<string>((int)RE_IDX.氏名),
+                            //氏名 = "患者　太郎",
                             男女区分 = (男女区分)csv.GetField<int>((int)RE_IDX.男女区分),
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
                             カルテ番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
@@ -266,6 +267,7 @@ namespace OpenReceiptViewer
                         {
                             // H30年4月以降
                             re.カタカナ = tmpカタカナ;
+                            //re.カタカナ = "カンジャ　タロウ";
                         }
                         if (csv.TryGetField<string>((int)RE_IDX.患者の状態, out string tmp患者の状態))
                         {
