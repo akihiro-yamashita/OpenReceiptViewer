@@ -382,6 +382,7 @@ namespace OpenReceiptViewer
         Ver202104 = 50304,
         Ver202201 = 50401,
         Ver202204 = 50404,
+        Ver202207 = 50407,
     }
 
     /// <summary>診療報酬マスターバージョン</summary>
@@ -397,5 +398,6 @@ namespace OpenReceiptViewer
         // 根本的には全ての診療行為の日付ごとにマスターを切り替えないといけない。
         Ver202201 = 202201,
         Ver202204 = 202204,
+        Ver202207 = 202207,
     }
 }

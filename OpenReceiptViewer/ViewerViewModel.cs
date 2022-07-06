@@ -58,6 +58,9 @@ namespace OpenReceiptViewer
 
         public bool IsNumberOnlyカルテ番号 { get; private set; } = true;
 
+        /// <summary>他院に見せる時やスクショ撮る時はtrueに</summary>
+        private bool _個人情報非表示 = false;
+
         public ViewerViewModel()
         {
             this.IR = new IR();
@@ -253,7 +256,6 @@ namespace OpenReceiptViewer
                             レセプト種別 = csv.GetField<int>((int)RE_IDX.レセプト種別),
                             診療年月 = csv.GetField<int>((int)RE_IDX.診療年月),
                             氏名 = csv.GetField<string>((int)RE_IDX.氏名),
-                            //氏名 = "患者　太郎",
                             男女区分 = (男女区分)csv.GetField<int>((int)RE_IDX.男女区分),
                             生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
                             カルテ番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
@@ -267,12 +269,18 @@ namespace OpenReceiptViewer
                         {
                             // H30年4月以降
                             re.カタカナ = tmpカタカナ;
-                            //re.カタカナ = "カンジャ　タロウ";
                         }
                         if (csv.TryGetField<string>((int)RE_IDX.患者の状態, out string tmp患者の状態))
                         {
                             // H30年4月以降
                             re.患者の状態 = tmp患者の状態;
+                        }
+                        if (_個人情報非表示)
+                        {
+                            re.氏名 = "患者　太郎";
+                            re.カタカナ = "カンジャ　タロウ";
+                            // 生年月日は日だけ1に変える。診療年月の年齢が分からないと不便なことがある。
+                            re.生年月日 = (int)(re.生年月日 / 100) * 100 + 1;
                         }
 
                         // 1件でも数値変換不可能なカルテ番号が来たらIsNumberOnlyカルテ番号をfalseに。
@@ -308,6 +316,12 @@ namespace OpenReceiptViewer
                             減額割合 = csv.GetField<int?>((int)HO_IDX.減額割合),
                             減額金額 = csv.GetField<int?>((int)HO_IDX.減額金額),
                         };
+                        if (_個人情報非表示)
+                        {
+                            ho.保険者番号 = 99999999;
+                            ho.被保険者証記号 = "１２３";
+                            ho.被保険者証番号 = "４５６７";
+                        }
                         if (receipt != null && receipt.RE != null)
                         {
                             receipt.HO = ho;
@@ -333,6 +347,11 @@ namespace OpenReceiptViewer
                             回数 = csv.GetField<int?>((int)KO_IDX.回数),
                             合計金額 = csv.GetField<int?>((int)KO_IDX.合計金額),
                         };
+                        if (_個人情報非表示)
+                        {
+                            ko.負担者番号 = "99999999";
+                            ko.受給者番号 = 9999999;
+                        }
                         if (receipt != null && receipt.RE != null)
                         {
                             receipt.KOList.Add(ko);
