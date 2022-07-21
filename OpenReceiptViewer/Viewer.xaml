@@ -165,6 +165,7 @@
                         <MultiBinding Converter="{x:Static local:被保険者Converter.Instance}">
                             <Binding Path="CurrentReceipt.HO.被保険者証記号" />
                             <Binding Path="CurrentReceipt.HO.被保険者証番号" />
+                            <Binding Path="CurrentReceipt.SN.枝番" />
                         </MultiBinding>
                     </Label>
                     <Label Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" BorderBrush="Black" BorderThickness="1">保険合計点数</Label>

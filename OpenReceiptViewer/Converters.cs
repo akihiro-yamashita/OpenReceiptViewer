@@ -902,11 +902,18 @@ namespace OpenReceiptViewer
         private static StringEmptyToNullConverter _instance;
     }
 
-    public class 被保険者Converter : TypeSafeMultiConverter<object, string, string>
+    public class 被保険者Converter : TypeSafeMultiConverter<object, string, string, string>
     {
-        public override object Convert(string 被保険者証記号, string 被保険者証番号, object parameter)
+        public override object Convert(string 被保険者証記号, string 被保険者証番号, string 枝番, object parameter)
         {
-            return 被保険者証記号 + " - " + 被保険者証番号;
+            if (string.IsNullOrEmpty(枝番))
+            {
+                return 被保険者証記号 + " - " + 被保険者証番号;
+            }
+            else
+            {
+                return 被保険者証記号 + " - " + 被保険者証番号 + " - " + 枝番;
+            }
         }
 
         public static 被保険者Converter Instance

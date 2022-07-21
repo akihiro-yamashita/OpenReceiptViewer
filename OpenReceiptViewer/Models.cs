@@ -622,6 +622,18 @@ namespace OpenReceiptViewer
     {
         /// <summary></summary>
         public SN() : base(レコード識別情報定数.資格確認) { }
+
+        /// <summary>枝番</summary>
+        public string 枝番
+        {
+            get { return this._枝番; }
+            set
+            {
+                this._枝番 = value;
+                OnPropertyChanged("枝番");
+            }
+        }
+        private string _枝番;
     }
 
     /// <summary>受診日レコード</summary>
@@ -653,6 +665,9 @@ namespace OpenReceiptViewer
 
         /// <summary>保険者</summary>
         public HO HO { get; set; }
+
+        /// <summary>資格確認</summary>
+        public SN SN { get; set; }
 
         /// <summary>公費4つまで</summary>
         public List<KO> KOList { get; set; }

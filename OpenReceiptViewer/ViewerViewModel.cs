@@ -302,8 +302,9 @@ namespace OpenReceiptViewer
                         var ho = new HO()
                         {
                             保険者番号 = csv.GetField<int>((int)HO_IDX.保険者番号),
-                            被保険者証記号 = csv.GetField<string>((int)HO_IDX.被保険者証記号),
-                            被保険者証番号 = csv.GetField<string>((int)HO_IDX.被保険者証番号),
+                            // 枝番まで出すようになって表示が切れるようになったため、半角化。
+                            被保険者証記号 = StringUtil.ZenToHan(csv.GetField<string>((int)HO_IDX.被保険者証記号)),
+                            被保険者証番号 = StringUtil.ZenToHan(csv.GetField<string>((int)HO_IDX.被保険者証番号)),
                             診療実日数 = csv.GetField<int>((int)HO_IDX.診療実日数),
                             合計点数 = csv.GetField<int>((int)HO_IDX.合計点数),
                             予備 = csv.GetField<int?>((int)HO_IDX.予備),
@@ -319,8 +320,8 @@ namespace OpenReceiptViewer
                         if (_個人情報非表示)
                         {
                             ho.保険者番号 = 99999999;
-                            ho.被保険者証記号 = "１２３";
-                            ho.被保険者証番号 = "４５６７";
+                            ho.被保険者証記号 = "123";
+                            ho.被保険者証番号 = "4567";
                         }
                         if (receipt != null && receipt.RE != null)
                         {
@@ -329,6 +330,25 @@ namespace OpenReceiptViewer
                         else
                         {
                             Debug.Assert(false, "保険者レコードの順番が不正です。");
+                        }
+                    }
+                    else if (lineDef == レコード識別情報定数.資格確認)
+                    {
+                        var sn = new SN()
+                        {
+                            枝番 = csv.GetField<string>((int)SN_IDX.枝番),
+                        };
+                        if (_個人情報非表示)
+                        {
+                            sn.枝番 = "99";
+                        }
+                        if (receipt != null && receipt.RE != null)
+                        {
+                            receipt.SN = sn;
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "資格確認レコードの順番が不正です。");
                         }
                     }
                     else if (lineDef == レコード識別情報定数.公費)
