@@ -400,4 +400,13 @@ namespace OpenReceiptViewer
         Ver202204 = 202204,
         Ver202207 = 202207,
     }
+
+    /// <summary></summary>
+    public enum 病棟種別
+    {
+        高度急性期 = 19061,
+        急性期 = 19062,
+        回復期 = 19063,
+        慢性期 = 19064,
+    }
 }

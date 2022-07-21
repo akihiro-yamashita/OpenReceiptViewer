@@ -73,9 +73,15 @@ namespace OpenReceiptViewer
     public static class Define
     {
         /// <summary></summary>
-        public const int 公費最大件数 = 4;
+        public const int 公費件数_MAX = 4;
 
         /// <summary></summary>
         public const int 未コード化傷病コード = 999;
+
+        /// <summary>病床機能報告用の病棟コード最小値</summary>
+        public const int 病棟コード_MIN = 190610000;
+
+        /// <summary>病床機能報告用の病棟コード最大値</summary>
+        public const int 病棟コード_MAX = 190649999;
     }
 }

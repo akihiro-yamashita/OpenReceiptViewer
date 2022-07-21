@@ -236,7 +236,22 @@ namespace OpenReceiptViewer
         {
             if (レコード識別情報 == レコード識別情報定数.診療行為)
             {
-                return DictConverter.診療行為Instance(診療年月).Convert((int)内容, parameter);
+                var 診療行為コード = (int)内容;
+                if (Define.病棟コード_MIN <= 診療行為コード && 診療行為コード <= Define.病棟コード_MAX)
+                {
+                    var top5 = (int)(診療行為コード / 10000);
+                    var 病棟コード下4桁 = 診療行為コード - (top5 * 10000);
+                    foreach (病棟種別 e in Enum.GetValues(typeof(病棟種別)))
+                    {
+                        if (top5 == (int)e)
+                        {
+                            return string.Format("{0}機能病棟{1}", e.ToString(), 病棟コード下4桁.ToString("D2"));
+                        }
+                    }
+                    return "不明な病棟";
+                }
+
+                return DictConverter.診療行為Instance(診療年月).Convert(診療行為コード, parameter);
             }
             else if (レコード識別情報 == レコード識別情報定数.医薬品)
             {

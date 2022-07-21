@@ -206,12 +206,12 @@ namespace OpenReceiptViewer
                 Action add = () =>
                 {
                     // 公費の件数調整
-                    while (Define.公費最大件数 < receipt.KOList.Count)
+                    while (Define.公費件数_MAX < receipt.KOList.Count)
                     {
-                        Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", Define.公費最大件数));
+                        Debug.Assert(false, string.Format("レセプトの仕様上、公費は最大{0}件までです。", Define.公費件数_MAX));
                         receipt.KOList.RemoveAt(receipt.KOList.Count - 1);
                     }
-                    while (receipt.KOList.Count < Define.公費最大件数)
+                    while (receipt.KOList.Count < Define.公費件数_MAX)
                     {
                         // KOListをindex指定でバインドしているため、空データ入れた方が都合が良い。
                         receipt.KOList.Add(null);
