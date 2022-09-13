@@ -30,18 +30,20 @@
 
 ## システム要件
 
-.NET Framework 4以上  
-（macOS対応のため、.NET6への移行を検討中）  
+.NET Framework 4.8以上  
+マルチプラットフォーム（特にmacOS）対応のため、技術選定中です。  
+システム要件が変わると思います。  
+~~.NET Framework 4以上（macOS対応のため、.NET6への移行を検討中）~~  
 
 ## ライセンス
 
-Apache License, Version 2.0
-
+Apache License, Version 2.0  
 http://opensource.org/licenses/Apache-2.0
 
 
 ## 更新履歴
 
+ver 0.2.0   .NET Framework 4.8に移行  
 ver 0.1.23   被保険者証の枝番表示、病棟コード表示対応  
 ver 0.1.22   マスター更新  
 ver 0.1.21   コメントパターン53、80、90に対応  
