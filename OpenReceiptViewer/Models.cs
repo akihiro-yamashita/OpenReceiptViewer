@@ -1089,6 +1089,9 @@ namespace OpenReceiptViewer
             get { return null; }
             set { }
         }
+
+        /// <summary>コメントレコードに存在しない項目だが、診療行為や医薬品と一律で扱う上でのバインドエラー対策</summary>
+        public List<object> コメントList { get; set; }
     }
 
     /// <summary>症状詳記レコード</summary>

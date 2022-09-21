@@ -191,7 +191,7 @@ namespace OpenReceiptViewer
         {
             using (var stream = new System.IO.StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
             {
-                var config = new CsvHelper.Configuration.CsvConfiguration()
+                var config = new CsvHelper.Configuration.Configuration()
                 {
                     HasHeaderRecord = hasHeaderRecord,
                 };

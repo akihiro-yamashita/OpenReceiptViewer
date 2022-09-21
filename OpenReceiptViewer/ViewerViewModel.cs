@@ -126,6 +126,7 @@ namespace OpenReceiptViewer
                 return _openCommand = _openCommand ??
                 new RelayCommand(() =>
                 {
+                    var st1 = DateTime.Now;
                     try
                     {
                         Read(ReceiptFilePath);
@@ -135,7 +136,9 @@ namespace OpenReceiptViewer
                         MessageBox.Show(ex.Message);
                         return;
                     }
+                    var ed1 = DateTime.Now;
 
+                    var st2 = DateTime.Now;
                     // TODO: Read内で都度マスター読んでもよい？
                     foreach (var x in this.ReceiptList)
                     {
@@ -147,6 +150,10 @@ namespace OpenReceiptViewer
                             InitializedMasterVersions.Add(masterVersion);
                         }
                     }
+                    var ed2 = DateTime.Now;
+
+                    Debug.WriteLine("Receipt open time: {0}", (ed1 - st1).TotalMilliseconds);
+                    Debug.WriteLine("Master open time : {0}", (ed2 - st2).TotalMilliseconds);
 
                     SelectFirstReceipt();
                 });
@@ -763,7 +770,7 @@ namespace OpenReceiptViewer
             }
             else  // レコード識別情報 in 診療行為, 医薬品, 特定器材
             {
-                var masterFilePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
+                var masterFilePath = FindMasterPath(masterSubDiretoryPath, fileName);
                 var masterIds = new Dictionary<int, int>();
 
                 // 対象マスターを探す。
@@ -1021,9 +1028,32 @@ namespace OpenReceiptViewer
         }
         private static List<MasterVersion> InitializedMasterVersions = new List<MasterVersion>();
 
+        /// <summary>ミニファイ版を優先してマスターファイルパスを探す。</summary>
+        /// <param name="fileName"></param>
+        /// <param name="masterSubDiretoryPath"></param>
+        /// <returns></returns>
+        private string FindMasterPath(string masterSubDiretoryPath, string fileName)
+        {
+            // ミニファイの方があれば使う。
+            var filePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName.Replace(".csv", ".min.csv"));
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
+            }
+            return filePath;
+        }
+
+        /// <summary>ミニファイ版を優先してマスターファイルパスを探す。</summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private string FindMasterPath(MasterVersion masterVersion, string fileName)
+        {
+            return FindMasterPath(EnumUtil.GetMasterSubDiretoryName(masterVersion), fileName);
+        }
+
         private Dictionary<int, string> Read傷病名(MasterVersion masterVersion)
         {
-            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "b.csv");
+            var filePath = FindMasterPath(masterVersion, "b.csv");
 
             var dict = new Dictionary<int, string>();
             Action<CsvReader> readAction = csv =>
@@ -1041,7 +1071,7 @@ namespace OpenReceiptViewer
 
         private Dictionary<int, string> Read修飾語(MasterVersion masterVersion)
         {
-            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "z.csv");
+            var filePath = FindMasterPath(masterVersion, "z.csv");
 
             var dict = new Dictionary<int, string>();
             Action<CsvReader> readAction = csv =>
@@ -1059,7 +1089,7 @@ namespace OpenReceiptViewer
 
         private List<名称単位マスター> Read名称単位マスター(MasterVersion masterVersion, string fileName)
         {
-            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), fileName);
+            var filePath = FindMasterPath(masterVersion, fileName);
 
             var list = new List<名称単位マスター>();
             Action<CsvReader> readAction = csv =>
@@ -1093,7 +1123,7 @@ namespace OpenReceiptViewer
 
         private Dictionary<int, コメントマスター> Readコメント(MasterVersion masterVersion)
         {
-            var filePath = Path.Combine(MasterRootDiretoryPath, EnumUtil.GetMasterSubDiretoryName(masterVersion), "c.csv");
+            var filePath = FindMasterPath(masterVersion, "c.csv");
 
             var dict = new Dictionary<int, コメントマスター>();
             Action<CsvReader> readAction = csv =>
