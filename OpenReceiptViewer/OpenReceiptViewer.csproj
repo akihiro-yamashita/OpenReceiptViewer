@@ -251,22 +251,52 @@
     <None Include="Master\202204\z.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\b.csv">
+    <None Include="Master\202207\b.csv" />
+    <None Include="Master\202207\b.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\c.csv">
+    <None Include="Master\202207\c.csv" />
+    <None Include="Master\202207\c.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\s.csv">
+    <None Include="Master\202207\s.csv" />
+    <None Include="Master\202207\s.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\t.csv">
+    <None Include="Master\202207\t.csv" />
+    <None Include="Master\202207\t.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\y.csv">
+    <None Include="Master\202207\y.csv" />
+    <None Include="Master\202207\y.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Master\202207\z.csv">
+    <None Include="Master\202207\z.csv" />
+    <None Include="Master\202207\z.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\b.csv" />
+    <None Include="Master\202210\b.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\c.csv" />
+    <None Include="Master\202210\c.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\s.csv" />
+    <None Include="Master\202210\s.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\t.csv" />
+    <None Include="Master\202210\t.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\y.csv" />
+    <None Include="Master\202210\y.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202210\z.csv" />
+    <None Include="Master\202210\z.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

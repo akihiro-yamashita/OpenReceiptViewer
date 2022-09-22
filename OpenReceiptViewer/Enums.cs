@@ -383,6 +383,7 @@ namespace OpenReceiptViewer
         Ver202201 = 50401,
         Ver202204 = 50404,
         Ver202207 = 50407,
+        Ver202210 = 50410,
     }
 
     /// <summary>診療報酬マスターバージョン</summary>
@@ -399,6 +400,7 @@ namespace OpenReceiptViewer
         Ver202201 = 202201,
         Ver202204 = 202204,
         Ver202207 = 202207,
+        Ver202210 = 202210,
     }
 
     /// <summary></summary>
