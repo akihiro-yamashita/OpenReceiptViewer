@@ -40,7 +40,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Label Height="Auto">医療機関コード：</Label>
-                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IR.医療機関コード, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
+                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IR.医療機関コード}"></Label>
                 <Label Height="Auto">医療機関名：</Label>
                 <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IR.医療機関名称}"></Label>
                 <Label Height="Auto">件数：</Label>

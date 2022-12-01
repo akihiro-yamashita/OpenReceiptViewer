@@ -92,7 +92,7 @@ namespace OpenReceiptViewer
         private int _点数表;
 
         /// <summary></summary>
-        public int 医療機関コード
+        public string 医療機関コード
         {
             get { return this._医療機関コード; }
             set
@@ -101,7 +101,7 @@ namespace OpenReceiptViewer
                 OnPropertyChanged("医療機関コード");
             }
         }
-        private int _医療機関コード;
+        private string _医療機関コード;
 
         /// <summary></summary>
         public int? 予備

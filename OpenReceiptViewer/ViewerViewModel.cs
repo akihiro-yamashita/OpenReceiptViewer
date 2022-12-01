@@ -236,7 +236,7 @@ namespace OpenReceiptViewer
                         this.IR.審査支払機関 = (審査支払機関)csv.GetField<int>((int)IR_IDX.審査支払機関);
                         this.IR.都道府県 = csv.GetField<int>((int)IR_IDX.都道府県);
                         this.IR.点数表 = csv.GetField<int>((int)IR_IDX.点数表);
-                        this.IR.医療機関コード = csv.GetField<int>((int)IR_IDX.医療機関コード);
+                        this.IR.医療機関コード = csv.GetField<string>((int)IR_IDX.医療機関コード);
                         this.IR.予備 = csv.GetField<int?>((int)IR_IDX.予備);
                         this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
                         this.IR.請求年月 = csv.GetField<int>((int)IR_IDX.請求年月);
