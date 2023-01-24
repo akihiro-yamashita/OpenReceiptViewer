@@ -363,7 +363,7 @@ namespace OpenReceiptViewer
                         var ko = new KO()
                         {
                             負担者番号 = csv.GetField<string>((int)KO_IDX.負担者番号),
-                            受給者番号 = csv.GetField<int?>((int)KO_IDX.受給者番号),
+                            受給者番号 = csv.GetField<string>((int)KO_IDX.受給者番号),
                             任意給付区分 = csv.GetField<int?>((int)KO_IDX.任意給付区分),
                             診療実日数 = csv.GetField<int>((int)KO_IDX.診療実日数),
                             合計点数 = csv.GetField<int>((int)KO_IDX.合計点数),
@@ -377,7 +377,7 @@ namespace OpenReceiptViewer
                         if (_個人情報非表示)
                         {
                             ko.負担者番号 = "99999999";
-                            ko.受給者番号 = 9999999;
+                            ko.受給者番号 = "99999999";
                         }
                         if (receipt != null && receipt.RE != null)
                         {

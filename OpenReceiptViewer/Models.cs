@@ -497,7 +497,7 @@ namespace OpenReceiptViewer
         private string _負担者番号;
 
         /// <summary>受給者番号</summary>
-        public int? 受給者番号
+        public string 受給者番号
         {
             get { return this._受給者番号; }
             set
@@ -506,7 +506,7 @@ namespace OpenReceiptViewer
                 OnPropertyChanged("受給者番号");
             }
         }
-        private int? _受給者番号;
+        private string _受給者番号;
 
         /// <summary>任意給付区分</summary>
         public int? 任意給付区分
