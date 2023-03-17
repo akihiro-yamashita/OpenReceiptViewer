@@ -66,6 +66,24 @@ namespace OpenReceiptViewer
         public const string 症状詳記 = "SJ";
 
         /// <summary></summary>
+        public const string 返戻医療機関 = "HI";
+
+        /// <summary></summary>
+        public const string 返戻理由 = "HR";
+
+        /// <summary></summary>
+        public const string 返戻合計 = "HG";
+
+        /// <summary></summary>
+        public const string 事由 = "JY";
+
+        /// <summary></summary>
+        public const string 資格確認運用 = "ON";
+
+        /// <summary></summary>
+        public const string レコード管理 = "RC";
+
+        /// <summary></summary>
         public const string 診療報酬請求書 = "GO";
     }
 
@@ -74,6 +92,9 @@ namespace OpenReceiptViewer
     {
         /// <summary></summary>
         public const int 公費件数_MAX = 4;
+
+        /// <summary></summary>
+        public const int 履歴管理行数 = 3;
 
         /// <summary></summary>
         public const int 未コード化傷病コード = 999;

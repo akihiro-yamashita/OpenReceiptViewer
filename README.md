@@ -45,6 +45,7 @@ http://opensource.org/licenses/Apache-2.0
 
 ## 更新履歴
 
+ver 0.2.3   症状詳記レコードに仮対応  
 ver 0.2.2   公費受給者番号のバグ修正  
 ver 0.2.1   医療機関コード表示のバグ修正  
 ver 0.2.0   .NET Framework 4.8に移行  

@@ -470,8 +470,17 @@ namespace OpenReceiptViewer
                     }
                     else if (lineDef == レコード識別情報定数.症状詳記)
                     {
+                        var sj = new SJ()
+                        {
+                            症状詳記区分 = csv.GetField<int?>((int)SJ_IDX.症状詳記区分),
+                            症状詳記データ = csv.GetField<string>((int)SJ_IDX.症状詳記データ),
+                        };
+                        receipt.SIIYTOCOList.Add(sj);
                     }
-
+                    else
+                    {
+                        Debug.WriteLine(string.Format("未対応のレコード識別: {0}", lineDef));
+                    }
                 }
 
                 add();  // 最後の患者を追加する。

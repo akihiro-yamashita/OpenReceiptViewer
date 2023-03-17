@@ -267,6 +267,18 @@ namespace OpenReceiptViewer
         private string _カルテ番号;
 
         /// <summary></summary>
+        public string 検索番号
+        {
+            get { return this._検索番号; }
+            set
+            {
+                this._検索番号 = value;
+                OnPropertyChanged("検索番号");
+            }
+        }
+        private string _検索番号;
+
+        /// <summary></summary>
         public string カタカナ
         {
             get { return this._カタカナ; }
@@ -1094,11 +1106,122 @@ namespace OpenReceiptViewer
         public List<object> コメントList { get; set; }
     }
 
+    public abstract class EmptySIIYTOCO : SIIYTOCO
+    {
+        /// <summary></summary>
+        /// <param name="レコード識別情報"></param>
+        public EmptySIIYTOCO(string レコード識別情報) : base(レコード識別情報) { }
+
+        /// <summary>数量</summary>
+        public override float? 数量
+        {
+            get { return null; }
+            set { }
+        }
+
+        /// <summary>点数</summary>
+        public override int? 点数
+        {
+            get { return null; }
+            set { }
+        }
+
+        /// <summary>回数</summary>
+        public override int 回数
+        {
+            get { return 0; }
+            set { }
+        }
+
+        /// <summary>XX日の情報</summary>
+        public override Dictionary<int, int> XX日の情報
+        {
+            get { return null; }
+            set { }
+        }
+
+        /// <summary>コメントレコードに存在しない項目だが、診療行為や医薬品と一律で扱う上でのバインドエラー対策</summary>
+        public List<object> コメントList { get; set; }
+    }
+
     /// <summary>症状詳記レコード</summary>
-    public class SJ : Record
+    public class SJ : EmptySIIYTOCO
     {
         /// <summary></summary>
         public SJ() : base(レコード識別情報定数.症状詳記) { }
+
+        /// <summary>内容</summary>
+        public override object 内容
+        {
+            get { return 症状詳記データ; }
+        }
+
+        /// <summary></summary>
+        public int? 症状詳記区分
+        {
+            get { return this._症状詳記区分; }
+            set
+            {
+                this._症状詳記区分 = value;
+                OnPropertyChanged("症状詳記区分");
+            }
+        }
+        private int? _症状詳記区分;
+
+        /// <summary></summary>
+        public string 症状詳記データ
+        {
+            get { return this._症状詳記データ; }
+            set
+            {
+                this._症状詳記データ = value;
+                OnPropertyChanged("症状詳記データ");
+                OnPropertyChanged("内容");
+            }
+        }
+        private string _症状詳記データ;
+    }
+
+    /// <summary>返戻医療機関レコード</summary>
+    public class HI : Record
+    {
+        /// <summary></summary>
+        public HI() : base(レコード識別情報定数.返戻医療機関) { }
+    }
+
+    /// <summary>返戻理由レコード</summary>
+    public class HR : Record
+    {
+        /// <summary></summary>
+        public HR() : base(レコード識別情報定数.返戻理由) { }
+    }
+
+    /// <summary>返戻合計レコード</summary>
+    public class HG : Record
+    {
+        /// <summary></summary>
+        public HG() : base(レコード識別情報定数.返戻合計) { }
+    }
+
+    /// <summary>事由レコード</summary>
+    public class JY : Record
+    {
+        /// <summary></summary>
+        public JY() : base(レコード識別情報定数.事由) { }
+    }
+
+    /// <summary>資格確認運用レコード</summary>
+    public class ON : Record
+    {
+        /// <summary></summary>
+        public ON() : base(レコード識別情報定数.資格確認運用) { }
+    }
+
+    /// <summary>レコード管理レコード</summary>
+    public class RC : Record
+    {
+        /// <summary></summary>
+        public RC() : base(レコード識別情報定数.レコード管理) { }
     }
 
     /// <summary>診療報酬請求書レコード</summary>    

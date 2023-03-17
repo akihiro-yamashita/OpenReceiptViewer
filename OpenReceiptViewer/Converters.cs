@@ -266,6 +266,14 @@ namespace OpenReceiptViewer
                 var tuple = (Tuple<int, string>)内容;
                 return コメントConverter.Instance.Convert(tuple.Item1, tuple.Item2, parameter);
             }
+            else if (レコード識別情報 == レコード識別情報定数.症状詳記)
+            {
+                if (内容 == null)
+                {
+                    return string.Empty;
+                }
+                return 内容 as string;
+            }
             else
             {
                 return string.Empty;
