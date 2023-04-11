@@ -299,6 +299,30 @@
     <None Include="Master\202210\z.min.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Master\202304\b.csv" />
+    <None Include="Master\202304\b.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202304\c.csv" />
+    <None Include="Master\202304\c.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202304\s.csv" />
+    <None Include="Master\202304\s.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202304\t.csv" />
+    <None Include="Master\202304\t.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202304\y.csv" />
+    <None Include="Master\202304\y.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Master\202304\z.csv" />
+    <None Include="Master\202304\z.min.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

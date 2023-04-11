@@ -220,6 +220,70 @@ namespace OpenReceiptViewer
         症状詳記データ = 2,
     }
 
+    /// <summary>返戻医療機関レコード</summary>
+    /// <remarks>仕様不明</remarks>
+    public enum HI_IDX
+    {
+    }
+
+    /// <summary>返戻理由レコード</summary>
+    /// <remarks>仕様不明、中身は予想</remarks>
+    public enum HR_IDX
+    {
+        診療年月 = 1,
+        不明2 = 2,
+        不明3 = 3,
+        不明4 = 4,
+        返戻理由 = 5,
+        不明6 = 6,
+        不明7 = 7,
+        不明8 = 8,
+        不明9 = 9,
+        不明10 = 10,
+        不明11 = 11,
+        不明12 = 12,
+        不明13 = 13,
+    }
+
+    /// <summary>返戻合計レコード</summary>
+    /// <remarks>仕様不明</remarks>
+    public enum HG_IDX
+    {
+    }
+
+    /// <summary>事由レコード</summary>
+    /// <remarks>仕様不明</remarks>
+    public enum JY_IDX
+    {
+    }
+
+    /// <summary>資格確認運用レコード</summary>
+    /// <remarks>仕様不明</remarks>
+    public enum ON_IDX
+    {
+        不明1 = 1,
+        不明2 = 2,
+        不明3 = 3,
+        不明4 = 4,
+        不明5 = 5,
+        不明6 = 6,
+        不明7 = 7,
+        不明8 = 8,
+        不明9 = 9,
+        不明10 = 10,
+        不明11 = 11,
+        不明12 = 12,
+        不明13 = 13,
+        コード = 14,
+    }
+
+    /// <summary>レコード管理レコード</summary>
+    /// <remarks>仕様不明</remarks>
+    public enum RC_IDX
+    {
+        コード = 1,
+    }
+
     /// <summary>診療報酬請求書レコード</summary>
     public enum GO_IDX
     {
@@ -384,6 +448,7 @@ namespace OpenReceiptViewer
         Ver202204 = 50404,
         Ver202207 = 50407,
         Ver202210 = 50410,
+        Ver202304 = 50504,
     }
 
     /// <summary>診療報酬マスターバージョン</summary>
@@ -401,6 +466,7 @@ namespace OpenReceiptViewer
         Ver202204 = 202204,
         Ver202207 = 202207,
         Ver202210 = 202210,
+        Ver202304 = 202304,
     }
 
     /// <summary></summary>
