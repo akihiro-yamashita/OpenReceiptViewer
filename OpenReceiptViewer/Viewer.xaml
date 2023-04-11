@@ -67,7 +67,15 @@
                       SelectedItem="{Binding CurrentReceipt}"
                       SelectedCellsChanged="DataGrid_SelectedCellsChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
+                    <!--<DataGridTextColumn Header="レセプト" Binding="{Binding Path=RE.レセプト番号}" Width="60" MaxWidth="60" CanUserSort="False">
+                    </DataGridTextColumn>-->
+                    <DataGridTextColumn Header="レセプト" Width="60" MaxWidth="60" CanUserSort="False">
+                        <DataGridTextColumn.Binding>
+                            <MultiBinding Converter="{x:Static local:レセプト番号Converter.Instance}">
+                                <Binding Path="RE.レセプト番号" />
+                                <Binding Path="RE.履歴管理番号" />
+                            </MultiBinding>
+                        </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="カルテ番号" Binding="{Binding Path=RE.カルテ番号}" Width="60" MaxWidth="60" CanUserSort="False">
                     </DataGridTextColumn>

@@ -183,6 +183,19 @@ namespace OpenReceiptViewer
         private int _レセプト番号;
 
         /// <summary></summary>
+        public int? 履歴管理番号
+        {
+            get { return this._履歴管理番号; }
+            set
+            {
+                this._履歴管理番号 = value;
+                OnPropertyChanged("履歴管理番号");
+                OnPropertyChanged("レセプト番号");
+            }
+        }
+        private int? _履歴管理番号;
+
+        /// <summary></summary>
         public int レセプト種別
         {
             get { return this._レセプト種別; }
@@ -1190,10 +1203,41 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>返戻理由レコード</summary>
-    public class HR : Record
+    public class HR : EmptySIIYTOCO
     {
         /// <summary></summary>
         public HR() : base(レコード識別情報定数.返戻理由) { }
+
+        /// <summary>内容</summary>
+        public override object 内容
+        {
+            get { return 返戻理由; }
+        }
+
+        /// <summary></summary>
+        public int 診療年月
+        {
+            get { return this._診療年月; }
+            set
+            {
+                this._診療年月 = value;
+                OnPropertyChanged("診療年月");
+            }
+        }
+        private int _診療年月;
+
+        /// <summary></summary>
+        public string 返戻理由
+        {
+            get { return this._返戻理由; }
+            set
+            {
+                this._返戻理由 = value;
+                OnPropertyChanged("返戻理由");
+                OnPropertyChanged("内容");
+            }
+        }
+        private string _返戻理由;
     }
 
     /// <summary>返戻合計レコード</summary>
@@ -1211,17 +1255,55 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>資格確認運用レコード</summary>
-    public class ON : Record
+    public class ON : EmptySIIYTOCO
     {
         /// <summary></summary>
         public ON() : base(レコード識別情報定数.資格確認運用) { }
+
+        /// <summary>内容</summary>
+        public override object 内容
+        {
+            get { return コード; }
+        }
+
+        /// <summary></summary>
+        public string コード
+        {
+            get { return this._コード; }
+            set
+            {
+                this._コード = value;
+                OnPropertyChanged("コード");
+                OnPropertyChanged("内容");
+            }
+        }
+        private string _コード;
     }
 
     /// <summary>レコード管理レコード</summary>
-    public class RC : Record
+    public class RC : EmptySIIYTOCO
     {
         /// <summary></summary>
         public RC() : base(レコード識別情報定数.レコード管理) { }
+
+        /// <summary>内容</summary>
+        public override object 内容
+        {
+            get { return コード; }
+        }
+
+        /// <summary></summary>
+        public string コード
+        {
+            get { return this._コード; }
+            set
+            {
+                this._コード = value;
+                OnPropertyChanged("コード");
+                OnPropertyChanged("内容");
+            }
+        }
+        private string _コード;
     }
 
     /// <summary>診療報酬請求書レコード</summary>    

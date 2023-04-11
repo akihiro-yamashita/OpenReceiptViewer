@@ -119,6 +119,27 @@ namespace OpenReceiptViewer
         private static 主傷病Converter _instance;
     }
 
+    public class レセプト番号Converter : TypeSafeMultiConverter<string, int, int?>
+    {
+        public override string Convert(int レセプト番号, int? 履歴管理番号, object parameter)
+        {
+            if (履歴管理番号.HasValue)
+            {
+                return レセプト番号.ToString() + " - " + 履歴管理番号.Value.ToString();
+            }
+            else
+            {
+                return レセプト番号.ToString();
+            }
+        }
+
+        public static レセプト番号Converter Instance
+        {
+            get { return _instance = _instance ?? new レセプト番号Converter(); }
+        }
+        private static レセプト番号Converter _instance;
+    }
+
     public class DictConverter : TypeSafeConverter<string, int>
     {
         /// <summary></summary>
@@ -267,6 +288,30 @@ namespace OpenReceiptViewer
                 return コメントConverter.Instance.Convert(tuple.Item1, tuple.Item2, parameter);
             }
             else if (レコード識別情報 == レコード識別情報定数.症状詳記)
+            {
+                if (内容 == null)
+                {
+                    return string.Empty;
+                }
+                return 内容 as string;
+            }
+            else if (レコード識別情報 == レコード識別情報定数.返戻理由)
+            {
+                if (内容 == null)
+                {
+                    return string.Empty;
+                }
+                return 内容 as string;
+            }
+            else if (レコード識別情報 == レコード識別情報定数.資格確認運用)
+            {
+                if (内容 == null)
+                {
+                    return string.Empty;
+                }
+                return 内容 as string;
+            }
+            else if (レコード識別情報 == レコード識別情報定数.レコード管理)
             {
                 if (内容 == null)
                 {

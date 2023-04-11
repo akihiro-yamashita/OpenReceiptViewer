@@ -163,12 +163,14 @@ namespace OpenReceiptViewer
 
         private void Read(string filePath)
         {
+            var is履歴管理行 = false;
+
             // SIIYTO行内のコメント1～3
             Action<CsvReader, int, int, SIIYTO> readコメント = (csv, コメントコード1, コメントコード3, target) =>
             {
                 for (int i = コメントコード1; i <= コメントコード3; i = i + 2)  // コメントコード、文字データ、コメントコード・・・となるので+2で進む。
                 {
-                    var tmp = csv.GetField<int?>(i);
+                    var tmp = csv.GetField<int?>(i + (is履歴管理行 ? Define.履歴管理行数 : 0));
                     if (tmp.HasValue)
                     {
                         if (target.コメントList == null)
@@ -178,7 +180,7 @@ namespace OpenReceiptViewer
                         target.コメントList.Add(new SIIYTO.コメント()
                         {
                             コメントコード = tmp.Value,
-                            文字データ = csv.GetField<string>(i + 1),
+                            文字データ = csv.GetField<string>(i + 1 + (is履歴管理行 ? Define.履歴管理行数 : 0)),
                         });
                     }
                     else
@@ -193,7 +195,7 @@ namespace OpenReceiptViewer
             {
                 for (int i = X01日; i <= X31日; i++)
                 {
-                    var tmp = csv.GetField<int?>(i);
+                    var tmp = csv.GetField<int?>(i + (is履歴管理行 ? Define.履歴管理行数 : 0));
                     if (tmp.HasValue)
                     {
                         if (target.XX日の情報 == null)
@@ -228,27 +230,55 @@ namespace OpenReceiptViewer
                     receipt = null;
                 };
 
+                Func<int, int> getInt = arg =>
+                {
+                    return csv.GetField<int>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                };
+                Func<int, int?> getNullableInt = arg =>
+                {
+                    return csv.GetField<int?>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                };
+                Func<int, float?> getNullableFloat = arg =>
+                {
+                    return csv.GetField<float?>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                };
+                Func<int, string> getString = arg =>
+                {
+                    return csv.GetField<string>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                };
+
                 while (csv.Read())
                 {
                     var lineDef = csv.GetField<string>(0);
+
+                    if (int.TryParse(lineDef, out int 履歴管理先頭行))
+                    {
+                        is履歴管理行 = true;
+                        lineDef = getString(0);  // 3列ずれるのでとり直し
+                    }
+                    else
+                    {
+                        is履歴管理行 = false;
+                    }
+
                     if (lineDef == レコード識別情報定数.医療機関情報)
                     {
-                        this.IR.審査支払機関 = (審査支払機関)csv.GetField<int>((int)IR_IDX.審査支払機関);
-                        this.IR.都道府県 = csv.GetField<int>((int)IR_IDX.都道府県);
-                        this.IR.点数表 = csv.GetField<int>((int)IR_IDX.点数表);
+                        this.IR.審査支払機関 = (審査支払機関)getInt((int)IR_IDX.審査支払機関);
+                        this.IR.都道府県 = getInt((int)IR_IDX.都道府県);
+                        this.IR.点数表 = getInt((int)IR_IDX.点数表);
                         this.IR.医療機関コード = csv.GetField<string>((int)IR_IDX.医療機関コード);
-                        this.IR.予備 = csv.GetField<int?>((int)IR_IDX.予備);
+                        this.IR.予備 = getNullableInt((int)IR_IDX.予備);
                         this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
-                        this.IR.請求年月 = csv.GetField<int>((int)IR_IDX.請求年月);
-                        this.IR.マルチボリューム識別子 = csv.GetField<int>((int)IR_IDX.マルチボリューム識別子);
-                        this.IR.電話番号 = csv.GetField<string>((int)IR_IDX.電話番号);
-                        this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
+                        this.IR.請求年月 = getInt((int)IR_IDX.請求年月);
+                        this.IR.マルチボリューム識別子 = getInt((int)IR_IDX.マルチボリューム識別子);
+                        this.IR.電話番号 = getString((int)IR_IDX.電話番号);
+                        this.IR.医療機関名称 = getString((int)IR_IDX.医療機関名称);
                     }
                     else if (lineDef == レコード識別情報定数.診療報酬請求書)
                     {
-                        this.GO.総件数 = csv.GetField<int>((int)GO_IDX.総件数);
-                        this.GO.総合計点数 = csv.GetField<int>((int)GO_IDX.総合計点数);
-                        this.GO.マルチボリューム識別子 = csv.GetField<int>((int)GO_IDX.マルチボリューム識別子);
+                        this.GO.総件数 = getInt((int)GO_IDX.総件数);
+                        this.GO.総合計点数 = getInt((int)GO_IDX.総合計点数);
+                        this.GO.マルチボリューム識別子 = getInt((int)GO_IDX.マルチボリューム識別子);
                     }
                     else if (lineDef == レコード識別情報定数.レセプト共通)
                     {
@@ -259,25 +289,35 @@ namespace OpenReceiptViewer
 
                         var re = new RE()
                         {
-                            レセプト番号 = csv.GetField<int>((int)RE_IDX.レセプト番号),
-                            レセプト種別 = csv.GetField<int>((int)RE_IDX.レセプト種別),
-                            診療年月 = csv.GetField<int>((int)RE_IDX.診療年月),
-                            氏名 = csv.GetField<string>((int)RE_IDX.氏名),
-                            男女区分 = (男女区分)csv.GetField<int>((int)RE_IDX.男女区分),
-                            生年月日 = csv.GetField<int>((int)RE_IDX.生年月日),
-                            カルテ番号 = csv.GetField<string>((int)RE_IDX.カルテ番号等),
+                            レセプト番号 = getInt((int)RE_IDX.レセプト番号),
+                            履歴管理番号 = null,
+                            レセプト種別 = getInt((int)RE_IDX.レセプト種別),
+                            診療年月 = getInt((int)RE_IDX.診療年月),
+                            氏名 = getString((int)RE_IDX.氏名),
+                            男女区分 = (男女区分)getInt((int)RE_IDX.男女区分),
+                            生年月日 = getInt((int)RE_IDX.生年月日),
+                            カルテ番号 = getString((int)RE_IDX.カルテ番号等),
+                            検索番号 = getString((int)RE_IDX.検索番号),
                         };
-                        if (csv.TryGetField<int>((int)RE_IDX.入院年月日, out int tmp入院年月日))
+
+                        if (is履歴管理行 && 0 < this.ReceiptList.Count)
+                        {
+                            var previous = this.ReceiptList[this.ReceiptList.Count - 1];
+                            re.履歴管理番号 = re.レセプト番号;  // レセプト番号の列ところに1～の付番が入っているので、履歴管理番号に移動。
+                            re.レセプト番号 = previous.RE.レセプト番号;  // 直近のレセプトが親レセプトのはず。
+                        }
+
+                        if (csv.TryGetField<int>((int)RE_IDX.入院年月日 + (is履歴管理行 ? Define.履歴管理行数 : 0), out int tmp入院年月日))
                         {
                             // 入院レセプトのみ
                             re.入院年月日 = tmp入院年月日;
                         }
-                        if (csv.TryGetField<string>((int)RE_IDX.カタカナ, out string tmpカタカナ))
+                        if (csv.TryGetField<string>((int)RE_IDX.カタカナ + (is履歴管理行 ? Define.履歴管理行数 : 0), out string tmpカタカナ))
                         {
                             // H30年4月以降
                             re.カタカナ = tmpカタカナ;
                         }
-                        if (csv.TryGetField<string>((int)RE_IDX.患者の状態, out string tmp患者の状態))
+                        if (csv.TryGetField<string>((int)RE_IDX.患者の状態 + (is履歴管理行 ? Define.履歴管理行数 : 0), out string tmp患者の状態))
                         {
                             // H30年4月以降
                             re.患者の状態 = tmp患者の状態;
@@ -308,21 +348,21 @@ namespace OpenReceiptViewer
                     {
                         var ho = new HO()
                         {
-                            保険者番号 = csv.GetField<int>((int)HO_IDX.保険者番号),
+                            保険者番号 = getInt((int)HO_IDX.保険者番号),
                             // 枝番まで出すようになって表示が切れるようになったため、半角化。
-                            被保険者証記号 = StringUtil.ZenToHan(csv.GetField<string>((int)HO_IDX.被保険者証記号)),
-                            被保険者証番号 = StringUtil.ZenToHan(csv.GetField<string>((int)HO_IDX.被保険者証番号)),
-                            診療実日数 = csv.GetField<int>((int)HO_IDX.診療実日数),
-                            合計点数 = csv.GetField<int>((int)HO_IDX.合計点数),
-                            予備 = csv.GetField<int?>((int)HO_IDX.予備),
-                            回数 = csv.GetField<int?>((int)HO_IDX.回数),
-                            //合計金額 = csv.GetField<int?>((int)HO_IDX.合計金額),
-                            職務上の事由 = csv.GetField<int?>((int)HO_IDX.職務上の事由),
-                            証明証番号 = csv.GetField<int?>((int)HO_IDX.証明証番号),
-                            医療保険 = csv.GetField<int?>((int)HO_IDX.医療保険),
-                            減免区分 = csv.GetField<int?>((int)HO_IDX.減免区分),
-                            減額割合 = csv.GetField<int?>((int)HO_IDX.減額割合),
-                            減額金額 = csv.GetField<int?>((int)HO_IDX.減額金額),
+                            被保険者証記号 = StringUtil.ZenToHan(getString((int)HO_IDX.被保険者証記号)),
+                            被保険者証番号 = StringUtil.ZenToHan(getString((int)HO_IDX.被保険者証番号)),
+                            診療実日数 = getInt((int)HO_IDX.診療実日数),
+                            合計点数 = getInt((int)HO_IDX.合計点数),
+                            予備 = getNullableInt((int)HO_IDX.予備),
+                            回数 = getNullableInt((int)HO_IDX.回数),
+                            //合計金額 = getNullableInt((int)HO_IDX.合計金額),
+                            職務上の事由 = getNullableInt((int)HO_IDX.職務上の事由),
+                            証明証番号 = getNullableInt((int)HO_IDX.証明証番号),
+                            医療保険 = getNullableInt((int)HO_IDX.医療保険),
+                            減免区分 = getNullableInt((int)HO_IDX.減免区分),
+                            減額割合 = getNullableInt((int)HO_IDX.減額割合),
+                            減額金額 = getNullableInt((int)HO_IDX.減額金額),
                         };
                         if (_個人情報非表示)
                         {
@@ -343,7 +383,7 @@ namespace OpenReceiptViewer
                     {
                         var sn = new SN()
                         {
-                            枝番 = csv.GetField<string>((int)SN_IDX.枝番),
+                            枝番 = getString((int)SN_IDX.枝番),
                         };
                         if (_個人情報非表示)
                         {
@@ -362,17 +402,17 @@ namespace OpenReceiptViewer
                     {
                         var ko = new KO()
                         {
-                            負担者番号 = csv.GetField<string>((int)KO_IDX.負担者番号),
-                            受給者番号 = csv.GetField<string>((int)KO_IDX.受給者番号),
-                            任意給付区分 = csv.GetField<int?>((int)KO_IDX.任意給付区分),
-                            診療実日数 = csv.GetField<int>((int)KO_IDX.診療実日数),
-                            合計点数 = csv.GetField<int>((int)KO_IDX.合計点数),
-                            公費 = csv.GetField<int?>((int)KO_IDX.公費),
-                            外来一部負担金 = csv.GetField<int?>((int)KO_IDX.外来一部負担金),
-                            入院一部負担金 = csv.GetField<int?>((int)KO_IDX.入院一部負担金),
-                            予備 = csv.GetField<int?>((int)KO_IDX.予備),
-                            回数 = csv.GetField<int?>((int)KO_IDX.回数),
-                            合計金額 = csv.GetField<int?>((int)KO_IDX.合計金額),
+                            負担者番号 = getString((int)KO_IDX.負担者番号),
+                            受給者番号 = getString((int)KO_IDX.受給者番号),
+                            任意給付区分 = getNullableInt((int)KO_IDX.任意給付区分),
+                            診療実日数 = getInt((int)KO_IDX.診療実日数),
+                            合計点数 = getInt((int)KO_IDX.合計点数),
+                            公費 = getNullableInt((int)KO_IDX.公費),
+                            外来一部負担金 = getNullableInt((int)KO_IDX.外来一部負担金),
+                            入院一部負担金 = getNullableInt((int)KO_IDX.入院一部負担金),
+                            予備 = getNullableInt((int)KO_IDX.予備),
+                            回数 = getNullableInt((int)KO_IDX.回数),
+                            合計金額 = getNullableInt((int)KO_IDX.合計金額),
                         };
                         if (_個人情報非表示)
                         {
@@ -404,13 +444,13 @@ namespace OpenReceiptViewer
                     {
                         var sy = new SY()
                         {
-                            傷病名コード = csv.GetField<int>((int)SY_IDX.傷病名コード),
-                            診療開始日 = csv.GetField<int>((int)SY_IDX.診療開始日),
-                            転帰区分 = (転帰区分)csv.GetField<int>((int)SY_IDX.転帰区分),
-                            修飾語コード = csv.GetField<string>((int)SY_IDX.修飾語コード),
-                            傷病名称 = csv.GetField<string>((int)SY_IDX.傷病名称),
-                            主傷病 = csv.GetField<string>((int)SY_IDX.主傷病),
-                            補足コメント = csv.GetField<string>((int)SY_IDX.補足コメント),
+                            傷病名コード = getInt((int)SY_IDX.傷病名コード),
+                            診療開始日 = getInt((int)SY_IDX.診療開始日),
+                            転帰区分 = (転帰区分)getInt((int)SY_IDX.転帰区分),
+                            修飾語コード = getString((int)SY_IDX.修飾語コード),
+                            傷病名称 = getString((int)SY_IDX.傷病名称),
+                            主傷病 = getString((int)SY_IDX.主傷病),
+                            補足コメント = getString((int)SY_IDX.補足コメント),
                         };
                         receipt.SYList.Add(sy);
                     }
@@ -430,12 +470,12 @@ namespace OpenReceiptViewer
                             throw new NotImplementedException();
                         }
 
-                        siiyto.診療識別 = csv.GetField<int?>((int)SI_IY_IDX.診療識別);
-                        siiyto.負担区分 = csv.GetField<string>((int)SI_IY_IDX.負担区分);
-                        siiyto.コード = (int)csv.GetField<int>((int)SI_IY_IDX.診療行為または医薬品コード);
-                        siiyto.数量 = csv.GetField<float?>((int)SI_IY_IDX.数量);
-                        siiyto.点数 = csv.GetField<int?>((int)SI_IY_IDX.点数);
-                        siiyto.回数 = csv.GetField<int>((int)SI_IY_IDX.回数);
+                        siiyto.診療識別 = getNullableInt((int)SI_IY_IDX.診療識別);
+                        siiyto.負担区分 = getString((int)SI_IY_IDX.負担区分);
+                        siiyto.コード = (int)getInt((int)SI_IY_IDX.診療行為または医薬品コード);
+                        siiyto.数量 = getNullableFloat((int)SI_IY_IDX.数量);
+                        siiyto.点数 = getNullableInt((int)SI_IY_IDX.点数);
+                        siiyto.回数 = getInt((int)SI_IY_IDX.回数);
                         readコメント(csv, (int)SI_IY_IDX.コメント1_コメントコード, (int)SI_IY_IDX.コメント3_コメントコード, siiyto);
                         readXX日の情報(csv, (int)SI_IY_IDX.X01日の情報, (int)SI_IY_IDX.X31日の情報, siiyto);
                         receipt.SIIYTOCOList.Add(siiyto);
@@ -443,16 +483,16 @@ namespace OpenReceiptViewer
                     else if (lineDef == レコード識別情報定数.特定器材)
                     {
                         var to = new TO();
-                        to.診療識別 = csv.GetField<int?>((int)TO_IDX.診療識別);
-                        to.負担区分 = csv.GetField<string>((int)TO_IDX.負担区分);
-                        to.コード = (int)csv.GetField<int>((int)TO_IDX.特定器材コード);
-                        to.数量 = csv.GetField<float?>((int)TO_IDX.使用量);
-                        to.点数 = csv.GetField<int?>((int)TO_IDX.点数);
-                        to.回数 = csv.GetField<int>((int)TO_IDX.回数);
-                        to.単位コード = csv.GetField<int?>((int)TO_IDX.単位コード);
-                        to.単価 = csv.GetField<float?>((int)TO_IDX.単価);
-                        to.特定器材名称 = csv.GetField<string>((int)TO_IDX.特定器材名称);
-                        to.商品名及び規格 = csv.GetField<string>((int)TO_IDX.商品名及び規格);
+                        to.診療識別 = getNullableInt((int)TO_IDX.診療識別);
+                        to.負担区分 = getString((int)TO_IDX.負担区分);
+                        to.コード = (int)getInt((int)TO_IDX.特定器材コード);
+                        to.数量 = getNullableFloat((int)TO_IDX.使用量);
+                        to.点数 = getNullableInt((int)TO_IDX.点数);
+                        to.回数 = getInt((int)TO_IDX.回数);
+                        to.単位コード = getNullableInt((int)TO_IDX.単位コード);
+                        to.単価 = getNullableFloat((int)TO_IDX.単価);
+                        to.特定器材名称 = getString((int)TO_IDX.特定器材名称);
+                        to.商品名及び規格 = getString((int)TO_IDX.商品名及び規格);
                         readコメント(csv, (int)TO_IDX.コメント1_コメントコード, (int)TO_IDX.コメント3_コメントコード, to);
                         readXX日の情報(csv, (int)TO_IDX.X01日の情報, (int)TO_IDX.X31日の情報, to);
                         receipt.SIIYTOCOList.Add(to);
@@ -461,10 +501,10 @@ namespace OpenReceiptViewer
                     {
                         var co = new CO()
                         {
-                            診療識別 = csv.GetField<int?>((int)CO_IDX.診療識別),
-                            負担区分 = csv.GetField<string>((int)CO_IDX.負担区分),
-                            コメントコード = csv.GetField<int>((int)CO_IDX.コメントコード),
-                            文字データ = csv.GetField<string>((int)CO_IDX.文字データ),
+                            診療識別 = getNullableInt((int)CO_IDX.診療識別),
+                            負担区分 = getString((int)CO_IDX.負担区分),
+                            コメントコード = getInt((int)CO_IDX.コメントコード),
+                            文字データ = getString((int)CO_IDX.文字データ),
                         };
                         receipt.SIIYTOCOList.Add(co);
                     }
@@ -472,10 +512,44 @@ namespace OpenReceiptViewer
                     {
                         var sj = new SJ()
                         {
-                            症状詳記区分 = csv.GetField<int?>((int)SJ_IDX.症状詳記区分),
-                            症状詳記データ = csv.GetField<string>((int)SJ_IDX.症状詳記データ),
+                            症状詳記区分 = getNullableInt((int)SJ_IDX.症状詳記区分),
+                            症状詳記データ = getString((int)SJ_IDX.症状詳記データ),
                         };
                         receipt.SIIYTOCOList.Add(sj);
+                    }
+                    else if (lineDef == レコード識別情報定数.返戻医療機関)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.返戻理由)
+                    {
+                        var hr = new HR()
+                        {
+                            診療年月 = getInt((int)HR_IDX.診療年月),
+                            返戻理由 = getString((int)HR_IDX.返戻理由),
+                        };
+                        receipt.SIIYTOCOList.Add(hr);
+                    }
+                    else if (lineDef == レコード識別情報定数.返戻合計)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.事由)
+                    {
+                    }
+                    else if (lineDef == レコード識別情報定数.資格確認運用)
+                    {
+                        var on = new ON()
+                        {
+                            コード = getString((int)ON_IDX.コード),
+                        };
+                        receipt.SIIYTOCOList.Add(on);
+                    }
+                    else if (lineDef == レコード識別情報定数.レコード管理)
+                    {
+                        var rc = new RC()
+                        {
+                            コード = getString((int)RC_IDX.コード),
+                        };
+                        receipt.SIIYTOCOList.Add(rc);
                     }
                     else
                     {
