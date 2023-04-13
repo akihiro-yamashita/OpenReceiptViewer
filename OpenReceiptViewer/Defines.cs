@@ -94,7 +94,7 @@ namespace OpenReceiptViewer
         public const int 公費件数_MAX = 4;
 
         /// <summary></summary>
-        public const int 履歴管理行数 = 3;
+        public const int 履歴管理情報_列数 = 3;
 
         /// <summary></summary>
         public const int 未コード化傷病コード = 999;

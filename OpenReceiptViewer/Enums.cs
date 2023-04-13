@@ -221,16 +221,22 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>返戻医療機関レコード</summary>
-    /// <remarks>仕様不明</remarks>
+    /// <remarks>IRと微妙に違う。仕様を考えた人センス無い。</remarks>
     public enum HI_IDX
     {
+        審査支払機関 = 1,
+        請求年月 = 2,
+        都道府県 = 3,
+        点数表 = 4,
+        医療機関コード = 5,
+        予備 = 6,
+        マルチボリューム識別子 = 7,
     }
 
     /// <summary>返戻理由レコード</summary>
-    /// <remarks>仕様不明、中身は予想</remarks>
     public enum HR_IDX
     {
-        診療年月 = 1,
+        処理年月 = 1,
         不明2 = 2,
         不明3 = 3,
         不明4 = 4,
@@ -243,12 +249,6 @@ namespace OpenReceiptViewer
         不明11 = 11,
         不明12 = 12,
         不明13 = 13,
-    }
-
-    /// <summary>返戻合計レコード</summary>
-    /// <remarks>仕様不明</remarks>
-    public enum HG_IDX
-    {
     }
 
     /// <summary>事由レコード</summary>
@@ -278,14 +278,13 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>レコード管理レコード</summary>
-    /// <remarks>仕様不明</remarks>
     public enum RC_IDX
     {
-        コード = 1,
+        管理情報 = 1,
     }
 
-    /// <summary>診療報酬請求書レコード</summary>
-    public enum GO_IDX
+    /// <summary>診療報酬請求書、返戻合計共通レコード</summary>
+    public enum GOHG_IDX
     {
         総件数 = 1,
         総合計点数 = 2,

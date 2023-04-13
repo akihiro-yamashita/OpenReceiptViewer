@@ -287,31 +287,14 @@ namespace OpenReceiptViewer
                 var tuple = (Tuple<int, string>)内容;
                 return コメントConverter.Instance.Convert(tuple.Item1, tuple.Item2, parameter);
             }
-            else if (レコード識別情報 == レコード識別情報定数.症状詳記)
-            {
-                if (内容 == null)
-                {
-                    return string.Empty;
-                }
-                return 内容 as string;
-            }
-            else if (レコード識別情報 == レコード識別情報定数.返戻理由)
-            {
-                if (内容 == null)
-                {
-                    return string.Empty;
-                }
-                return 内容 as string;
-            }
-            else if (レコード識別情報 == レコード識別情報定数.資格確認運用)
-            {
-                if (内容 == null)
-                {
-                    return string.Empty;
-                }
-                return 内容 as string;
-            }
-            else if (レコード識別情報 == レコード識別情報定数.レコード管理)
+            else if (
+                レコード識別情報 == レコード識別情報定数.症状詳記 ||
+                レコード識別情報 == レコード識別情報定数.返戻医療機関 ||
+                レコード識別情報 == レコード識別情報定数.返戻理由 ||
+                レコード識別情報 == レコード識別情報定数.返戻合計 ||
+                レコード識別情報 == レコード識別情報定数.事由 ||
+                レコード識別情報 == レコード識別情報定数.資格確認運用 ||
+                レコード識別情報 == レコード識別情報定数.レコード管理)
             {
                 if (内容 == null)
                 {

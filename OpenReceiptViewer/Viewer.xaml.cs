@@ -84,5 +84,26 @@ namespace OpenReceiptViewer
                 }
             }
         }
+
+        private void DataGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // DataGridにマウスホイールを取られるので、その親の親のScrollViewerに対してスクロールが効かない。
+            // コードで無理矢理スクロール処理を行う。
+
+            var dataGrid = sender as DataGrid;
+            if (dataGrid != null)
+            {
+                var stackPanel = dataGrid.Parent as StackPanel;
+                if (stackPanel != null)
+                {
+                    var scrollViewer = stackPanel.Parent as ScrollViewer;
+                    if (scrollViewer != null)
+                    {
+                        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
     }
 }

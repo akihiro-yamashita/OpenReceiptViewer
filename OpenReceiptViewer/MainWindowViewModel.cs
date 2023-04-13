@@ -38,7 +38,7 @@ namespace OpenReceiptViewer
                 new RelayCommand<TabControl>(tabControl =>
                 {
                     var dialog = new Microsoft.Win32.OpenFileDialog();
-                    dialog.Filter = "*.UKE|*.*";
+                    dialog.Filter = "*.UKE,*.HEN|*.*";
                     dialog.FilterIndex = 0;
                     var dialogResult = dialog.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
@@ -69,7 +69,7 @@ namespace OpenReceiptViewer
                 {
                     new Label
                     {
-                        Content = vm.IR.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IR.請求年月, true),
+                        Content = vm.IRHI.審査支払機関.ToString() + "  請求年月" + DateUtil.ReceiptDateToShowDate(vm.IRHI.請求年月, true),
                     },
                     new Button
                     {

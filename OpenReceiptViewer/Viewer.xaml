@@ -40,13 +40,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Label Height="Auto">医療機関コード：</Label>
-                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IR.医療機関コード}"></Label>
+                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IRHI.医療機関コード}"></Label>
                 <Label Height="Auto">医療機関名：</Label>
-                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IR.医療機関名称}"></Label>
+                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=IRHI.医療機関名称}"></Label>
                 <Label Height="Auto">件数：</Label>
-                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=GO.総件数, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
+                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=GOHG.総件数, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
                 <Label Height="Auto">合計点数：</Label>
-                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=GO.総合計点数, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
+                <Label Height="Auto" Margin="0,0,8,0" Content="{Binding Path=GOHG.総合計点数, Converter={x:Static local:ZeroHideConverter.Instance} }"></Label>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Height ="Auto" Width="75"  Content="前へ" Command="{Binding PreviousReceiptCommand}"/>
@@ -55,12 +55,13 @@
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="290"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <DataGrid Grid.Column="0"
                       x:Name="_dataGrid"
                       AutoGenerateColumns="False"
+                      HeadersVisibility="Column"
                       IsReadOnly="True"
                       ItemsSource="{Binding ReceiptList}"
                       SelectionMode="Single"
@@ -237,7 +238,12 @@
                            Content="{Binding CurrentReceipt.KOList[3].合計点数}"></Label>
                     </Grid>
                 </ScrollViewer>
-                <DataGrid Grid.Row="3" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding CurrentReceipt.SYList}" GridLinesVisibility="None">
+                <DataGrid Grid.Row="3"
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding CurrentReceipt.SYList}"
+                    GridLinesVisibility="None">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="主" Binding="{Binding Path=主傷病, Converter={x:Static local:主傷病Converter.Instance} }" Width="30" MaxWidth="30">
                         </DataGridTextColumn>
@@ -255,61 +261,81 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid Grid.Row="4"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}"
-                          GridLinesVisibility="None">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="識別" Binding="{Binding Path=診療識別}" Width="40" MaxWidth="40">
-                            <DataGridTextColumn.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="ToolTip" Value="{Binding Path=診療識別, Converter={x:Static local:EnumNullableIntStringConverter.診療識別Instance} }"></Setter>
-                                </Style>
-                            </DataGridTextColumn.CellStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="内容" Width="330">
-                            <DataGridTextColumn.Binding>
-                                <MultiBinding Converter="{x:Static local:内容Converter.Instance}">
-                                    <Binding Path="DataContext.CurrentReceipt.RE.診療年月" RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
-                                    <Binding Path="レコード識別情報" />
-                                    <Binding Path="内容" />
-                                </MultiBinding>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}}"></Setter>
-                                </Style>
-                            </DataGridTextColumn.CellStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="コメント" Width="40">
-                            <DataGridTextColumn.Binding>
-                                <Binding Path="コメントList" Converter="{x:Static local:コメントListConverter.Instance}"></Binding>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}, Converter={x:Static local:StringEmptyToNullConverter.Instance}}"></Setter>
-                                </Style>
-                            </DataGridTextColumn.CellStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="数量" Width="50">
-                            <DataGridTextColumn.Binding>
-                                <MultiBinding Converter="{x:Static local:数量Converter.Instance}">
-                                    <Binding Path="レコード識別情報" />
-                                    <Binding Path="数量" />
-                                    <Binding Path="内容" />
-                                </MultiBinding>
-                            </DataGridTextColumn.Binding>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="点数" Binding="{Binding Path=点数}" Width="44">
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="回数" Binding="{Binding Path=回数, Converter={x:Static local:ZeroHideConverter.Instance} }" Width="40">
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="算定日" Binding="{Binding Path=XX日の情報, Converter={x:Static local:算定日Converter.Instance} }" Width="120">
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
 
+                <ScrollViewer Grid.Row="4">
+                    <StackPanel Focusable="True">
+                        <DataGrid
+                            AutoGenerateColumns="False"
+                            HeadersVisibility="Column"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding CurrentReceipt.SIIYTOCOList}"
+                            GridLinesVisibility="None"
+                            PreviewMouseWheel="DataGrid_PreviewMouseWheel">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="識別" Binding="{Binding Path=診療識別}" Width="40" MaxWidth="40" CanUserSort="False">
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="ToolTip" Value="{Binding Path=診療識別, Converter={x:Static local:EnumNullableIntStringConverter.診療識別Instance} }"></Setter>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="内容" Width="330" CanUserSort="False">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{x:Static local:内容Converter.Instance}">
+                                            <Binding Path="DataContext.CurrentReceipt.RE.診療年月" RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
+                                            <Binding Path="レコード識別情報" />
+                                            <Binding Path="内容" />
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}}"></Setter>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="コメント" Width="40" CanUserSort="False">
+                                    <DataGridTextColumn.Binding>
+                                        <Binding Path="コメントList" Converter="{x:Static local:コメントListConverter.Instance}"></Binding>
+                                    </DataGridTextColumn.Binding>
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="ToolTip" Value="{Binding Content.Text, RelativeSource={RelativeSource Self}, Converter={x:Static local:StringEmptyToNullConverter.Instance}}"></Setter>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="数量" Width="50" CanUserSort="False">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{x:Static local:数量Converter.Instance}">
+                                            <Binding Path="レコード識別情報" />
+                                            <Binding Path="数量" />
+                                            <Binding Path="内容" />
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="点数" Binding="{Binding Path=点数}" Width="40" CanUserSort="False">
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="回数" Binding="{Binding Path=回数, Converter={x:Static local:ZeroHideConverter.Instance} }" Width="40" CanUserSort="False">
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="算定日" Binding="{Binding Path=XX日の情報, Converter={x:Static local:算定日Converter.Instance} }" Width="120" CanUserSort="False">
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid
+                            AutoGenerateColumns="False"
+                            HeadersVisibility="None"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding CurrentReceipt.HRJYONRCList}"
+                            GridLinesVisibility="None"
+                            PreviewMouseWheel="DataGrid_PreviewMouseWheel">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Path=レコード識別情報}" Width="40" MaxWidth="40">
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Path=内容}" Width="620">
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </Grid>

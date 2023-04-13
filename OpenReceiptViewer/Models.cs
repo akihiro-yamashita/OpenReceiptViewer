@@ -49,11 +49,12 @@ namespace OpenReceiptViewer
         private string _レコード識別情報;
     }
 
-    /// <summary>医療機関情報レコード</summary>
-    public class IR : Record
+    /// <summary>医療機関情報、返戻医療機関共通レコード</summary>
+    public abstract class IRHI : Record
     {
         /// <summary></summary>
-        public IR() : base(レコード識別情報定数.医療機関情報) { }
+        /// <param name="レコード識別情報"></param>
+        public IRHI(string レコード識別情報) : base(レコード識別情報) { }
 
         /// <summary></summary>
         public 審査支払機関 審査支払機関
@@ -162,6 +163,20 @@ namespace OpenReceiptViewer
             }
         }
         private string _電話番号;
+    }
+
+    /// <summary>医療機関情報レコード</summary>
+    public class IR : IRHI
+    {
+        /// <summary></summary>
+        public IR() : base(レコード識別情報定数.医療機関情報) { }
+    }
+
+    /// <summary>返戻医療機関レコード</summary>
+    public class HI : IRHI
+    {
+        /// <summary></summary>
+        public HI() : base(レコード識別情報定数.返戻医療機関) { }
     }
 
     /// <summary>レセプト共通レコード</summary>
@@ -702,6 +717,9 @@ namespace OpenReceiptViewer
 
         /// <summary>明細共通</summary>
         public List<SIIYTOCO> SIIYTOCOList { get; set; }
+
+        /// <summary>履歴管理情報共通</summary>
+        public List<HRJYONRC> HRJYONRCList { get; set; }
     }
 
     /// <summary>傷病名レコード</summary>    
@@ -1195,15 +1213,19 @@ namespace OpenReceiptViewer
         private string _症状詳記データ;
     }
 
-    /// <summary>返戻医療機関レコード</summary>
-    public class HI : Record
+    /// <summary>履歴管理情報関連レコード</summary>
+    public abstract class HRJYONRC : Record
     {
         /// <summary></summary>
-        public HI() : base(レコード識別情報定数.返戻医療機関) { }
+        /// <param name="レコード識別情報"></param>
+        public HRJYONRC(string レコード識別情報) : base(レコード識別情報) { }
+
+        /// <summary>内容</summary>
+        public abstract object 内容 { get; }
     }
 
     /// <summary>返戻理由レコード</summary>
-    public class HR : EmptySIIYTOCO
+    public class HR : HRJYONRC
     {
         /// <summary></summary>
         public HR() : base(レコード識別情報定数.返戻理由) { }
@@ -1215,16 +1237,16 @@ namespace OpenReceiptViewer
         }
 
         /// <summary></summary>
-        public int 診療年月
+        public int 処理年月
         {
-            get { return this._診療年月; }
+            get { return this._処理年月; }
             set
             {
-                this._診療年月 = value;
-                OnPropertyChanged("診療年月");
+                this._処理年月 = value;
+                OnPropertyChanged("処理年月");
             }
         }
-        private int _診療年月;
+        private int _処理年月;
 
         /// <summary></summary>
         public string 返戻理由
@@ -1240,22 +1262,21 @@ namespace OpenReceiptViewer
         private string _返戻理由;
     }
 
-    /// <summary>返戻合計レコード</summary>
-    public class HG : Record
-    {
-        /// <summary></summary>
-        public HG() : base(レコード識別情報定数.返戻合計) { }
-    }
-
     /// <summary>事由レコード</summary>
-    public class JY : Record
+    public class JY : HRJYONRC
     {
         /// <summary></summary>
         public JY() : base(レコード識別情報定数.事由) { }
+
+        /// <summary>内容</summary>
+        public override object 内容
+        {
+            get { return "未実装"; }
+        }
     }
 
     /// <summary>資格確認運用レコード</summary>
-    public class ON : EmptySIIYTOCO
+    public class ON : HRJYONRC
     {
         /// <summary></summary>
         public ON() : base(レコード識別情報定数.資格確認運用) { }
@@ -1281,7 +1302,7 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>レコード管理レコード</summary>
-    public class RC : EmptySIIYTOCO
+    public class RC : HRJYONRC
     {
         /// <summary></summary>
         public RC() : base(レコード識別情報定数.レコード管理) { }
@@ -1289,28 +1310,29 @@ namespace OpenReceiptViewer
         /// <summary>内容</summary>
         public override object 内容
         {
-            get { return コード; }
+            get { return 管理情報; }
         }
 
         /// <summary></summary>
-        public string コード
+        public string 管理情報
         {
-            get { return this._コード; }
+            get { return this._管理情報; }
             set
             {
-                this._コード = value;
-                OnPropertyChanged("コード");
+                this._管理情報 = value;
+                OnPropertyChanged("管理情報");
                 OnPropertyChanged("内容");
             }
         }
-        private string _コード;
+        private string _管理情報;
     }
 
-    /// <summary>診療報酬請求書レコード</summary>    
-    public class GO : Record
+    /// <summary>診療報酬請求書、返戻合計共通レコード</summary>    
+    public abstract class GOHG : Record
     {
         /// <summary></summary>
-        public GO() : base(レコード識別情報定数.診療報酬請求書) { }
+        /// <param name="レコード識別情報"></param>
+        public GOHG(string レコード識別情報) : base(レコード識別情報) { }
 
         /// <summary></summary>
         public int 総件数
@@ -1347,6 +1369,20 @@ namespace OpenReceiptViewer
             }
         }
         private int _マルチボリューム識別子;
+    }
+
+    /// <summary>レコード管理レコード</summary>
+    public class GO : GOHG
+    {
+        /// <summary></summary>
+        public GO() : base(レコード識別情報定数.診療報酬請求書) { }
+    }
+
+    /// <summary>返戻合計レコード</summary>
+    public class HG : GOHG
+    {
+        /// <summary></summary>
+        public HG() : base(レコード識別情報定数.返戻合計) { }
     }
 
     /// <summary></summary>

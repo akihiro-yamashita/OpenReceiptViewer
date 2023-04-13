@@ -27,11 +27,11 @@ namespace OpenReceiptViewer
 {
     public class ViewerViewModel : NotifyPropertyChanged
     {
-        /// <summary>医療機関情報レコード</summary>
-        public IR IR { get; set; }
+        /// <summary>医療機関情報、返戻医療機関共通レコード</summary>
+        public IRHI IRHI { get; set; }
 
-        /// <summary>診療報酬請求書レコード</summary>
-        public GO GO { get; set; }
+        /// <summary>診療報酬請求書、返戻合計共通レコード</summary>
+        public GOHG GOHG { get; set; }
 
         /// <summary>レセプトリスト</summary>
         public ObservableCollection<Receipt> ReceiptList { get; set; }
@@ -63,8 +63,8 @@ namespace OpenReceiptViewer
 
         public ViewerViewModel()
         {
-            this.IR = new IR();
-            this.GO = new GO();
+            //this.IR = new IR();
+            //this.GO = new GO();
             this.ReceiptList = new ObservableCollection<Receipt>();
             this.ReceiptListOriginal = null;
             this.MasterRootDiretoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Master");
@@ -97,8 +97,8 @@ namespace OpenReceiptViewer
                         var tmp = args.Replace("{%カルテ番号%}", this.CurrentReceipt.RE.カルテ番号);
                         tmp = tmp.Replace("{%レセプト番号%}", this.CurrentReceipt.RE.レセプト番号.ToString());
                         tmp = tmp.Replace("{%氏名%}", this.CurrentReceipt.RE.氏名);
-                        tmp = tmp.Replace("{%審査支払機関%}", ((int)this.IR.審査支払機関).ToString());
-                        tmp = tmp.Replace("{%請求年月%}", this.IR.請求年月.ToString());
+                        tmp = tmp.Replace("{%審査支払機関%}", ((int)this.IRHI.審査支払機関).ToString());
+                        tmp = tmp.Replace("{%請求年月%}", this.IRHI.請求年月.ToString());
 
                         try
                         {
@@ -163,14 +163,14 @@ namespace OpenReceiptViewer
 
         private void Read(string filePath)
         {
-            var is履歴管理行 = false;
+            var is履歴管理情報 = false;
 
             // SIIYTO行内のコメント1～3
             Action<CsvReader, int, int, SIIYTO> readコメント = (csv, コメントコード1, コメントコード3, target) =>
             {
                 for (int i = コメントコード1; i <= コメントコード3; i = i + 2)  // コメントコード、文字データ、コメントコード・・・となるので+2で進む。
                 {
-                    var tmp = csv.GetField<int?>(i + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    var tmp = csv.GetField<int?>(i + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                     if (tmp.HasValue)
                     {
                         if (target.コメントList == null)
@@ -180,7 +180,7 @@ namespace OpenReceiptViewer
                         target.コメントList.Add(new SIIYTO.コメント()
                         {
                             コメントコード = tmp.Value,
-                            文字データ = csv.GetField<string>(i + 1 + (is履歴管理行 ? Define.履歴管理行数 : 0)),
+                            文字データ = csv.GetField<string>(i + 1 + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0)),
                         });
                     }
                     else
@@ -195,7 +195,7 @@ namespace OpenReceiptViewer
             {
                 for (int i = X01日; i <= X31日; i++)
                 {
-                    var tmp = csv.GetField<int?>(i + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    var tmp = csv.GetField<int?>(i + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                     if (tmp.HasValue)
                     {
                         if (target.XX日の情報 == null)
@@ -232,19 +232,19 @@ namespace OpenReceiptViewer
 
                 Func<int, int> getInt = arg =>
                 {
-                    return csv.GetField<int>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    return csv.GetField<int>(arg + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                 };
                 Func<int, int?> getNullableInt = arg =>
                 {
-                    return csv.GetField<int?>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    return csv.GetField<int?>(arg + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                 };
                 Func<int, float?> getNullableFloat = arg =>
                 {
-                    return csv.GetField<float?>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    return csv.GetField<float?>(arg + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                 };
                 Func<int, string> getString = arg =>
                 {
-                    return csv.GetField<string>(arg + (is履歴管理行 ? Define.履歴管理行数 : 0));
+                    return csv.GetField<string>(arg + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0));
                 };
 
                 while (csv.Read())
@@ -253,32 +253,53 @@ namespace OpenReceiptViewer
 
                     if (int.TryParse(lineDef, out int 履歴管理先頭行))
                     {
-                        is履歴管理行 = true;
+                        is履歴管理情報 = true;
                         lineDef = getString(0);  // 3列ずれるのでとり直し
                     }
                     else
                     {
-                        is履歴管理行 = false;
+                        is履歴管理情報 = false;
                     }
 
                     if (lineDef == レコード識別情報定数.医療機関情報)
                     {
-                        this.IR.審査支払機関 = (審査支払機関)getInt((int)IR_IDX.審査支払機関);
-                        this.IR.都道府県 = getInt((int)IR_IDX.都道府県);
-                        this.IR.点数表 = getInt((int)IR_IDX.点数表);
-                        this.IR.医療機関コード = csv.GetField<string>((int)IR_IDX.医療機関コード);
-                        this.IR.予備 = getNullableInt((int)IR_IDX.予備);
-                        this.IR.医療機関名称 = csv.GetField<string>((int)IR_IDX.医療機関名称);
-                        this.IR.請求年月 = getInt((int)IR_IDX.請求年月);
-                        this.IR.マルチボリューム識別子 = getInt((int)IR_IDX.マルチボリューム識別子);
-                        this.IR.電話番号 = getString((int)IR_IDX.電話番号);
-                        this.IR.医療機関名称 = getString((int)IR_IDX.医療機関名称);
+                        this.IRHI = new IR();
+                        this.IRHI.審査支払機関 = (審査支払機関)getInt((int)IR_IDX.審査支払機関);
+                        this.IRHI.都道府県 = getInt((int)IR_IDX.都道府県);
+                        this.IRHI.点数表 = getInt((int)IR_IDX.点数表);
+                        this.IRHI.医療機関コード = getString((int)IR_IDX.医療機関コード);
+                        this.IRHI.予備 = getNullableInt((int)IR_IDX.予備);
+                        this.IRHI.医療機関名称 = getString((int)IR_IDX.医療機関名称);
+                        this.IRHI.請求年月 = getInt((int)IR_IDX.請求年月);
+                        this.IRHI.マルチボリューム識別子 = getInt((int)IR_IDX.マルチボリューム識別子);
+                        this.IRHI.電話番号 = getString((int)IR_IDX.電話番号);
+                    }
+                    else if (lineDef == レコード識別情報定数.返戻医療機関)
+                    {
+                        this.IRHI = new HI();
+                        this.IRHI.審査支払機関 = (審査支払機関)getInt((int)HI_IDX.審査支払機関);
+                        this.IRHI.都道府県 = getInt((int)HI_IDX.都道府県);
+                        this.IRHI.点数表 = getInt((int)HI_IDX.点数表);
+                        this.IRHI.医療機関コード = getString((int)HI_IDX.医療機関コード);
+                        this.IRHI.予備 = getNullableInt((int)HI_IDX.予備);
+                        this.IRHI.医療機関名称 = string.Empty;
+                        this.IRHI.請求年月 = getInt((int)HI_IDX.請求年月);
+                        this.IRHI.マルチボリューム識別子 = getInt((int)HI_IDX.マルチボリューム識別子);
+                        this.IRHI.電話番号 = string.Empty;
                     }
                     else if (lineDef == レコード識別情報定数.診療報酬請求書)
                     {
-                        this.GO.総件数 = getInt((int)GO_IDX.総件数);
-                        this.GO.総合計点数 = getInt((int)GO_IDX.総合計点数);
-                        this.GO.マルチボリューム識別子 = getInt((int)GO_IDX.マルチボリューム識別子);
+                        this.GOHG = new GO();
+                        this.GOHG.総件数 = getInt((int)GOHG_IDX.総件数);
+                        this.GOHG.総合計点数 = getInt((int)GOHG_IDX.総合計点数);
+                        this.GOHG.マルチボリューム識別子 = getInt((int)GOHG_IDX.マルチボリューム識別子);
+                    }
+                    else if (lineDef == レコード識別情報定数.返戻合計)
+                    {
+                        this.GOHG = new HG();
+                        this.GOHG.総件数 = getInt((int)GOHG_IDX.総件数);
+                        this.GOHG.総合計点数 = getInt((int)GOHG_IDX.総合計点数);
+                        this.GOHG.マルチボリューム識別子 = getInt((int)GOHG_IDX.マルチボリューム識別子);
                     }
                     else if (lineDef == レコード識別情報定数.レセプト共通)
                     {
@@ -300,24 +321,24 @@ namespace OpenReceiptViewer
                             検索番号 = getString((int)RE_IDX.検索番号),
                         };
 
-                        if (is履歴管理行 && 0 < this.ReceiptList.Count)
+                        if (is履歴管理情報 && 0 < this.ReceiptList.Count)
                         {
                             var previous = this.ReceiptList[this.ReceiptList.Count - 1];
                             re.履歴管理番号 = re.レセプト番号;  // レセプト番号の列ところに1～の付番が入っているので、履歴管理番号に移動。
                             re.レセプト番号 = previous.RE.レセプト番号;  // 直近のレセプトが親レセプトのはず。
                         }
 
-                        if (csv.TryGetField<int>((int)RE_IDX.入院年月日 + (is履歴管理行 ? Define.履歴管理行数 : 0), out int tmp入院年月日))
+                        if (csv.TryGetField<int>((int)RE_IDX.入院年月日 + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0), out int tmp入院年月日))
                         {
                             // 入院レセプトのみ
                             re.入院年月日 = tmp入院年月日;
                         }
-                        if (csv.TryGetField<string>((int)RE_IDX.カタカナ + (is履歴管理行 ? Define.履歴管理行数 : 0), out string tmpカタカナ))
+                        if (csv.TryGetField<string>((int)RE_IDX.カタカナ + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0), out string tmpカタカナ))
                         {
                             // H30年4月以降
                             re.カタカナ = tmpカタカナ;
                         }
-                        if (csv.TryGetField<string>((int)RE_IDX.患者の状態 + (is履歴管理行 ? Define.履歴管理行数 : 0), out string tmp患者の状態))
+                        if (csv.TryGetField<string>((int)RE_IDX.患者の状態 + (is履歴管理情報 ? Define.履歴管理情報_列数 : 0), out string tmp患者の状態))
                         {
                             // H30年4月以降
                             re.患者の状態 = tmp患者の状態;
@@ -340,6 +361,7 @@ namespace OpenReceiptViewer
                         {
                             KOList = new List<KO>(),
                             SIIYTOCOList = new List<SIIYTOCO>(),
+                            HRJYONRCList = new List<HRJYONRC>(),
                             SYList = new List<SY>(),
                         };
                         receipt.RE = re;
@@ -517,23 +539,19 @@ namespace OpenReceiptViewer
                         };
                         receipt.SIIYTOCOList.Add(sj);
                     }
-                    else if (lineDef == レコード識別情報定数.返戻医療機関)
-                    {
-                    }
                     else if (lineDef == レコード識別情報定数.返戻理由)
                     {
                         var hr = new HR()
                         {
-                            診療年月 = getInt((int)HR_IDX.診療年月),
+                            処理年月 = getInt((int)HR_IDX.処理年月),
                             返戻理由 = getString((int)HR_IDX.返戻理由),
                         };
-                        receipt.SIIYTOCOList.Add(hr);
-                    }
-                    else if (lineDef == レコード識別情報定数.返戻合計)
-                    {
+                        receipt.HRJYONRCList.Add(hr);
                     }
                     else if (lineDef == レコード識別情報定数.事由)
                     {
+                        var jy = new JY();
+                        receipt.HRJYONRCList.Add(jy);
                     }
                     else if (lineDef == レコード識別情報定数.資格確認運用)
                     {
@@ -541,15 +559,15 @@ namespace OpenReceiptViewer
                         {
                             コード = getString((int)ON_IDX.コード),
                         };
-                        receipt.SIIYTOCOList.Add(on);
+                        receipt.HRJYONRCList.Add(on);
                     }
                     else if (lineDef == レコード識別情報定数.レコード管理)
                     {
                         var rc = new RC()
                         {
-                            コード = getString((int)RC_IDX.コード),
+                            管理情報 = getString((int)RC_IDX.管理情報),
                         };
-                        receipt.SIIYTOCOList.Add(rc);
+                        receipt.HRJYONRCList.Add(rc);
                     }
                     else
                     {
