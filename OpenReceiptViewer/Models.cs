@@ -722,7 +722,7 @@ namespace OpenReceiptViewer
         public List<HRJYONRC> HRJYONRCList { get; set; }
     }
 
-    /// <summary>傷病名レコード</summary>    
+    /// <summary>傷病名レコード</summary>
     public class SY : Record
     {
         /// <summary></summary>
@@ -1328,7 +1328,7 @@ namespace OpenReceiptViewer
     }
 
     /// <summary>診療報酬請求書、返戻合計共通レコード</summary>    
-    public abstract class GOHG : Record
+    public class GOHG : Record
     {
         /// <summary></summary>
         /// <param name="レコード識別情報"></param>
@@ -1369,20 +1369,6 @@ namespace OpenReceiptViewer
             }
         }
         private int _マルチボリューム識別子;
-    }
-
-    /// <summary>レコード管理レコード</summary>
-    public class GO : GOHG
-    {
-        /// <summary></summary>
-        public GO() : base(レコード識別情報定数.診療報酬請求書) { }
-    }
-
-    /// <summary>返戻合計レコード</summary>
-    public class HG : GOHG
-    {
-        /// <summary></summary>
-        public HG() : base(レコード識別情報定数.返戻合計) { }
     }
 
     /// <summary></summary>

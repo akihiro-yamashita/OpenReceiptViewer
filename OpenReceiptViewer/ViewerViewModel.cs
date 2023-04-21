@@ -287,16 +287,9 @@ namespace OpenReceiptViewer
                         this.IRHI.マルチボリューム識別子 = getInt((int)HI_IDX.マルチボリューム識別子);
                         this.IRHI.電話番号 = string.Empty;
                     }
-                    else if (lineDef == レコード識別情報定数.診療報酬請求書)
+                    else if (lineDef == レコード識別情報定数.診療報酬請求書 || lineDef == レコード識別情報定数.返戻合計)
                     {
-                        this.GOHG = new GO();
-                        this.GOHG.総件数 = getInt((int)GOHG_IDX.総件数);
-                        this.GOHG.総合計点数 = getInt((int)GOHG_IDX.総合計点数);
-                        this.GOHG.マルチボリューム識別子 = getInt((int)GOHG_IDX.マルチボリューム識別子);
-                    }
-                    else if (lineDef == レコード識別情報定数.返戻合計)
-                    {
-                        this.GOHG = new HG();
+                        this.GOHG = new GOHG(lineDef);
                         this.GOHG.総件数 = getInt((int)GOHG_IDX.総件数);
                         this.GOHG.総合計点数 = getInt((int)GOHG_IDX.総合計点数);
                         this.GOHG.マルチボリューム識別子 = getInt((int)GOHG_IDX.マルチボリューム識別子);

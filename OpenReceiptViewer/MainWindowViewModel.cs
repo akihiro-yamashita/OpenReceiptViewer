@@ -38,7 +38,7 @@ namespace OpenReceiptViewer
                 new RelayCommand<TabControl>(tabControl =>
                 {
                     var dialog = new Microsoft.Win32.OpenFileDialog();
-                    dialog.Filter = "*.UKE,*.HEN|*.*";
+                    dialog.Filter = "*.UKE,*.HEN,*.SAH|*.*";
                     dialog.FilterIndex = 0;
                     var dialogResult = dialog.ShowDialog();
                     if (dialogResult.HasValue && dialogResult.Value)
