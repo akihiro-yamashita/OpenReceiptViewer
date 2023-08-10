@@ -261,7 +261,7 @@ namespace OpenReceiptViewer
                         is履歴管理情報 = false;
                     }
 
-                    if (lineDef == レコード識別情報定数.医療機関情報)
+                    if (lineDef == レコード識別情報定数.医療機関情報 && !is履歴管理情報)  // 返戻元によってはHIじゃなくてIRで来てしまう。
                     {
                         this.IRHI = new IR();
                         this.IRHI.審査支払機関 = (審査支払機関)getInt((int)IR_IDX.審査支払機関);
