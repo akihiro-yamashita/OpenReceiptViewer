@@ -45,6 +45,7 @@ http://opensource.org/licenses/Apache-2.0
 
 ## 更新履歴
 
+ver 0.2.10   2024年06月診療報酬改定対応マスター更新  
 ver 0.2.9   マスター更新  
 ver 0.2.8   マスター更新  
 ver 0.2.7   返戻のIR行が反映されるバグを修正  
