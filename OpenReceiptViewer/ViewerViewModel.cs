@@ -1132,6 +1132,7 @@ namespace OpenReceiptViewer
             var filePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName.Replace(".csv", ".min.csv"));
             if (!File.Exists(filePath))
             {
+                // 202406以降はフル版をもう管理しない。なのでこのコードは過去レセプトでしか通らない。
                 filePath = Path.Combine(MasterRootDiretoryPath, masterSubDiretoryPath, fileName);
             }
             return filePath;
