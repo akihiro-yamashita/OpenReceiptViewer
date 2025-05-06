@@ -45,6 +45,7 @@ http://opensource.org/licenses/Apache-2.0
 
 ## 更新履歴
 
+ver 0.2.14   マスター更新  
 ver 0.2.13   マスター更新  
 ver 0.2.12   マスター更新  
 ver 0.2.11   マスター更新等  
